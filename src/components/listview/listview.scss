@@ -303,6 +303,33 @@
     align-items: center;
 }
 
+.listItem-dubSubIndicators {
+    position: absolute;
+    top: 0.4em;
+    left: 0.4em;
+    display: flex;
+    gap: 0.4em;
+    z-index: 1;
+}
+
+.listItem-audioLanguages {
+    background-color: rgba(43, 179, 66, 0.753);
+    color: #fff;
+    font-size: 75%;
+    padding: 0.5em 1em;
+    border-radius: 5em;
+    font-weight: 600;
+}
+
+.listItem-subtitleLanguages {
+    background-color: rgba(153, 53, 192, 0.856);
+    color: #fff;
+    font-size: 75%;
+    padding: 0.5em 1em;
+    border-radius: 5em;
+    font-weight: 600;
+}
+
 .listItem-bottomoverview {
     font-size: 88%;
     margin-bottom: 1em;

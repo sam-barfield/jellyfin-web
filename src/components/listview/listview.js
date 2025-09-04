@@ -19,6 +19,7 @@ import '../../elements/emby-playstatebutton/emby-playstatebutton';
 import { getDefaultBackgroundClass } from '../cardbuilder/cardBuilderUtils';
 import markdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
+import { isDubbed, isSubbed } from 'utils/dubSubIndicators';
 
 function getIndex(item, options) {
     if (options.index === 'disc') {
@@ -300,6 +301,19 @@ export function getListViewHtml(options) {
             if (playOnImageClick) {
                 html += '<button is="paper-icon-button-light" class="listItemImageButton itemAction" data-action="resume"><span class="material-icons listItemImageButton-icon play_arrow" aria-hidden="true"></span></button>';
             }
+
+            if (item.IsAnime) {
+                let dubSubHtml = '';
+                if (isDubbed(item)) {
+                    dubSubHtml += '<div class="listItem-audioLanguages">' + 'DUB' + '</div>';
+                }
+
+                if (isSubbed(item)) {
+                    dubSubHtml += '<div class="listItem-subtitleLanguages">' + 'SUB' + '</div>';
+                }
+                html += `<div class="listItem-dubSubIndicators">${dubSubHtml}</div>`;
+            }
+
 
             const progressHtml = indicators.getProgressBarHtml(item, {
                 containerClass: 'listItemProgressBar'

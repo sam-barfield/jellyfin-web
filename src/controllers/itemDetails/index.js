@@ -776,7 +776,7 @@ function renderNextUp(page, item, user) {
     ServerConnections.getApiClient(item.ServerId).getNextUpEpisodes({
         SeriesId: item.Id,
         UserId: user.Id,
-        Fields: 'MediaSourceCount'
+        Fields: 'MediaSourceCount,AudioLanguages,SubtitleLanguages,IsAnime'
     }).then(function (result) {
         if (result.Items.length) {
             section.classList.remove('hide');
@@ -1141,7 +1141,7 @@ function renderMoreFromSeason(view, item, apiClient) {
         apiClient.getEpisodes(item.SeriesId, {
             SeasonId: item.SeasonId,
             UserId: userId,
-            Fields: 'ItemCounts,PrimaryImageAspectRatio,CanDelete,MediaSourceCount'
+            Fields: 'ItemCounts,PrimaryImageAspectRatio,CanDelete,MediaSourceCount,AudioLanguages,SubtitleLanguages,IsAnime',
         }).then(function (result) {
             if (result.Items.length < 2) {
                 section.classList.add('hide');
@@ -1338,7 +1338,7 @@ function renderTags(page, item) {
 }
 
 function renderChildren(page, item) {
-    let fields = 'ItemCounts,PrimaryImageAspectRatio,CanDelete,MediaSourceCount';
+    let fields = 'ItemCounts,PrimaryImageAspectRatio,CanDelete,MediaSourceCount,AudioLanguages,SubtitleLanguages,IsAnime';
     const query = {
         ParentId: item.Id,
         Fields: fields

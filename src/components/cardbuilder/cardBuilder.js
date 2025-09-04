@@ -24,6 +24,7 @@ import layoutManager from '../layoutManager';
 import { playbackManager } from '../playback/playbackmanager';
 import { appRouter } from '../router/appRouter';
 import itemShortcuts from '../shortcuts';
+import { isDubbed, isSubbed } from 'utils/dubSubIndicators';
 
 import 'elements/emby-button/paper-icon-button-light';
 
@@ -1128,6 +1129,18 @@ function buildCard(index, item, apiClient, options) {
 
     if (layoutManager.desktop && !options.disableHoverMenu) {
         additionalCardContent += getHoverMenuHtml(item, action);
+    }
+
+    if (item.IsAnime) {
+        let dubSubHtml = '';
+        if (isDubbed(item)) {
+            dubSubHtml += '<div class="listItem-audioLanguages">' + 'DUB' + '</div>';
+        }
+
+        if (isSubbed(item)) {
+            dubSubHtml += '<div class="listItem-subtitleLanguages">' + 'SUB' + '</div>';
+        }
+        additionalCardContent += `<div class="listItem-dubSubIndicators">${dubSubHtml}</div>`;
     }
 
     return '<' + tagName + ' data-index="' + index + '"' + timerAttributes + actionAttribute + ' data-isfolder="' + (item.IsFolder || false) + '" data-serverid="' + (item.ServerId || options.serverId) + '" data-id="' + (item.Id || item.ItemId) + '" data-type="' + item.Type + '"' + mediaTypeData + collectionTypeData + channelIdData + pathData + positionTicksData + collectionIdData + playlistIdData + contextData + parentIdData + startDate + endDate + ' data-prefix="' + escapeHtml(prefix) + '" class="' + className + '"' + ariaLabelAttribute + '>' + cardImageContainerOpen + innerCardFooter + cardImageContainerClose + overlayButtons + additionalCardContent + cardScalableClose + outerCardFooter + cardBoxClose + '</' + tagName + '>';
