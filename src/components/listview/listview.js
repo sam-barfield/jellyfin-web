@@ -19,7 +19,6 @@ import '../../elements/emby-playstatebutton/emby-playstatebutton';
 import { getDefaultBackgroundClass } from '../cardbuilder/cardBuilderUtils';
 import markdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
-import { isDubbed, isSubbed } from 'utils/dubSubIndicators';
 
 function getIndex(item, options) {
     if (options.index === 'disc') {
@@ -304,16 +303,24 @@ export function getListViewHtml(options) {
 
             if (item.IsAnime) {
                 let dubSubHtml = '';
-                if (isDubbed(item)) {
-                    dubSubHtml += '<div class="listItem-audioLanguages">' + 'DUB' + '</div>';
+                if (item.ItemDubbedCount === 2) {
+                    dubSubHtml += '<div class="listItem-audioLanguages">DUB</div>';
                 }
 
-                if (isSubbed(item)) {
-                    dubSubHtml += '<div class="listItem-subtitleLanguages">' + 'SUB' + '</div>';
+                // 1 indicates partial dubs/subs, so we'll style this differently.
+                if (item.ItemDubbedCount === 1) {
+                    dubSubHtml += '<div class="listItem-audioLanguages listItem-partMissing"></span>DUB</div>';
+                }
+
+                if (item.ItemSubbedCount === 2) {
+                    dubSubHtml += '<div class="listItem-subtitleLanguages">SUB</div>';
+                }
+
+                if (item.ItemSubbedCount === 1) {
+                    dubSubHtml += '<div class="listItem-subtitleLanguages listItem-partMissing">SUB</div>';
                 }
                 html += `<div class="listItem-dubSubIndicators">${dubSubHtml}</div>`;
             }
-
 
             const progressHtml = indicators.getProgressBarHtml(item, {
                 containerClass: 'listItemProgressBar'

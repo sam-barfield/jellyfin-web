@@ -170,7 +170,7 @@ function getFetchDataFn(section) {
             SortOrder: 'Ascending',
             Filters: 'IsFavorite',
             Recursive: true,
-            Fields: 'PrimaryImageAspectRatio,AudioLanguages,SubtitleLanguages,IsAnime',
+            Fields: 'PrimaryImageAspectRatio,IsAnime,DubSubCount',
             CollapseBoxSetItems: false,
             ExcludeLocationTypes: 'Virtual',
             EnableTotalRecordCount: false

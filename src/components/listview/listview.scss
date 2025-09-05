@@ -310,6 +310,16 @@
     display: flex;
     gap: 0.4em;
     z-index: 1;
+
+    .overflowBackdropCard & {
+        flex-direction: row;  // Force horizontal layout when inside stack-indicators
+    }
+
+    &:not(.overflowBackdropCard *) {
+        @media all and (max-width: 55.625em) { // 890px
+            flex-direction: column;
+        }
+    }
 }
 
 .listItem-audioLanguages {
@@ -328,6 +338,10 @@
     padding: 0.5em 1em;
     border-radius: 5em;
     font-weight: 600;
+}
+
+.listItem-partMissing {
+    background-color: rgba(201, 43, 64, 0.856);
 }
 
 .listItem-bottomoverview {

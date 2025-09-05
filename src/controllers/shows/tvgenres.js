@@ -74,7 +74,7 @@ export default function (view, params, tabContent) {
             SortOrder: 'Ascending',
             IncludeItemTypes: 'Series',
             Recursive: true,
-            Fields: 'PrimaryImageAspectRatio,MediaSourceCount',
+            Fields: 'PrimaryImageAspectRatio,MediaSourceCount,IsAnime,DubSubCount',
             ImageTypeLimit: 1,
             EnableImageTypes: enableImageTypes,
             Limit: limit,
