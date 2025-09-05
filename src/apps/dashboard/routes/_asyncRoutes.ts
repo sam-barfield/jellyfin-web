@@ -29,5 +29,7 @@ export const ASYNC_ADMIN_ROUTES: AsyncRoute[] = [
     { path: 'users/add', type: AppType.Dashboard },
     { path: 'users/parentalcontrol', type: AppType.Dashboard },
     { path: 'users/password', type: AppType.Dashboard },
-    { path: 'users/profile', type: AppType.Dashboard }
+    { path: 'users/profile', type: AppType.Dashboard },
+    { path: 'remaster', type: AppType.Dashboard },
+    { path: 'remaster/tasks', type: AppType.Dashboard }
 ];
