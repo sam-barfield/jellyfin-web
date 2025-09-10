@@ -1136,6 +1136,26 @@ function buildCard(index, item, apiClient, options) {
         additionalCardContent += getHoverMenuHtml(item, action);
     }
 
+    if (item.IsAnime) {
+        let dubSubHtml = '';
+        if (item.DubAvailable === 'Full') {
+            dubSubHtml += '<div class="listItem-audioLanguages">DUB</div>';
+        }
+
+        if (item.DubAvailable === 'Partial') {
+            dubSubHtml += '<div class="listItem-audioLanguages listItem-partMissing"></span>DUB</div>';
+        }
+
+        if (item.SubAvailable === 'Full') {
+            dubSubHtml += '<div class="listItem-subtitleLanguages">SUB</div>';
+        }
+
+        if (item.SubAvailable === 'Partial') {
+            dubSubHtml += '<div class="listItem-subtitleLanguages listItem-partMissing">SUB</div>';
+        }
+        additionalCardContent += `<div class="listItem-dubSubIndicators">${dubSubHtml}</div>`;
+    }
+
     return '<' + tagName + ' data-index="' + index + '"' + timerAttributes + actionAttribute + ' data-isfolder="' + (item.IsFolder || false) + '" data-serverid="' + (item.ServerId || options.serverId) + '" data-id="' + (item.Id || item.ItemId) + '" data-type="' + item.Type + '"' + mediaTypeData + collectionTypeData + channelIdData + pathData + positionTicksData + collectionIdData + playlistIdData + contextData + parentIdData + startDate + endDate + ' data-prefix="' + escapeHtml(prefix) + '" class="' + className + '"' + ariaLabelAttribute + '>' + cardImageContainerOpen + innerCardFooter + cardImageContainerClose + overlayButtons + additionalCardContent + cardScalableClose + outerCardFooter + cardBoxClose + '</' + tagName + '>';
 }
 

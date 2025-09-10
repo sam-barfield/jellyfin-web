@@ -38,7 +38,7 @@ function getFetchLatestItemsFn(
 
         const options = {
             Limit: limit,
-            Fields: 'PrimaryImageAspectRatio,Path',
+            Fields: 'PrimaryImageAspectRatio,Path,IsAnime,DubAvailability',
             ImageTypeLimit: 1,
             EnableImageTypes: 'Primary,Backdrop,Thumb',
             ParentId: parentId
