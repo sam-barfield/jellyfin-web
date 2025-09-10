@@ -326,6 +326,26 @@ export function getListViewHtml(options) {
                 html += `<div class="listItem-dubSubIndicators">${dubSubHtml}</div>`;
             }
 
+            if (item.IsAnime) {
+                let dubSubHtml = '';
+                if (item.DubAvailable === 'Full') {
+                    dubSubHtml += '<div class="listItem-audioLanguages">DUB</div>';
+                }
+
+                if (item.DubAvailable === 'Partial') {
+                    dubSubHtml += '<div class="listItem-audioLanguages listItem-partMissing"></span>DUB</div>';
+                }
+
+                if (item.SubAvailable === 'Full') {
+                    dubSubHtml += '<div class="listItem-subtitleLanguages">SUB</div>';
+                }
+
+                if (item.SubAvailable === 'Partial') {
+                    dubSubHtml += '<div class="listItem-subtitleLanguages listItem-partMissing">SUB</div>';
+                }
+                html += `<div class="listItem-dubSubIndicators">${dubSubHtml}</div>`;
+            }
+
             const progressHtml = indicators.getProgressBarHtml(item, {
                 containerClass: 'listItemProgressBar'
             });
