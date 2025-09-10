@@ -76,7 +76,7 @@ export const DubbingSettings = () => {
                 <Stack spacing={3}>
                     <Typography variant='h1'>{globalize.translate('Settings')}</Typography>
                     <TextField
-                        name='Dubbing LanguageCodes'
+                        name='DubbingLanguageCodes'
                         label={'Language Codes'}
                         helperText={'A list of language codes used to determine if audio or video streams are dubbed/subbed.'}
                         defaultValue={configWithDubbing.DubbingLanguageCodes}
