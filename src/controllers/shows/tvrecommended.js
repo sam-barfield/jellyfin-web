@@ -102,7 +102,7 @@ function loadResume(view, userId, parentId) {
         Filters: 'IsResumable',
         Limit: screenWidth >= 1600 ? 5 : 3,
         Recursive: true,
-        Fields: 'PrimaryImageAspectRatio,MediaSourceCount',
+        Fields: 'PrimaryImageAspectRatio,MediaSourceCount,IsAnime,DubAvailability',
         CollapseBoxSetItems: false,
         ParentId: parentId,
         ImageTypeLimit: 1,
@@ -142,7 +142,7 @@ function loadLatest(view, userId, parentId) {
         userId: userId,
         IncludeItemTypes: 'Episode',
         Limit: 30,
-        Fields: 'PrimaryImageAspectRatio',
+        Fields: 'PrimaryImageAspectRatio,IsAnime,DubAvailability',
         ParentId: parentId,
         ImageTypeLimit: 1,
         EnableImageTypes: 'Primary,Backdrop,Thumb'
@@ -180,7 +180,7 @@ function loadNextUp(view, userId, parentId) {
     const query = {
         userId: userId,
         Limit: 24,
-        Fields: 'PrimaryImageAspectRatio,DateCreated,MediaSourceCount',
+        Fields: 'PrimaryImageAspectRatio,DateCreated,MediaSourceCount,IsAnime,DubAvailability',
         ParentId: parentId,
         ImageTypeLimit: 1,
         EnableImageTypes: 'Primary,Backdrop,Thumb',
