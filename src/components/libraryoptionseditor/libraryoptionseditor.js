@@ -479,6 +479,10 @@ export function setContentType(parent, contentType) {
         parent.querySelector('.chkAutomaticallyGroupSeriesContainer').classList.remove('hide');
         parent.querySelector('.fldSeasonZeroDisplayName').classList.remove('hide');
         parent.querySelector('#txtSeasonZeroName').setAttribute('required', 'required');
+
+        parent.querySelector('.remasterSettingsSection').classList.remove('hide');
+        parent.querySelector('.chkDubbingIconsEnabledContainer').classList.remove('hide');
+        parent.querySelector('#chkDubbingIconsEnabled').classList.remove('hide');
     } else {
         parent.querySelector('.chkAutomaticallyGroupSeriesContainer').classList.add('hide');
         parent.querySelector('.fldSeasonZeroDisplayName').classList.add('hide');
@@ -656,7 +660,8 @@ export function getLibraryOptions(parent) {
         }), elem => {
             return elem.getAttribute('data-pluginname');
         }),
-        TypeOptions: []
+        TypeOptions: [],
+        DubbingIconsEnabled: parent.querySelector('#chkDubbingIconsEnabled').checked
     };
 
     options.LocalMetadataReaderOrder = Array.prototype.map.call(parent.querySelectorAll('.localReaderOption'), elem => {
@@ -734,6 +739,7 @@ export function setLibraryOptions(parent, options) {
     renderSubtitleFetchers(parent, parent.availableOptions, options);
     renderLyricFetchers(parent, parent.availableOptions, options);
     renderMediaSegmentProviders(parent, parent.availableOptions, options);
+    parent.querySelector('#chkDubbingIconsEnabled').checked = options.DubbingIconsEnabled;
 }
 
 let currentLibraryOptions;
