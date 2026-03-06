@@ -9,6 +9,7 @@ import ServerButton from 'components/toolbar/ServerButton';
 import RemotePlayButton from './RemotePlayButton';
 import SyncPlayButton from './SyncPlayButton';
 import SearchButton from './SearchButton';
+import AnnouncementsButton from './announcements/AnnouncementsButton';
 import UserViewNav from './userViews/UserViewNav';
 
 interface AppToolbarProps {
@@ -37,6 +38,7 @@ const ExperimentalAppToolbar: FC<AppToolbarProps> = ({
         <AppToolbar
             buttons={!isPublicPath && (
                 <>
+                    <AnnouncementsButton />
                     <SyncPlayButton />
                     <RemotePlayButton />
                     <SearchButton />

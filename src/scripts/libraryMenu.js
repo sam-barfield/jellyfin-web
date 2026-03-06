@@ -46,6 +46,7 @@ function renderHeader() {
     html += '<h3 class="pageTitle" aria-hidden="true"></h3>';
     html += '</div>';
     html += '<div class="headerRight">';
+    html += '<div class="headerAnnouncementsButtonContainer headerButtonRight hide"></div>';
     html += '<button is="paper-icon-button-light" class="headerSyncButton syncButton headerButton headerButtonRight hide"><span class="material-icons groups" aria-hidden="true"></span></button>';
     html += '<span class="headerSelectedPlayer"></span>';
     html += '<button is="paper-icon-button-light" class="headerAudioPlayerButton audioPlayerButton headerButton headerButtonRight hide"><span class="material-icons music_note" aria-hidden="true"></span></button>';
@@ -72,6 +73,7 @@ function renderHeader() {
     headerAudioPlayerButton = skinHeader.querySelector('.headerAudioPlayerButton');
     headerSearchButton = skinHeader.querySelector('.headerSearchButton');
     headerSyncButton = skinHeader.querySelector('.headerSyncButton');
+    headerAnnouncementsButtonContainer = skinHeader.querySelector('.headerAnnouncementsButtonContainer');
     currentTimeText = skinHeader.querySelector('.currentTimeText');
 
     retranslateUi();
@@ -79,6 +81,14 @@ function renderHeader() {
     bindMenuEvents();
     updateCastIcon();
     updateClock();
+
+    if (headerAnnouncementsButtonContainer) {
+        import('../utils/reactUtils').then(({ renderComponent }) => {
+            import('../apps/experimental/components/AppToolbar/announcements/AnnouncementsButton').then(({ default: AnnouncementsButton }) => {
+                renderComponent(AnnouncementsButton, {}, headerAnnouncementsButtonContainer);
+            });
+        });
+    }
 }
 
 function getCurrentApiClient() {
@@ -167,6 +177,10 @@ function updateUserInHeader(user) {
             headerCastButton.classList.remove('hide');
         }
 
+        if (headerAnnouncementsButtonContainer) {
+            headerAnnouncementsButtonContainer.classList.remove('hide');
+        }
+
         const policy = user.Policy ? user.Policy : user.localUser.Policy;
 
         if (
@@ -183,6 +197,10 @@ function updateUserInHeader(user) {
         headerHomeButton.classList.add('hide');
         headerCastButton.classList.add('hide');
         headerSyncButton.classList.add('hide');
+
+        if (headerAnnouncementsButtonContainer) {
+            headerAnnouncementsButtonContainer.classList.add('hide');
+        }
 
         if (headerSearchButton) {
             headerSearchButton.classList.add('hide');
@@ -700,6 +718,7 @@ let headerCastButton;
 let headerSearchButton;
 let headerAudioPlayerButton;
 let headerSyncButton;
+let headerAnnouncementsButtonContainer;
 let currentTimeText;
 const enableLibraryNavDrawer = layoutManager.desktop;
 const enableLibraryNavDrawerHome = !layoutManager.tv;
