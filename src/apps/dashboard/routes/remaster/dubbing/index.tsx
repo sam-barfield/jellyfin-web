@@ -3,6 +3,7 @@ import Page from 'components/Page';
 import { DubbingTask } from 'apps/dashboard/components/remaster/dubbing/DubbingTask';
 import Box from '@mui/material/Box';
 import { DubbingSettings } from 'apps/dashboard/components/remaster/dubbing/DubbingSettings';
+import { DubbingMissingReport } from 'apps/dashboard/components/remaster/dubbing/DubbingMissingReport';
 
 export const Component = () => {
     return (
@@ -14,6 +15,7 @@ export const Component = () => {
             <Box className='content-primary'>
                 <DubbingSettings />
                 <DubbingTask />
+                <DubbingMissingReport />
             </Box>
         </Page>
     );
