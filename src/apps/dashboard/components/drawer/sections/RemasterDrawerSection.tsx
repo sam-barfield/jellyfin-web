@@ -1,4 +1,5 @@
 import Schedule from '@mui/icons-material/Schedule';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -33,6 +34,14 @@ const RemasterDrawerSection = () => {
                         <Schedule />
                     </ListItemIcon>
                     <ListItemText primary={'Dubbing'} />
+                </ListItemLink>
+            </ListItem>
+            <ListItem disablePadding>
+                <ListItemLink to='/dashboard/remaster/announcements'>
+                    <ListItemIcon>
+                        <NotificationsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Announcements'} />
                 </ListItemLink>
             </ListItem>
         </List>

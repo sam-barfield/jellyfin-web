@@ -33,5 +33,6 @@ export const ASYNC_ADMIN_ROUTES: AsyncRoute[] = [
     { path: 'users/password', type: AppType.Dashboard },
     { path: 'users/profile', type: AppType.Dashboard },
     { path: 'remaster', type: AppType.Dashboard },
-    { path: 'remaster/dubbing', type: AppType.Dashboard }
+    { path: 'remaster/dubbing', type: AppType.Dashboard },
+    { path: 'remaster/announcements', type: AppType.Dashboard }
 ];
