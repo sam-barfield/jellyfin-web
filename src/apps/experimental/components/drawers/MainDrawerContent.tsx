@@ -106,6 +106,14 @@ const MainDrawerContent = () => {
                                 </ListItemLink>
                             </ListItem>
                         ))}
+                        <ListItem disablePadding>
+                            <ListItemLink to='/calendar'>
+                                <ListItemIcon>
+                                    <Icon>calendar_month</Icon>
+                                </ListItemIcon>
+                                <ListItemText primary={'Calendar'} />
+                            </ListItemLink>
+                        </ListItem>
                     </List>
                 </>
             )}

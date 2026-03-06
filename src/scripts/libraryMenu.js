@@ -498,6 +498,12 @@ function updateLibraryMenu(user) {
                                     <span class="sectionName navMenuOptionText">${escapeHtml(i.Name)}</span>
                                   </a>`;
             }).join('');
+
+            html += `<a is="emby-linkbutton" data-itemid="calendar" class="lnkMediaFolder navMenuOption" href="#/calendar">
+                                <span class="material-icons navMenuOptionIcon calendar_month" aria-hidden="true"></span>
+                                <span class="sectionName navMenuOptionText">Calendar</span>
+                              </a>`;
+
             libraryMenuOptions.innerHTML = html;
             const elem = libraryMenuOptions;
             const sidebarLinks = elem.querySelectorAll('.navMenuOption');
@@ -559,7 +565,8 @@ function updateLibraryNavLinks(page) {
     const isChannelsPage = page.classList.contains('channelsPage');
     const isEditorPage = page.classList.contains('metadataEditorPage');
     const isMySyncPage = page.classList.contains('mySyncPage');
-    const id = isLiveTvPage || isChannelsPage || isEditorPage || isMySyncPage || page.classList.contains('allLibraryPage') ? '' : getTopParentId() || '';
+    const isCalendarPage = page.classList.contains('releaseCalendarPage') || page.classList.contains('remasterCalendarPage');
+    const id = isLiveTvPage || isChannelsPage || isEditorPage || isMySyncPage || isCalendarPage || page.classList.contains('allLibraryPage') ? '' : getTopParentId() || '';
     const elems = document.getElementsByClassName('lnkMediaFolder');
 
     for (let i = 0, length = elems.length; i < length; i++) {
@@ -569,6 +576,8 @@ function updateLibraryNavLinks(page) {
         if (isChannelsPage && itemId === 'channels') {
             lnkMediaFolder.classList.add('navMenuOption-selected');
         } else if (isLiveTvPage && itemId === 'livetv') {
+            lnkMediaFolder.classList.add('navMenuOption-selected');
+        } else if (isCalendarPage && itemId === 'calendar') {
             lnkMediaFolder.classList.add('navMenuOption-selected');
         } else if (isEditorPage && itemId === 'editor') {
             lnkMediaFolder.classList.add('navMenuOption-selected');
