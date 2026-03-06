@@ -1,6 +1,6 @@
 import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { type FC, useCallback } from 'react';
+import React, { type FC, useCallback, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import CheckIcon from '@mui/icons-material/Check';
 import classNames from 'classnames';
@@ -25,27 +25,36 @@ const PlayedButton: FC<PlayedButtonProps> = ({
 }) => {
     const queryClient = useQueryClient();
     const { mutateAsync: togglePlayedMutation } = useTogglePlayedMutation();
+    const [optimisticPlayed, setOptimisticPlayed] = useState<boolean | null>(null);
+
+    const currentPlayed = optimisticPlayed !== null ? optimisticPlayed : isPlayed;
 
     const getTitle = useCallback(() => {
         let buttonTitle;
         if (itemType !== BaseItemKind.AudioBook) {
-            buttonTitle = isPlayed ? globalize.translate('Watched') : globalize.translate('MarkPlayed');
+            buttonTitle = currentPlayed ? globalize.translate('Watched') : globalize.translate('MarkPlayed');
         } else {
-            buttonTitle = isPlayed ? globalize.translate('Played') : globalize.translate('MarkPlayed');
+            buttonTitle = currentPlayed ? globalize.translate('Played') : globalize.translate('MarkPlayed');
         }
 
         return buttonTitle;
-    }, [itemType, isPlayed]);
+    }, [itemType, currentPlayed]);
 
-    const onClick = useCallback(async () => {
+    const onClick = useCallback(async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         try {
             if (!itemId) {
                 throw new Error('Item has no Id');
             }
 
+            const newPlayedState = !currentPlayed;
+            setOptimisticPlayed(newPlayedState);
+
             await togglePlayedMutation({
                 itemId,
-                isPlayed
+                isPlayed: !newPlayedState // send original state to toggle
             },
             { onSuccess: async() => {
                 await queryClient.invalidateQueries({
@@ -54,28 +63,21 @@ const PlayedButton: FC<PlayedButtonProps> = ({
                     refetchType: 'active'
                 });
             } });
-        } catch (e) {
-            console.error(e);
+        } catch (err) {
+            console.error(err);
+            setOptimisticPlayed(null);
         }
-    }, [itemId, togglePlayedMutation, isPlayed, queryClient, queryKey]);
+    }, [itemId, togglePlayedMutation, currentPlayed, queryClient, queryKey]);
 
-    const btnClass = classNames(
-        className,
-        { 'playstatebutton-played': isPlayed }
-    );
-
-    const iconClass = classNames(
-        { 'playstatebutton-icon-played': isPlayed }
-    );
     return (
         <IconButton
             data-action='none'
             title={getTitle()}
-            className={btnClass}
+            className={classNames(className, { 'playstatebutton-played': currentPlayed })}
             size='small'
             onClick={onClick}
         >
-            <CheckIcon className={iconClass} />
+            <CheckIcon className={classNames({ 'playstatebutton-icon-played': currentPlayed })} />
         </IconButton>
     );
 };

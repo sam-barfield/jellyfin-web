@@ -1,4 +1,5 @@
 import Schedule from '@mui/icons-material/Schedule';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -50,6 +51,14 @@ const RemasterDrawerSection = () => {
                         <Schedule />
                     </ListItemIcon>
                     <ListItemText primary={'Calendar Settings'} />
+                </ListItemLink>
+            </ListItem>
+            <ListItem disablePadding>
+                <ListItemLink to='/dashboard/remaster/trending'>
+                    <ListItemIcon>
+                        <TrendingUpIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Trending Settings'} />
                 </ListItemLink>
             </ListItem>
         </List>

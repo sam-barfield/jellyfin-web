@@ -10,6 +10,7 @@ import PlayedButton from 'elements/emby-playstatebutton/PlayedButton';
 import FavoriteButton from 'elements/emby-ratingbutton/FavoriteButton';
 import PlayArrowIconButton from '../../common/PlayArrowIconButton';
 import MoreVertIconButton from '../../common/MoreVertIconButton';
+import { useApi } from 'hooks/useApi';
 
 import type { ItemDto } from 'types/base/models/item-dto';
 import type { CardOptions } from 'types/cardOptions';
@@ -25,6 +26,7 @@ const CardHoverMenu: FC<CardHoverMenuProps> = ({
     item,
     cardOptions
 }) => {
+    const { user } = useApi();
     const url = appRouter.getRouteUrl(item, {
         parentId: cardOptions.parentId
     });
@@ -36,6 +38,23 @@ const CardHoverMenu: FC<CardHoverMenuProps> = ({
         'cardOverlayFab-primary'
     );
     const { IsFavorite, Played } = item.UserData ?? {};
+
+    const onMoreClick = React.useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+            const { default: itemContextMenu } = await import('components/itemContextMenu');
+            const target = e.currentTarget;
+            await itemContextMenu.show({
+                item,
+                user,
+                positionTo: target
+            });
+        } catch (err) {
+            console.error('[CardHoverMenu] Failed to open context menu', err);
+        }
+    }, [item, user]);
 
     return (
         <Box
@@ -76,7 +95,9 @@ const CardHoverMenu: FC<CardHoverMenuProps> = ({
                     />
                 )}
 
-                <MoreVertIconButton className={btnCssClass} />
+                {(cardOptions as Record<string, unknown>).enableMoreOptions !== false && (
+                    <MoreVertIconButton className={btnCssClass} onClick={onMoreClick} />
+                )}
             </ButtonGroup>
         </Box>
     );

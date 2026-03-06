@@ -2133,7 +2133,7 @@ export class PlaybackManager {
 
         function getPlayerData(player) {
             if (!player) {
-                throw new Error('player cannot be null');
+                return {};
             }
             if (!player.name) {
                 throw new Error('player name cannot be null');
@@ -2153,7 +2153,7 @@ export class PlaybackManager {
             player = player || self._currentPlayer;
 
             if (!player) {
-                throw new Error('player cannot be null');
+                return {};
             }
 
             if (!enableLocalPlaylistManagement(player) && player.getPlayerState) {

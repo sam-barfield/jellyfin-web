@@ -35,5 +35,6 @@ export const ASYNC_ADMIN_ROUTES: AsyncRoute[] = [
     { path: 'remaster', type: AppType.Dashboard },
     { path: 'remaster/dubbing', type: AppType.Dashboard },
     { path: 'remaster/announcements', type: AppType.Dashboard },
-    { path: 'remaster/calendar', type: AppType.Dashboard }
+    { path: 'remaster/calendar', type: AppType.Dashboard },
+    { path: 'remaster/trending', type: AppType.Dashboard }
 ];
