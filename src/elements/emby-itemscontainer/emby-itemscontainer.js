@@ -441,6 +441,10 @@ function onDataFetched(result) {
         focusId = activeElement.getAttribute('data-id');
     }
 
+    if (!this.getItemsHtml) {
+        return;
+    }
+
     this.innerHTML = this.getItemsHtml(items);
 
     imageLoader.lazyChildren(this);

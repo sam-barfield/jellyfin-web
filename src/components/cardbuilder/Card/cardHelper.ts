@@ -379,6 +379,33 @@ function shouldShowParentTitle(
     return showParentTitle && parentTitleUnderneath;
 }
 
+function addProgramAndTimerText(
+    cardOptions: CardOptions,
+    item: ItemDto,
+    addTextLine: (val: TextLine) => void
+) {
+    if (shouldShowCurrentProgram(cardOptions.showCurrentProgram, item.Type)) {
+        addTextLine({ title: getCurrentProgramName(item.CurrentProgram) });
+    }
+
+    if (
+        shouldShowCurrentProgramTime(
+            cardOptions.showCurrentProgramTime,
+            item.Type
+        )
+    ) {
+        addTextLine({ title: getCurrentProgramTime(item.CurrentProgram) });
+    }
+
+    if (cardOptions.showSeriesTimerTime) {
+        addTextLine({ title: getSeriesTimerTime(item) });
+    }
+
+    if (cardOptions.showSeriesTimerChannel) {
+        addTextLine({ title: getSeriesTimerChannel(item) });
+    }
+}
+
 function addOtherText(
     cardOptions: CardOptions,
     parentTitleUnderneath: boolean,
@@ -416,8 +443,10 @@ function addOtherText(
         addTextLine({ title: getPremiereDate(item.PremiereDate) });
     }
 
+    const isEpisode = item.Type === ItemKind.Episode;
     if (
-        shouldShowSeriesYearOrYear(
+        !isEpisode
+        && shouldShowSeriesYearOrYear(
             cardOptions.showYear,
             cardOptions.showSeriesYear
         )
@@ -443,26 +472,7 @@ function addOtherText(
         addTextLine(getChannelName(item));
     }
 
-    if (shouldShowCurrentProgram(cardOptions.showCurrentProgram, item.Type)) {
-        addTextLine({ title: getCurrentProgramName(item.CurrentProgram) });
-    }
-
-    if (
-        shouldShowCurrentProgramTime(
-            cardOptions.showCurrentProgramTime,
-            item.Type
-        )
-    ) {
-        addTextLine({ title: getCurrentProgramTime(item.CurrentProgram) });
-    }
-
-    if (cardOptions.showSeriesTimerTime) {
-        addTextLine({ title: getSeriesTimerTime(item) });
-    }
-
-    if (cardOptions.showSeriesTimerChannel) {
-        addTextLine({ title: getSeriesTimerChannel(item) });
-    }
+    addProgramAndTimerText(cardOptions, item, addTextLine);
 
     if (shouldShowPersonRoleOrType(cardOptions.showCurrentProgramTime, item)) {
         addTextLine({
@@ -686,9 +696,11 @@ export function getCardTextLines({
         && (cardOptions.showParentTitle || cardOptions.showParentTitleOrTitle)
         && !parentTitleUnderneath
     ) {
-        addTextLine(
-            getParentTitleOrTitle(isOuterFooter, item, setTitleAdded, showTitle)
-        );
+        const parentResult = getParentTitleOrTitle(isOuterFooter, item, setTitleAdded, showTitle);
+        // Only add if it actually has text, to prevent empty lines stealing the primary CSS styling
+        if (parentResult.titleAction || (typeof parentResult.title === 'string' && parentResult.title.trim() !== '') || Array.isArray(parentResult.title)) {
+            addTextLine(parentResult);
+        }
     }
 
     const showMediaTitle = shouldShowMediaTitle(

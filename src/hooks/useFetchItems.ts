@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig } from 'axios';
 import type { ItemsApiGetItemsRequest, PlaylistsApiMoveItemRequest } from '@jellyfin/sdk/lib/generated-client';
+import type { TvShowsApiGetNextUpRequest } from '@jellyfin/sdk/lib/generated-client/api/tv-shows-api';
 import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
 import { ImageType } from '@jellyfin/sdk/lib/generated-client/models/image-type';
 import { ItemFields } from '@jellyfin/sdk/lib/generated-client/models/item-fields';
@@ -52,10 +53,8 @@ const fetchGetItems = async (
     }
 };
 
-export const useGetItems = (parametersOptions: ItemsApiGetItemsRequest) => {
+export const useGetItems = (parametersOptions: ItemsApiGetItemsRequest, queryOptions?: { enabled?: boolean }) => {
     const currentApi = useApi();
-    const isRandom = Boolean(parametersOptions.sortBy?.includes(ItemSortBy.Random));
-
     return useQuery({
         queryKey: [
             'Items',
@@ -65,10 +64,78 @@ export const useGetItems = (parametersOptions: ItemsApiGetItemsRequest) => {
         ],
         queryFn: ({ signal }) =>
             fetchGetItems(currentApi, parametersOptions, { signal }),
-        gcTime: isRandom ? Infinity : undefined,
-        refetchOnMount: isRandom ? false : undefined,
-        refetchOnWindowFocus: isRandom ? false : undefined,
-        enabled: !!currentApi.api && !!currentApi.user?.Id
+        gcTime: parametersOptions.sortBy?.includes(ItemSortBy.Random) ? 0 : undefined,
+        enabled: (queryOptions?.enabled !== false) && !!currentApi.api && !!currentApi.user?.Id
+    });
+};
+
+const fetchGetLatestItems = async (
+    currentApi: JellyfinApiContext,
+    parametersOptions: ItemsApiGetItemsRequest,
+    options?: AxiosRequestConfig
+) => {
+    const { api, user } = currentApi;
+    if (api && user?.Id) {
+        const response = await getUserLibraryApi(api).getLatestMedia(
+            {
+                userId: user.Id,
+                ...parametersOptions
+            },
+            {
+                signal: options?.signal
+            }
+        );
+        return response.data as ItemDto[];
+    }
+};
+
+export const useGetLatestItems = (parametersOptions: ItemsApiGetItemsRequest, queryOptions?: { enabled?: boolean }) => {
+    const currentApi = useApi();
+    return useQuery({
+        queryKey: [
+            'LatestItems',
+            {
+                ...parametersOptions
+            }
+        ],
+        queryFn: ({ signal }) =>
+            fetchGetLatestItems(currentApi, parametersOptions, { signal }),
+        enabled: (queryOptions?.enabled !== false) && !!currentApi.api && !!currentApi.user?.Id
+    });
+};
+
+const fetchGetNextUp = async (
+    currentApi: JellyfinApiContext,
+    parametersOptions: TvShowsApiGetNextUpRequest,
+    options?: AxiosRequestConfig
+) => {
+    const { api, user } = currentApi;
+    if (api && user?.Id) {
+        const response = await getTvShowsApi(api).getNextUp(
+            {
+                userId: user.Id,
+                ...parametersOptions
+            },
+            {
+                signal: options?.signal
+            }
+        );
+        return response.data as ItemDtoQueryResult;
+    }
+};
+
+export const useGetNextUp = (parametersOptions: TvShowsApiGetNextUpRequest, queryOptions?: { enabled?: boolean }) => {
+    const currentApi = useApi();
+    return useQuery({
+        queryKey: [
+            'NextUp',
+            {
+                ...parametersOptions
+            }
+        ],
+        queryFn: ({ signal }) =>
+            fetchGetNextUp(currentApi, parametersOptions, { signal }),
+        enabled: (queryOptions?.enabled !== false) && !!currentApi.api && !!currentApi.user?.Id
     });
 };
 

@@ -36,6 +36,9 @@ const CardImageContainer: FC<CardImageContainerProps> = ({
         { 'coveredImage-contain': coveredImage && item.Type === ItemKind.TvChannel }
     );
 
+    // Type-safe mapping for custom anime metadata attached by useHomeData
+    const tagItem = item as ItemDto & { IsAnime?: boolean; DubAvailable?: string; SubAvailable?: string };
+
     return (
         <div className={cardImageClass}>
             {cardOptions.disableIndicators !== true && (
@@ -58,6 +61,23 @@ const CardImageContainer: FC<CardImageContainerProps> = ({
                             <RefreshIndicator item={item} />
                         )}
                     </Box>
+                </Box>
+            )}
+
+            {Boolean(tagItem.IsAnime && (tagItem.DubAvailable || tagItem.SubAvailable)) && (
+                <Box sx={{
+                    position: 'absolute',
+                    top: '8px',
+                    left: '8px',
+                    display: 'flex',
+                    gap: 0.5,
+                    zIndex: 2,
+                    pointerEvents: 'none'
+                }}>
+                    {tagItem.DubAvailable === 'Full' && <Box sx={{ backgroundColor: 'rgba(43, 179, 66, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
+                    {tagItem.DubAvailable === 'Partial' && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
+                    {tagItem.SubAvailable === 'Full' && <Box sx={{ backgroundColor: 'rgba(153, 53, 192, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
+                    {tagItem.SubAvailable === 'Partial' && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
                 </Box>
             )}
 
