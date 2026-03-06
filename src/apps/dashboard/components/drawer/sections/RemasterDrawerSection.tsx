@@ -44,6 +44,14 @@ const RemasterDrawerSection = () => {
                     <ListItemText primary={'Announcements'} />
                 </ListItemLink>
             </ListItem>
+            <ListItem disablePadding>
+                <ListItemLink to='/dashboard/remaster/calendar'>
+                    <ListItemIcon>
+                        <Schedule />
+                    </ListItemIcon>
+                    <ListItemText primary={'Calendar Settings'} />
+                </ListItemLink>
+            </ListItem>
         </List>
     );
 };
