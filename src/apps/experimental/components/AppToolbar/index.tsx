@@ -38,7 +38,8 @@ const ExperimentalAppToolbar: FC<AppToolbarProps> = ({
         <AppToolbar
             buttons={!isPublicPath && (
                 <>
-                    <AnnouncementsButton />
+                    {/* Hide Announcements when in the video player */}
+                    {!location.hash.startsWith('#/video') && !location.pathname.startsWith('/video') && <AnnouncementsButton />}
                     <SyncPlayButton />
                     <RemotePlayButton />
                     <SearchButton />

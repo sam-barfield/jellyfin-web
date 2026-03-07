@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
@@ -18,6 +18,8 @@ import {
     useMarkAllAnnouncementsRead,
     AnnouncementInfoDto
 } from 'apps/dashboard/features/announcements/api/useAnnouncements';
+import { playbackManager } from 'components/playback/playbackmanager';
+import Events from 'utils/events';
 
 const AnnouncementItem = ({ announcement, onClose }: { announcement: AnnouncementInfoDto, onClose: () => void }) => {
     const { mutate: markRead } = useMarkAnnouncementRead();
@@ -130,6 +132,18 @@ const AnnouncementsButton = () => {
     // Poll for unread announcements every 60 seconds
     const { data: unreadStatus } = useUnreadAnnouncements(60000);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [isPlayingVideo, setIsPlayingVideo] = useState(() => playbackManager.isPlayingVideo());
+
+    useEffect(() => {
+        const onPlaybackStart = () => setIsPlayingVideo(playbackManager.isPlayingVideo());
+        const onPlaybackStop = () => setIsPlayingVideo(false);
+        Events.on(playbackManager, 'playbackstart', onPlaybackStart);
+        Events.on(playbackManager, 'playbackstop', onPlaybackStop);
+        return () => {
+            Events.off(playbackManager, 'playbackstart', onPlaybackStart);
+            Events.off(playbackManager, 'playbackstop', onPlaybackStop);
+        };
+    }, []);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -141,6 +155,9 @@ const AnnouncementsButton = () => {
 
     const open = Boolean(anchorEl);
     const id = open ? 'announcements-popover' : undefined;
+
+    // Follow the same pattern as RemotePlayButton — hide during video playback
+    if (isPlayingVideo) return null;
 
     return (
         <>
