@@ -16,44 +16,81 @@ import { useBackdropColor } from 'hooks/useBackdropColor';
 import { ServerConnections } from 'lib/jellyfin-apiclient';
 import type { ItemDto } from 'types/base/models/item-dto';
 
+// Icons
+import FavoriteRounded from '@mui/icons-material/FavoriteRounded';
+import MovieRounded from '@mui/icons-material/MovieRounded';
+import TvRounded from '@mui/icons-material/TvRounded';
+import VideoLibraryRounded from '@mui/icons-material/VideoLibraryRounded';
+import CollectionsBookmarkRounded from '@mui/icons-material/CollectionsBookmarkRounded';
+import LiveTvRounded from '@mui/icons-material/LiveTvRounded';
+import MusicNoteRounded from '@mui/icons-material/MusicNoteRounded';
+
 const TABS = [
-    { label: 'All', types: [] as BaseItemKind[] },
-    { label: 'Movies', types: ['Movie'] as BaseItemKind[] },
-    { label: 'Shows', types: ['Series'] as BaseItemKind[] },
-    { label: 'Episodes', types: ['Episode'] as BaseItemKind[] },
-    { label: 'Collections', types: ['BoxSet'] as BaseItemKind[] },
-    { label: 'Live TV', types: ['LiveTvChannel', 'LiveTvProgram'] as BaseItemKind[] },
-    { label: 'Music', types: ['MusicArtist', 'MusicAlbum', 'Audio', 'MusicVideo'] as BaseItemKind[] }
+    { label: 'All', types: [] as BaseItemKind[], icon: <FavoriteRounded sx={{ fontSize: '1.1rem' }} /> },
+    { label: 'Movies', types: ['Movie'] as BaseItemKind[], icon: <MovieRounded sx={{ fontSize: '1.1rem' }} /> },
+    { label: 'Shows', types: ['Series'] as BaseItemKind[], icon: <TvRounded sx={{ fontSize: '1.1rem' }} /> },
+    { label: 'Episodes', types: ['Episode'] as BaseItemKind[], icon: <VideoLibraryRounded sx={{ fontSize: '1.1rem' }} /> },
+    { label: 'Collections', types: ['BoxSet'] as BaseItemKind[], icon: <CollectionsBookmarkRounded sx={{ fontSize: '1.1rem' }} /> },
+    { label: 'Live TV', types: ['LiveTvChannel', 'LiveTvProgram'] as BaseItemKind[], icon: <LiveTvRounded sx={{ fontSize: '1.1rem' }} /> },
+    { label: 'Music', types: ['MusicArtist', 'MusicAlbum', 'Audio', 'MusicVideo'] as BaseItemKind[], icon: <MusicNoteRounded sx={{ fontSize: '1.1rem' }} /> }
 ];
 
-const TabButton = ({ tab, idx, activeTab, onClick }: { tab: { label: string }, idx: number, activeTab: number, onClick: (idx: number) => void }) => {
+const TabButton = ({ tab, idx, activeTab, onClick }: { tab: typeof TABS[0], idx: number, activeTab: number, onClick: (idx: number) => void }) => {
     const handleTabClick = useCallback(() => {
         onClick(idx);
     }, [onClick, idx]);
+
+    const isActive = activeTab === idx;
 
     return (
         <ButtonBase
             onClick={handleTabClick}
             className='home-nav-item'
             sx={{
-                px: 2.5,
-                py: 1,
-                borderRadius: '24px',
-                backgroundColor: activeTab === idx ? 'primary.main' : 'rgba(255,255,255,0.05)',
-                color: activeTab === idx ? 'white' : 'text.secondary',
-                fontWeight: activeTab === idx ? 700 : 500,
-                fontFamily: 'inherit',
-                fontSize: '0.85rem',
-                transition: 'all 0.3s ease',
+                px: 2.2,
+                py: 1.1,
+                borderRadius: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.2,
+                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                position: 'relative',
+                overflow: 'hidden',
+                background: isActive ?
+                    'linear-gradient(135deg, #00a4dc 0%, #007bb5 100%)' :
+                    'rgba(255, 255, 255, 0.03)',
+                backdropFilter: isActive ? 'none' : 'blur(12px)',
                 border: '1px solid',
-                borderColor: activeTab === idx ? 'transparent' : 'rgba(255,255,255,0.1)',
+                borderColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                color: isActive ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                boxShadow: isActive ? '0 4px 15px rgba(0, 164, 220, 0.4)' : 'none',
                 '&:hover': {
-                    backgroundColor: activeTab === idx ? 'primary.dark' : 'rgba(255,255,255,0.1)',
-                    color: 'white'
+                    background: isActive ?
+                        'linear-gradient(135deg, #00b4ec 0%, #008cc5 100%)' :
+                        'rgba(255, 255, 255, 0.08)',
+                    color: 'white',
+                    transform: 'translateY(-2px) scale(1.02)',
+                    '& .tab-icon': {
+                        transform: 'scale(1.1) rotate(-5deg)'
+                    }
                 }
             }}
         >
-            {tab.label}
+            <Box className='tab-icon' sx={{
+                display: 'flex',
+                transition: 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                color: isActive ? 'white' : 'rgba(255, 255, 255, 0.4)'
+            }}>
+                {tab.icon}
+            </Box>
+            <Typography sx={{
+                fontWeight: isActive ? 700 : 600,
+                fontSize: '0.88rem',
+                letterSpacing: '0.01em',
+                userSelect: 'none'
+            }}>
+                {tab.label}
+            </Typography>
         </ButtonBase>
     );
 };
