@@ -43,7 +43,12 @@ export const Component = () => {
 
     // Global toggle function for absolute robustness
     React.useEffect(() => {
-        const win = window as any;
+        interface WindowWithDrawerFunctions extends Window {
+            jellyfinToggleDrawer?: () => void
+            jellyfinOpenDrawer?: () => void
+            jellyfinCloseDrawer?: () => void
+        }
+        const win = window as unknown as WindowWithDrawerFunctions;
         win.jellyfinToggleDrawer = () => setIsDrawerActive(prev => !prev);
         win.jellyfinOpenDrawer = () => setIsDrawerActive(true);
         win.jellyfinCloseDrawer = () => setIsDrawerActive(false);
@@ -92,13 +97,18 @@ export const Component = () => {
                             onClose={onCloseDrawer}
                             variant='temporary'
                             ModalProps={{ keepMounted: true }}
-                            sx={{
-                                zIndex: 2000,
-                                '& .MuiDrawer-paper': {
-                                    width: 240,
-                                    background: 'rgba(20, 20, 25, 1)',
-                                    boxSizing: 'border-box',
-                                    borderRight: '1px solid rgba(255,255,255,0.1)'
+                            slotProps={{
+                                paper: {
+                                    sx: {
+                                        width: 240,
+                                        background: 'rgba(20, 20, 25, 0.75) !important',
+                                        backgroundColor: 'rgba(20, 20, 25, 0.75) !important',
+                                        backdropFilter: 'blur(20px) !important',
+                                        WebkitBackdropFilter: 'blur(20px) !important',
+                                        boxSizing: 'border-box',
+                                        borderRight: '1px solid rgba(255,255,255,0.1) !important',
+                                        boxShadow: '4px 0 24px rgba(0,0,0,0.5) !important'
+                                    }
                                 }
                             }}
                         >

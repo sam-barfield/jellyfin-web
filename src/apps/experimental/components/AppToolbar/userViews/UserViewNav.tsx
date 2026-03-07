@@ -3,7 +3,6 @@ import { CollectionType } from '@jellyfin/sdk/lib/generated-client/models/collec
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import Favorite from '@mui/icons-material/Favorite';
 import Button from '@mui/material/Button/Button';
-import Icon from '@mui/material/Icon';
 import { Theme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -144,16 +143,6 @@ const UserViewNav = () => {
                     />
                 </>
             )}
-
-            <Button
-                variant='text'
-                color={(location.pathname === '/calendar') ? 'primary' : 'inherit'}
-                startIcon={<Icon>calendar_month</Icon>}
-                component={Link}
-                to='/calendar'
-            >
-                Calendar
-            </Button>
         </>
     );
 };

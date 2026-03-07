@@ -42,3 +42,91 @@ $mui-bp-xl: 1536px;
         }
     }
 }
+
+// ─── Legacy Sidebar Modernization (Vanilla JS Drawer) ─────────────────────────
+
+.mainDrawer.touch-menu-la {
+    background: rgba(20, 20, 25, 0.75) !important;
+    background-color: rgba(20, 20, 25, 0.75) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
+    width: 280px !important; // Match home.tsx override
+
+    &.drawer-open {
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
+    }
+}
+
+// Sidebar links
+.mainDrawer .navMenuOption {
+    border-radius: 10px !important;
+    margin: 4px 12px !important;
+    padding: 10px 16px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+
+    [dir="ltr"] & {
+        padding-left: 16px !important;
+    }
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
+        transform: translateX(4px);
+
+        .navMenuOptionIcon {
+            color: #00a4dc !important;
+            transform: scale(1.1);
+        }
+    }
+
+    &.navMenuOption-selected,
+    &.selected {
+        background-color: rgba(0, 164, 220, 0.15) !important;
+        color: #00a4dc !important;
+        font-weight: 700 !important;
+
+        &:hover {
+            background-color: rgba(0, 164, 220, 0.2) !important;
+        }
+
+        .navMenuOptionIcon {
+            color: #00a4dc !important;
+        }
+    }
+}
+
+.mainDrawer .navMenuOptionIcon {
+    margin-right: 14px !important;
+    transition: all 0.2s ease !important;
+    color: inherit !important;
+    font-size: 24px !important;
+}
+
+// Sidebar headers
+.mainDrawer .sidebarHeader {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.15em !important;
+    margin: 20px 24px 8px !important;
+    border-bottom: none !important;
+}
+
+// Mask backdrop
+.tmla-mask {
+    background-color: rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+}
+
+// Hide the legacy scrollbar
+.mainDrawer-scrollContainer::-webkit-scrollbar {
+    display: none;
+}
