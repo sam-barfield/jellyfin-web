@@ -67,6 +67,8 @@ const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string;
         overlayText: Boolean(cardOptions?.overlayText ?? false),
         overlayPlayButton: Boolean(cardOptions?.overlayPlayButton ?? true),
         enableMoreOptions: false,
+        enablePlayedButton: false,
+        enableRatingButton: false,
         allowBottomPadding: Boolean(cardOptions?.allowBottomPadding ?? true),
         cardLayout: Boolean(cardOptions?.cardLayout ?? true)
     } as Record<string, unknown>), [cardOptions, shape]);

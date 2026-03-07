@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import LinearProgress, {
     linearProgressClasses
 } from '@mui/material/LinearProgress';
+import './indicators.scss';
 import FiberSmartRecordIcon from '@mui/icons-material/FiberSmartRecord';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import CheckIcon from '@mui/icons-material/Check';

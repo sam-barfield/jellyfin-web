@@ -32,8 +32,10 @@ export const useHomeData = () => {
             'RunTimeTicks' as ItemFields,
             'ProductionYear' as ItemFields,
             'IsAnime' as ItemFields,
-            'DubAvailability' as ItemFields
+            'DubAvailability' as ItemFields,
+            'ServerId' as ItemFields
         ],
+        enableUserData: true,
         imageTypeLimit: 1,
         enableImageTypes: [ImageType.Primary, ImageType.Backdrop, ImageType.Banner, ImageType.Thumb],
         includeItemTypes: ['Movie', 'Series']
@@ -51,10 +53,13 @@ export const useHomeData = () => {
             'IsAnime' as ItemFields,
             'DubAvailability' as ItemFields
         ],
+        enableUserData: true,
         enableImageTypes: [ImageType.Primary, ImageType.Thumb, ImageType.Backdrop],
         imageTypeLimit: 1,
         parentId: undefined,
-        filters: ['IsResumable']
+        filters: ['IsResumable'],
+        sortBy: [ItemSortBy.DatePlayed],
+        sortOrder: [SortOrder.Descending]
     });
 
     // 3. Next Up
@@ -66,8 +71,10 @@ export const useHomeData = () => {
             'Path' as ItemFields,
             'MediaSourceCount' as ItemFields,
             'IsAnime' as ItemFields,
-            'DubAvailability' as ItemFields
+            'DubAvailability' as ItemFields,
+            'ServerId' as ItemFields
         ],
+        enableUserData: true,
         enableImageTypes: [ImageType.Primary, ImageType.Thumb, ImageType.Backdrop, ImageType.Banner],
         imageTypeLimit: 1,
         enableTotalRecordCount: false,
@@ -88,8 +95,12 @@ export const useHomeData = () => {
             'ImageTags' as ItemFields,
             'ServerId' as ItemFields,
             'IsAnime' as ItemFields,
-            'DubAvailability' as ItemFields
+            'DubAvailability' as ItemFields,
+            'ChildCount' as ItemFields,
+            'RunTimeTicks' as ItemFields,
+            'Status' as ItemFields
         ],
+        enableUserData: true,
         enableImageTypes: [ImageType.Primary, ImageType.Thumb],
         imageTypeLimit: 1
     }, { enabled: !!trendingMoviesIds?.length });
@@ -106,8 +117,12 @@ export const useHomeData = () => {
             'ImageTags' as ItemFields,
             'ServerId' as ItemFields,
             'IsAnime' as ItemFields,
-            'DubAvailability' as ItemFields
+            'DubAvailability' as ItemFields,
+            'ChildCount' as ItemFields,
+            'RunTimeTicks' as ItemFields,
+            'Status' as ItemFields
         ],
+        enableUserData: true,
         enableImageTypes: [ImageType.Primary, ImageType.Thumb],
         imageTypeLimit: 1
     }, { enabled: !!trendingShowsIds?.length });

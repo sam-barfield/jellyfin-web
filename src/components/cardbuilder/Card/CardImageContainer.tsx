@@ -67,7 +67,7 @@ const CardImageContainer: FC<CardImageContainerProps> = ({
             {Boolean(tagItem.IsAnime && (tagItem.DubAvailable || tagItem.SubAvailable)) && (
                 <Box sx={{
                     position: 'absolute',
-                    top: '8px',
+                    bottom: '8px',
                     left: '8px',
                     display: 'flex',
                     gap: 0.5,
