@@ -16,6 +16,7 @@ import { type ItemDto } from 'types/base/models/item-dto';
 import { ServerConnections } from 'lib/jellyfin-apiclient';
 import Grid from '@mui/material/Grid2';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useBackdropColor } from '../../../hooks/useBackdropColor';
 
 import '../../../elements/emby-tabs/emby-tabs';
 import '../../../elements/emby-button/emby-button';
@@ -287,64 +288,6 @@ const Home = () => {
     );
 };
 
-/**
- * Samples the average color of a hero backdrop image via an off-screen canvas.
- * Returns an rgb(...) string or null while loading.
- */
-function useBackdropColor(imageUrl: string | undefined): string | null {
-    const [color, setColor] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!imageUrl) {
-            setColor(null);
-            return;
-        }
-
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = 40;
-                canvas.height = 22;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return;
-                ctx.drawImage(img, 0, 0, 40, 22);
-                const data = ctx.getImageData(0, 0, 40, 22).data;
-                let r = 0;
-                let g = 0;
-                let b = 0;
-                let count = 0;
-                for (let i = 0; i < data.length; i += 4) {
-                    const pr = data[i];
-                    const pg = data[i + 1];
-                    const pb = data[i + 2];
-                    const luminance = 0.299 * pr + 0.587 * pg + 0.114 * pb;
-                    if (luminance > 30) {
-                        r += pr;
-                        g += pg;
-                        b += pb;
-                        count++;
-                    }
-                }
-                if (count === 0) {
-                    setColor(null);
-                    return;
-                }
-                // Mute/darken the sampled color so it's a subtle tint
-                const factor = 0.45;
-                setColor(`${Math.round(r / count * factor)},${Math.round(g / count * factor)},${Math.round(b / count * factor)}`);
-            } catch {
-                setColor(null);
-            }
-        };
-        img.onerror = () => setColor(null);
-        img.src = imageUrl;
-    }, [imageUrl]);
-
-    return color;
-}
-
 import { ModernFavorites } from '../features/favorites/ModernFavorites';
 
 const HERO_INTERVAL_MS = 12000; // 12 seconds per hero
@@ -364,7 +307,8 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
     } = useHomeData();
 
     const [activeTab, setActiveTab] = React.useState(initialTabIndex);
-    const [heroIndex, setHeroIndex] = useState(0);
+    const [ heroIndex, setHeroIndex ] = useState(0);
+    const [ favoritesBgColor, setFavoritesBgColor ] = useState<string | null>(null);
 
     // Advance hero every HERO_INTERVAL_MS — CSS animation handles the smooth progress bar
     useEffect(() => {
@@ -373,19 +317,21 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
             setHeroIndex(prev => (prev + 1) % heroItems.length);
         }, HERO_INTERVAL_MS);
         return () => clearInterval(id);
-    }, [heroItems.length]);
+    }, [ heroItems.length ]);
 
     const handleTabChange = useCallback((index: number) => {
         setActiveTab(index);
         onTabChangeUrl(index);
-    }, [onTabChangeUrl]);
+    }, [ onTabChangeUrl ]);
 
     const heroItem = heroItems[heroIndex];
     const apiClient = ServerConnections.currentApiClient();
     const backdropUrl = heroItem?.Id ?
         (apiClient?.getScaledImageUrl(heroItem.Id, { type: 'Backdrop', maxWidth: 400, quality: 60 }) ?? undefined) :
         undefined;
-    const bgColor = useBackdropColor(backdropUrl);
+    const heroBgColor = useBackdropColor(backdropUrl);
+
+    const activeBgColor = activeTab === 0 ? heroBgColor : favoritesBgColor;
 
     if (isPending && !heroItem && activeTab === 0) {
         return (
@@ -399,10 +345,12 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
         <Box
             sx={{
                 position: 'relative',
-                transition: 'background 1.2s ease',
-                ...(bgColor && activeTab === 0 ? {
-                    background: `radial-gradient(ellipse 120% 45% at 50% 0%, rgba(${bgColor},0.4) 0%, transparent 60%)`
-                } : {})
+                transition: 'background 1.5s ease',
+                ...(activeBgColor ? {
+                    background: `radial-gradient(ellipse 150% 100% at 50% 0%, rgba(${activeBgColor}, 0.55) 0%, transparent 85%)`
+                } : {
+                    background: 'transparent'
+                })
             }}
         >
             <UnifiedNav
@@ -417,7 +365,7 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
                     pb: { xs: 'calc(6rem + 56px)', md: '6rem' }
                 }}
             >
-                {activeTab === 1 && <ModernFavorites />}
+                {activeTab === 1 && <ModernFavorites onColorChange={setFavoritesBgColor} />}
 
                 {activeTab === 0 && (
                     <Grid container spacing={4}>

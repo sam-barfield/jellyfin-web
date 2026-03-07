@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -12,6 +12,9 @@ import { ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models/item-sort-
 import { SortOrder } from '@jellyfin/sdk/lib/generated-client/models/sort-order';
 import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
 import { MediaCard } from '../home/components/MediaRow';
+import { useBackdropColor } from 'hooks/useBackdropColor';
+import { ServerConnections } from 'lib/jellyfin-apiclient';
+import type { ItemDto } from 'types/base/models/item-dto';
 
 const TABS = [
     { label: 'All', types: [] as BaseItemKind[] },
@@ -55,7 +58,7 @@ const TabButton = ({ tab, idx, activeTab, onClick }: { tab: { label: string }, i
     );
 };
 
-export const ModernFavorites = () => {
+export const ModernFavorites = ({ onColorChange }: { onColorChange?: (color: string | null) => void }) => {
     const [activeTab, setActiveTab] = useState(0);
 
     const handleTabChange = useCallback((idx: number) => {
@@ -78,11 +81,40 @@ export const ModernFavorites = () => {
             'DubAvailability' as ItemFields
         ],
         enableUserData: true,
-        enableImageTypes: [ImageType.Primary, ImageType.Thumb],
+        enableImageTypes: [ImageType.Primary, ImageType.Thumb, ImageType.Backdrop],
         imageTypeLimit: 1
     });
 
     const items = useMemo(() => favoritesData?.Items ?? [], [favoritesData]);
+
+    const samplingItem = useMemo(() => {
+        // Prefer an item with a backdrop tag
+        const backdropItem = items.find((item: ItemDto) => item.ImageTags?.Backdrop);
+        if (backdropItem) return { item: backdropItem, type: 'Backdrop' };
+
+        // Fallback to the first item with a primary image tag
+        const primaryItem = items.find((item: ItemDto) => item.ImageTags?.Primary);
+        if (primaryItem) return { item: primaryItem, type: 'Primary' };
+
+        return null;
+    }, [items]);
+
+    const apiClient = ServerConnections.currentApiClient();
+    const backdropUrl = samplingItem?.item.Id ?
+        (apiClient?.getScaledImageUrl(samplingItem.item.Id, {
+            type: samplingItem.type as 'Backdrop' | 'Primary',
+            maxWidth: 400,
+            quality: 60
+        }) ?? undefined) :
+        undefined;
+
+    const bgColor = useBackdropColor(backdropUrl);
+
+    useEffect(() => {
+        if (onColorChange) {
+            onColorChange(bgColor);
+        }
+    }, [bgColor, onColorChange]);
 
     return (
         <Box sx={{ pb: 8 }}>
