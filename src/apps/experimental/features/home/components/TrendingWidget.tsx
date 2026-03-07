@@ -30,8 +30,6 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
     const isFavorite = optFavorite ?? (item.UserData?.IsFavorite ?? false);
     const isPlayed = optPlayed ?? (item.UserData?.Played ?? false);
 
-    console.log(item);
-
     // Uniform size for all rows
     const imgW = 72;
     const imgH = 108;

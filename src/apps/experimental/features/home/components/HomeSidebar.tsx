@@ -62,7 +62,23 @@ export const HomeSidebar = () => {
                             '& .MuiPaper-root': {
                                 backgroundColor: 'rgba(255,255,255,0.03)',
                                 backdropFilter: 'blur(10px)',
-                                border: '1px solid rgba(255,255,255,0.05)'
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                // The inner list is what actually scrolls, so target its scrollbar
+                                '& .MuiList-root': {
+                                    paddingRight: '6px',
+                                    '&::-webkit-scrollbar': {
+                                        width: '6px',
+                                        backgroundColor: 'transparent',
+                                        display: 'block'
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                        borderRadius: '10px'
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.4)'
+                                    }
+                                }
                             }
                         }}
                     />

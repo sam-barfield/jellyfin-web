@@ -24,7 +24,7 @@ interface MediaRowProps {
 /**
  * A single card with hover-reveal favourite + played buttons.
  */
-const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string; cardOptions?: Record<string, unknown> }) => {
+export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string; cardOptions?: Record<string, unknown> }) => {
     const queryClient = useQueryClient();
     const { mutateAsync: toggleFavorite } = useToggleFavoriteMutation();
     const { mutateAsync: togglePlayed } = useTogglePlayedMutation();
@@ -73,6 +73,9 @@ const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string;
         cardLayout: Boolean(cardOptions?.cardLayout ?? true)
     } as Record<string, unknown>), [cardOptions, shape]);
 
+    const aspectRatioMap: Record<string, string> = { backdrop: '16/9', portrait: '2/3', square: '1/1' };
+    const dynamicAspectRatio = aspectRatioMap[shape] ?? '16/9';
+
     return (
         <Box
             sx={{
@@ -87,18 +90,24 @@ const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string;
         >
             <Card item={item} cardOptions={cardOpts} />
 
-            {/* Hover action buttons — absolutely positioned over the card image area */}
             <Box
                 className='card-actions'
                 sx={{
                     position: 'absolute',
-                    top: 6,
-                    right: 6,
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    aspectRatio: dynamicAspectRatio,
+                    pointerEvents: 'none',
                     display: 'flex',
                     flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    alignItems: 'flex-end',
+                    p: 1,
                     gap: 0.5,
                     opacity: 0,
-                    transform: 'translateY(-4px)',
+                    transform: 'translateY(4px)',
                     transition: 'opacity 0.2s ease, transform 0.2s ease',
                     zIndex: 5
                 }}
@@ -108,6 +117,7 @@ const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string;
                     onClick={handleFavorite}
                     title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
                     sx={{
+                        pointerEvents: 'auto',
                         color: isFavorite ? 'error.main' : 'white',
                         backgroundColor: 'rgba(0,0,0,0.65)',
                         backdropFilter: 'blur(6px)',
@@ -126,6 +136,7 @@ const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string;
                     onClick={handlePlayed}
                     title={isPlayed ? 'Mark as unplayed' : 'Mark as played'}
                     sx={{
+                        pointerEvents: 'auto',
                         color: isPlayed ? 'success.main' : 'white',
                         backgroundColor: 'rgba(0,0,0,0.65)',
                         backdropFilter: 'blur(6px)',

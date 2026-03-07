@@ -2,10 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Box from '@mui/material/Box';
 import { useSearchParams } from 'react-router-dom';
 
-import globalize from '../../../lib/globalize';
-import { clearBackdrop } from '../../../components/backdrop/backdrop';
-import layoutManager from '../../../components/layoutManager';
 import Page from '../../../components/Page';
+import { clearBackdrop } from '../../../components/backdrop/backdrop';
 import { EventType } from 'constants/eventType';
 import Events from 'utils/events';
 import { HeroSection } from '../features/home/components/HeroSection';
@@ -23,28 +21,11 @@ import '../../../elements/emby-tabs/emby-tabs';
 import '../../../elements/emby-button/emby-button';
 import '../../../elements/emby-scroller/emby-scroller';
 
-type OnResumeOptions = {
-    autoFocus?: boolean;
-    refresh?: boolean
-};
-
-type ControllerProps = {
-    onResume: (
-        options: OnResumeOptions
-    ) => void;
-    refreshed: boolean;
-    onPause: () => void;
-    destroy: () => void;
-};
-
 const Home = () => {
-    const [ searchParams ] = useSearchParams();
+    const [ searchParams, setSearchParams ] = useSearchParams();
     const initialTabIndex = parseInt(searchParams.get('tab') ?? '0', 10);
 
     const libraryMenu = useMemo(async () => ((await import('../../../scripts/libraryMenu')).default), []);
-    const mainTabsManager = useMemo(() => import('../../../components/maintabsmanager'), []);
-    const tabController = useRef<ControllerProps | null>();
-    const tabControllers = useMemo<ControllerProps[]>(() => [], []);
 
     const documentRef = useRef<Document>(document);
     const element = useRef<HTMLDivElement>(null);
@@ -53,100 +34,17 @@ const Home = () => {
         (await libraryMenu).setTitle(null);
     }, [ libraryMenu ]);
 
-    const getTabs = () => {
-        return [{
-            name: globalize.translate('Home')
-        }, {
-            name: globalize.translate('Favorites')
-        }];
-    };
-
-    const getTabContainers = () => {
-        return element.current?.querySelectorAll('.tabContent');
-    };
-
-    const getTabController = useCallback((index: number) => {
-        if (index == null) {
-            throw new Error('index cannot be null');
-        }
-
-        if (index === 0) {
-            // Bypass legacy hometab.js for the modern home view
-            return Promise.resolve({
-                onResume: () => { /* noop */ },
-                onPause: () => { /* noop */ },
-                destroy: () => { /* noop */ },
-                refreshed: true
-            } as ControllerProps);
-        }
-
-        let depends = '';
-
-        switch (index) {
-            case 0:
-                depends = 'hometab';
-                break;
-
-            case 1:
-                depends = 'favorites';
-        }
-
-        return import(/* webpackChunkName: "[request]" */ `../../../controllers/${depends}`).then(({ default: ControllerFactory }) => {
-            let controller = tabControllers[index];
-
-            if (!controller) {
-                const tabContent = element.current?.querySelector(".tabContent[data-index='" + index + "']");
-                controller = new ControllerFactory(tabContent, null);
-                tabControllers[index] = controller;
-            }
-
-            return controller;
-        });
-    }, [ tabControllers ]);
-
-    const loadTab = useCallback((index: number, previousIndex: number | null) => {
-        getTabController(index).then((controller) => {
-            const refresh = !controller.refreshed;
-
-            controller.onResume({
-                autoFocus: previousIndex == null && layoutManager.tv,
-                refresh: refresh
-            });
-
-            controller.refreshed = true;
-            tabController.current = controller;
-        }).catch(err => {
-            console.error('[Home] failed to get tab controller', err);
-        });
-    }, [ getTabController ]);
-
-    const onTabChange = useCallback((e: { detail: { selectedTabIndex: string; previousIndex: number | null }; }) => {
-        const newIndex = parseInt(e.detail.selectedTabIndex, 10);
-        const previousIndex = e.detail.previousIndex;
-
-        const previousTabController = previousIndex == null ? null : tabControllers[previousIndex];
-        if (previousTabController?.onPause) {
-            previousTabController.onPause();
-        }
-
-        loadTab(newIndex, previousIndex);
-    }, [ loadTab, tabControllers ]);
-
-    const onSetTabs = useCallback(async () => {
-        (await mainTabsManager).setTabs(element.current, initialTabIndex, getTabs, getTabContainers, null, onTabChange, false);
-    }, [ initialTabIndex, mainTabsManager, onTabChange ]);
+    // Handling tab change locally
+    const onTabChange = useCallback((index: number) => {
+        setSearchParams(prev => {
+            prev.set('tab', index.toString());
+            return prev;
+        }, { replace: true });
+    }, [setSearchParams]);
 
     const onResume = useCallback(async () => {
         void setTitle();
         clearBackdrop();
-
-        const currentTabController = tabController.current;
-
-        if (!currentTabController) {
-            (await mainTabsManager).selectedTabIndex(initialTabIndex);
-        } else if (currentTabController?.onResume) {
-            currentTabController.onResume({});
-        }
 
         // Hide legacy Home/Favorites buttons and style modern cards
         const skinHeader = documentRef.current.querySelector('.skinHeader');
@@ -258,34 +156,58 @@ const Home = () => {
                     .homePage .cardOverlayContainer > div.cardOverlayButton-br > button[is="emby-playstatebutton"] {
                         display: none !important;
                     }
-                    /* Force React CardHoverMenu Style to Bottom Right */
+                    /* Move Legacy Play Button to Bottom Left and Stylize */
                     .homePage .cardOverlayContainer .cardOverlayButton-br.flex {
                         position: absolute !important;
                         top: auto !important;
                         bottom: 0 !important;
-                        right: 0 !important;
-                        padding: 8px !important;
+                        left: 0 !important;
+                        right: auto !important;
+                        padding: 10px !important;
                         display: flex !important;
-                        gap: 2px !important;
+                    }
+                    .homePage .cardOverlayContainer .cardOverlayButton-br.flex button[is="emby-playbutton"] {
+                        background-color: rgba(0, 0, 0, 0.65) !important;
+                        backdrop-filter: blur(6px) !important;
+                        -webkit-backdrop-filter: blur(6px) !important;
+                        color: white !important;
+                        border-radius: 50% !important;
+                        width: 34px !important;
+                        height: 34px !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        transition: all 0.2s ease !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                    }
+                    .homePage .cardOverlayContainer .cardOverlayButton-br.flex button[is="emby-playbutton"]:hover {
+                        background-color: rgba(0, 164, 220, 0.85) !important;
+                        transform: scale(1.1) !important;
+                        color: white !important;
+                    }
+                    .homePage .cardOverlayContainer .cardOverlayButton-br.flex button[is="emby-playbutton"] * {
+                        font-size: 22px !important;
+                        margin: 0 !important;
+                    }
+                    /* Hide Announcements Button during video playback */
+                    html:has(.videoPlayerContainer-onTop) button[aria-label="announcements"],
+                    html:has(.videoPlayerContainer-onTop) .headerAnnouncementsButtonContainer {
+                        display: none !important;
                     }
                 `;
                 documentRef.current.head.appendChild(style);
             }
         }
-    }, [ initialTabIndex, mainTabsManager, setTitle ]);
+    }, [ setTitle ]);
 
     const onPause = useCallback(() => {
-        const currentTabController = tabController.current;
-        if (currentTabController?.onPause) {
-            currentTabController.onPause();
-        }
         (documentRef.current.querySelector('.skinHeader') as HTMLDivElement).classList.remove('noHomeButtonHeader');
     }, []);
 
     const renderHome = useCallback(() => {
-        void onSetTabs();
         void onResume();
-    }, [ onResume, onSetTabs ]);
+    }, [ onResume ]);
 
     useEffect(() => {
         if (documentRef.current?.querySelector('.headerTabs')) {
@@ -310,15 +232,12 @@ const Home = () => {
         <div ref={element}>
             <Page
                 id='indexPage'
-                className='mainAnimatedPage homePage libraryPage allLibraryPage backdropPage pageWithAbsoluteTabs withTabs'
+                className='mainAnimatedPage homePage libraryPage allLibraryPage backdropPage'
                 isBackButtonEnabled={false}
                 backDropType='movie,series,book'
             >
-                <div className='tabContent pageTabContent' id='homeTab' data-index='0'>
-                    <ModernHome />
-                </div>
-                <div className='tabContent pageTabContent' id='favoritesTab' data-index='1'>
-                    <div className='sections'></div>
+                <div className='tabContent pageTabContent is-active' id='homeTab' data-index='0'>
+                    <ModernHome initialTabIndex={initialTabIndex} onTabChangeUrl={onTabChange} />
                 </div>
             </Page>
         </div>
@@ -383,9 +302,16 @@ function useBackdropColor(imageUrl: string | undefined): string | null {
     return color;
 }
 
+import { ModernFavorites } from '../features/favorites/ModernFavorites';
+
 const HERO_INTERVAL_MS = 12000; // 12 seconds per hero
 
-const ModernHome = () => {
+interface ModernHomeProps {
+    initialTabIndex: number;
+    onTabChangeUrl: (index: number) => void;
+}
+
+const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
     const {
         heroItems,
         resumeItems,
@@ -393,9 +319,8 @@ const ModernHome = () => {
         libraries,
         isPending
     } = useHomeData();
-    const mainTabsManagerPromise = useMemo(() => import('../../../components/maintabsmanager'), []);
 
-    const [activeTab, setActiveTab] = React.useState(0);
+    const [activeTab, setActiveTab] = React.useState(initialTabIndex);
     const [heroIndex, setHeroIndex] = useState(0);
 
     // Advance hero every HERO_INTERVAL_MS — CSS animation handles the smooth progress bar
@@ -407,14 +332,10 @@ const ModernHome = () => {
         return () => clearInterval(id);
     }, [heroItems.length]);
 
-    const handleTabChange = useCallback(async (index: number) => {
+    const handleTabChange = useCallback((index: number) => {
         setActiveTab(index);
-        const manager = await mainTabsManagerPromise;
-        const mainManager = manager as unknown as { selectedTabIndex?: (i: number) => void };
-        if (mainManager?.selectedTabIndex) {
-            mainManager.selectedTabIndex(index);
-        }
-    }, [mainTabsManagerPromise]);
+        onTabChangeUrl(index);
+    }, [onTabChangeUrl]);
 
     const heroItem = heroItems[heroIndex];
     const apiClient = ServerConnections.currentApiClient();
@@ -423,7 +344,7 @@ const ModernHome = () => {
         undefined;
     const bgColor = useBackdropColor(backdropUrl);
 
-    if (isPending && !heroItem) {
+    if (isPending && !heroItem && activeTab === 0) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
                 <CircularProgress />
@@ -440,7 +361,7 @@ const ModernHome = () => {
                 pt: 8,
                 position: 'relative',
                 transition: 'background 1.2s ease',
-                ...(bgColor ? {
+                ...(bgColor && activeTab === 0 ? {
                     background: `radial-gradient(ellipse 120% 55% at 50% 0%, rgba(${bgColor},0.4) 0%, transparent 65%)`
                 } : {})
             }}
@@ -451,38 +372,47 @@ const ModernHome = () => {
                 libraries={libraries}
             />
 
-            <Grid container spacing={4}>
-                {/* Main Content Column */}
-                <Grid size={{ xs: 12, lg: 9 }}>
-                    <HeroSection item={heroItem} isPending={isPending} heroItems={heroItems} heroIndex={heroIndex} />
+            {activeTab === 1 && <ModernFavorites />}
 
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <MediaRow
-                            title='Continue Watching'
-                            items={resumeItems}
-                            shape='backdrop'
-                        />
-                        <MediaRow
-                            title='Next Up'
-                            items={nextUpItems}
-                            shape='backdrop'
-                            cardOptions={{
-                                preferThumb: true,
-                                inheritThumb: true,
-                                lines: 2
-                            }}
-                        />
-                        {libraries?.map((library: ItemDto) => (
-                            <LibraryLatestRow key={library.Id} library={library} />
-                        ))}
-                    </Box>
-                </Grid>
+            {activeTab === 0 && (
+                <Grid container spacing={4}>
+                    {/* Main Content Column */}
+                    <Grid size={{ xs: 12, lg: 9 }}>
+                        <HeroSection item={heroItem} isPending={isPending} heroItems={heroItems} heroIndex={heroIndex} />
 
-                {/* Sidebar Column */}
-                <Grid size={{ xs: 12, lg: 3 }}>
-                    <HomeSidebar />
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <MediaRow
+                                title='Continue Watching'
+                                items={resumeItems}
+                                shape='backdrop'
+                                cardOptions={{
+                                    preferThumb: true,
+                                    inheritThumb: true,
+                                    lines: 2
+                                }}
+                            />
+                            <MediaRow
+                                title='Next Up'
+                                items={nextUpItems}
+                                shape='backdrop'
+                                cardOptions={{
+                                    preferThumb: true,
+                                    inheritThumb: true,
+                                    lines: 2
+                                }}
+                            />
+                            {libraries?.map((library: ItemDto) => (
+                                <LibraryLatestRow key={library.Id} library={library} />
+                            ))}
+                        </Box>
+                    </Grid>
+
+                    {/* Sidebar Column */}
+                    <Grid size={{ xs: 12, lg: 3 }}>
+                        <HomeSidebar />
+                    </Grid>
                 </Grid>
-            </Grid>
+            )}
         </Box>
     );
 };
