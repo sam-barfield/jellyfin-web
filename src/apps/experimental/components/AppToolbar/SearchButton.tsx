@@ -6,7 +6,7 @@ import {
     useLocation,
     useSearchParams
 } from 'react-router-dom';
-import SearchIcon from '@mui/icons-material/Search';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import globalize from 'lib/globalize';
@@ -27,6 +27,18 @@ const getUrlParams = (searchParams: URLSearchParams) => {
     return params;
 };
 
+const navIconSx = {
+    color: 'rgba(255,255,255,0.75)',
+    padding: '8px',
+    transition: 'color 0.2s ease, transform 0.2s ease',
+    '&:hover': {
+        color: '#00a4dc',
+        transform: 'scale(1.15)',
+        backgroundColor: 'transparent'
+    },
+    '&:focus-visible': { outline: '2px solid #00a4dc', outlineOffset: '2px', borderRadius: '8px' }
+};
+
 const SearchButton: FC = () => {
     const location = useLocation();
     const [searchParams] = useSearchParams();
@@ -42,14 +54,15 @@ const SearchButton: FC = () => {
     return (
         <Tooltip title={globalize.translate('Search')}>
             <IconButton
-                size='large'
                 aria-label={globalize.translate('Search')}
                 color='inherit'
                 component={Link}
                 disabled={isSearchPath}
                 to={createSearchLink}
+                disableRipple
+                sx={navIconSx}
             >
-                <SearchIcon />
+                <SearchRoundedIcon />
             </IconButton>
         </Tooltip>
     );

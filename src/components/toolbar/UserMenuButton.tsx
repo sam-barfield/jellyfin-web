@@ -8,6 +8,16 @@ import globalize from 'lib/globalize';
 
 import AppUserMenu, { ID } from './AppUserMenu';
 
+const navIconSx = {
+    padding: '8px',
+    transition: 'transform 0.2s ease',
+    '&:hover': {
+        transform: 'scale(1.15)',
+        backgroundColor: 'transparent'
+    },
+    '&:focus-visible': { outline: '2px solid #00a4dc', outlineOffset: '2px', borderRadius: '8px' }
+};
+
 const UserMenuButton = () => {
     const { user } = useApi();
 
@@ -26,13 +36,13 @@ const UserMenuButton = () => {
         <>
             <Tooltip title={globalize.translate('UserMenu')}>
                 <IconButton
-                    size='large'
                     aria-label={globalize.translate('UserMenu')}
                     aria-controls={ID}
                     aria-haspopup='true'
                     onClick={onUserButtonClick}
                     color='inherit'
-                    sx={{ padding: 0 }}
+                    disableRipple
+                    sx={navIconSx}
                 >
                     <UserAvatar user={user} />
                 </IconButton>

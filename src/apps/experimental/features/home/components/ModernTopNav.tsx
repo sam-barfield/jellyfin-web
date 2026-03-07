@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
-import CollectionsBookmarkRoundedIcon from '@mui/icons-material/CollectionsBookmarkRounded';
 import LocalMoviesRoundedIcon from '@mui/icons-material/LocalMoviesRounded';
 import TvRoundedIcon from '@mui/icons-material/TvRounded';
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
@@ -20,6 +19,8 @@ import { type ItemDto } from 'types/base/models/item-dto';
 import { appRouter } from 'components/router/appRouter';
 import { useNavContext } from '../../../contexts/NavContext';
 
+import Events from 'utils/events';
+
 import SearchButton from '../../../components/AppToolbar/SearchButton';
 import AnnouncementsButton from '../../../components/AppToolbar/announcements/AnnouncementsButton';
 import SyncPlayButton from '../../../components/AppToolbar/SyncPlayButton';
@@ -31,34 +32,66 @@ const navIconSx = {
     color: 'rgba(255,255,255,0.75)',
     padding: '8px',
     transition: 'color 0.2s ease, transform 0.2s ease',
-    '&:hover': { color: '#00a4dc', transform: 'scale(1.15)' },
+    '&:hover': {
+        color: '#00a4dc',
+        transform: 'scale(1.15)',
+        backgroundColor: 'transparent'
+    },
     '&:focus-visible': { outline: '2px solid #00a4dc', outlineOffset: '2px', borderRadius: '8px' }
 };
 
 // ─── Animated Hamburger ───────────────────────────────────────────────────────
 const HamburgerButton = () => {
-    const { isDrawerOpen, onToggleDrawer } = useNavContext();
+    const { isDrawerOpen } = useNavContext();
+
+    const handleHamburgerClick = useCallback(() => {
+        const win = window as any;
+        // 1. Try modern React-based drawer toggle via global bridge
+        if (win.jellyfinToggleDrawer) {
+            win.jellyfinToggleDrawer();
+        } else if (win.LibraryMenu?.onHardwareMenuButtonClick) {
+            // 2. Fallback to legacy drawer toggle if modern layout bridge is missing
+            win.LibraryMenu.onHardwareMenuButtonClick();
+        } else {
+            // 3. Last resort: trigger global event
+            Events.trigger(window, 'jellyfin-toggle-drawer');
+        }
+    }, []);
+
     return (
         <Tooltip title={isDrawerOpen ? 'Close menu' : 'Open menu'} placement='bottom'>
             <IconButton
-                onClick={onToggleDrawer}
+                onClick={handleHamburgerClick}
+                disableRipple
                 aria-label={isDrawerOpen ? 'Close menu' : 'Open menu'}
-                sx={{ ...navIconSx, flexShrink: 0 }}
+                sx={{
+                    ...navIconSx,
+                    flexShrink: 0,
+                    // Hover animation for the internal lines
+                    '&:hover div:nth-of-type(1)': {
+                        width: isDrawerOpen ? 22 : 14,
+                        ml: isDrawerOpen ? 0 : 'auto'
+                    },
+                    '&:hover div:nth-of-type(3)': {
+                        width: isDrawerOpen ? 22 : 18,
+                        ml: isDrawerOpen ? 0 : 'auto'
+                    }
+                }}
             >
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '5px', width: 22, height: 16, justifyContent: 'center' }}>
                     <Box sx={{
-                        display: 'block', height: 2, backgroundColor: 'currentColor', borderRadius: 1,
-                        transition: 'transform 0.25s ease, opacity 0.25s ease',
+                        display: 'block', height: 2, width: 22, backgroundColor: 'currentColor', borderRadius: 1,
+                        transition: 'transform 0.25s ease, opacity 0.25s ease, width 0.2s ease, margin-left 0.2s ease',
                         ...(isDrawerOpen ? { transform: 'translateY(7px) rotate(45deg)' } : {})
                     }} />
                     <Box sx={{
-                        display: 'block', height: 2, backgroundColor: 'currentColor', borderRadius: 1,
-                        transition: 'opacity 0.25s ease',
+                        display: 'block', height: 2, width: 22, backgroundColor: 'currentColor', borderRadius: 1,
+                        transition: 'opacity 0.25s ease, width 0.2s ease',
                         ...(isDrawerOpen ? { opacity: 0 } : {})
                     }} />
                     <Box sx={{
-                        display: 'block', height: 2, backgroundColor: 'currentColor', borderRadius: 1,
-                        transition: 'transform 0.25s ease, opacity 0.25s ease',
+                        display: 'block', height: 2, width: 22, backgroundColor: 'currentColor', borderRadius: 1,
+                        transition: 'transform 0.25s ease, opacity 0.25s ease, width 0.2s ease, margin-left 0.2s ease',
                         ...(isDrawerOpen ? { transform: 'translateY(-7px) rotate(-45deg)' } : {})
                     }} />
                 </Box>
@@ -186,14 +219,9 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
         return VideoLibraryRoundedIcon;
     };
 
-    const handleCollectionsClick = useCallback(() => {
-        window.location.href = '#/collections';
-    }, []);
-
     const allTabs = [
         { icon: HomeRoundedIcon, label: 'Home', onClick: handleHomeClick, active: activeTab === 0 },
         { icon: FavoriteRoundedIcon, label: 'Favourites', onClick: handleFavouritesClick, active: activeTab === 1 },
-        { icon: CollectionsBookmarkRoundedIcon, label: 'Collections', onClick: handleCollectionsClick, active: false },
         ...libraries.map(lib => ({
             icon: getLibraryIcon(lib),
             label: lib.Name || '',

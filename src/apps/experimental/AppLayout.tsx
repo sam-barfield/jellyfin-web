@@ -1,7 +1,7 @@
 import React, { StrictMode, useCallback, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import Drawer from '@mui/material/Drawer';
 import { type Theme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -17,6 +17,8 @@ import AppDrawer, { isDrawerPath } from './components/drawers/AppDrawer';
 import MainDrawerContent from './components/drawers/MainDrawerContent';
 import { NavContext } from './contexts/NavContext';
 
+import Events from 'utils/events';
+
 import './AppOverrides.scss';
 
 export const Component = () => {
@@ -27,11 +29,39 @@ export const Component = () => {
     const isMediumScreen = useMediaQuery((t: Theme) => t.breakpoints.up('md'));
     const isHomePage = location.pathname === '/home';
     const isDrawerAvailable = Boolean(user) && (isHomePage || (isDrawerPath(location.pathname) && !isMediumScreen));
+
+    // Force drawer open state logic
     const isDrawerOpen = isDrawerActive && isDrawerAvailable;
 
+    // Use events as the single source of truth for toggling
     const onToggleDrawer = useCallback(() => {
-        setIsDrawerActive(!isDrawerActive);
-    }, [ isDrawerActive, setIsDrawerActive ]);
+        Events.trigger(window, 'jellyfin-toggle-drawer');
+    }, []);
+
+    const onOpenDrawer = useCallback(() => setIsDrawerActive(true), []);
+    const onCloseDrawer = useCallback(() => setIsDrawerActive(false), []);
+
+    // Global toggle function for absolute robustness
+    React.useEffect(() => {
+        const win = window as any;
+        win.jellyfinToggleDrawer = () => setIsDrawerActive(prev => !prev);
+        win.jellyfinOpenDrawer = () => setIsDrawerActive(true);
+        win.jellyfinCloseDrawer = () => setIsDrawerActive(false);
+
+        const handleToggle = () => setIsDrawerActive(prev => !prev);
+        Events.on(window, 'jellyfin-toggle-drawer', handleToggle);
+        Events.on(window, 'jellyfin-open-drawer', onOpenDrawer);
+        Events.on(window, 'jellyfin-close-drawer', onCloseDrawer);
+
+        return () => {
+            delete win.jellyfinToggleDrawer;
+            delete win.jellyfinOpenDrawer;
+            delete win.jellyfinCloseDrawer;
+            Events.off(window, 'jellyfin-toggle-drawer', handleToggle);
+            Events.off(window, 'jellyfin-open-drawer', onOpenDrawer);
+            Events.off(window, 'jellyfin-close-drawer', onCloseDrawer);
+        };
+    }, [onOpenDrawer, onCloseDrawer]);
 
     return (
         <NavContext.Provider value={{ isDrawerOpen, isDrawerAvailable, onToggleDrawer }}>
@@ -56,26 +86,37 @@ export const Component = () => {
                     {/* On the home page use a SwipeableDrawer overlay so it toggles properly.
                         On other pages use the standard AppDrawer (permanent on desktop). */}
                     {isHomePage ? (
-                        <SwipeableDrawer
+                        <Drawer
                             anchor='left'
-                            open={isDrawerOpen}
-                            onClose={onToggleDrawer}
-                            onOpen={onToggleDrawer}
+                            open={isDrawerActive}
+                            onClose={onCloseDrawer}
+                            variant='temporary'
                             ModalProps={{ keepMounted: true }}
+                            sx={{
+                                zIndex: 2000,
+                                '& .MuiDrawer-paper': {
+                                    width: 240,
+                                    background: 'rgba(20, 20, 25, 1)',
+                                    boxSizing: 'border-box',
+                                    borderRight: '1px solid rgba(255,255,255,0.1)'
+                                }
+                            }}
                         >
                             <Box
                                 role='presentation'
-                                sx={{ width: 240, height: '100%' }}
+                                onClick={onCloseDrawer}
+                                onKeyDown={onCloseDrawer}
+                                sx={{ height: '100%' }}
                             >
                                 <MainDrawerContent />
                             </Box>
-                        </SwipeableDrawer>
+                        </Drawer>
                     ) : (
                         isDrawerAvailable && (
                             <AppDrawer
                                 open={isDrawerOpen}
-                                onClose={onToggleDrawer}
-                                onOpen={onToggleDrawer}
+                                onClose={onCloseDrawer}
+                                onOpen={onOpenDrawer}
                             />
                         )
                     )}

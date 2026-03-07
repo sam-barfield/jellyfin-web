@@ -288,6 +288,35 @@ const SyncPlayMenu: FC<SyncPlayMenuProps> = ({
             open={open}
             onClose={onMenuClose}
             slotProps={{
+                paper: {
+                    sx: {
+                        mt: 1.5,
+                        background: 'rgba(20, 20, 25, 0.75)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '16px',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                        overflow: 'hidden',
+                        '& .MuiMenuItem-root': {
+                            py: 1.5,
+                            px: 2,
+                            transition: 'background-color 0.2s ease',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        },
+                        '& .MuiListSubheader-root': {
+                            background: 'transparent',
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            letterSpacing: '0.05em',
+                            textTransform: 'uppercase',
+                            lineHeight: '32px'
+                        }
+                    }
+                },
                 list: MenuListProps
             }}
         >
