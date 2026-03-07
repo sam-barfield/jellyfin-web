@@ -78,6 +78,56 @@ const AppUserMenu: FC<AppUserMenuProps> = ({
             keepMounted
             open={open}
             onClose={onMenuClose}
+            sx={{
+                '& .MuiPaper-root': {
+                    backgroundColor: 'rgba(20, 20, 25, 0.75)',
+                    background: 'rgba(20, 20, 25, 0.75)', // Match AnnouncementButton exactly
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                    borderRadius: '16px',
+                    mt: 1.5,
+                    minWidth: 220, // Slightly narrower
+                    px: 0.5, // Reduced outer horizontal padding
+                    py: 1 // Reduced outer vertical padding
+                },
+                '& .MuiMenuItem-root': {
+                    borderRadius: 2,
+                    mx: 0.5,
+                    my: 0.15, // Reduced vertical margin between items
+                    px: 1.5, // Reduced horizontal padding within items
+                    py: 0.75, // Reduced vertical padding within items
+                    minHeight: '36px', // Ensure consistent but smaller height
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                        backgroundColor: 'rgba(0,164,220,0.2)', // Slightly stronger hover tint
+                        transform: 'translateX(3px)', // Slightly less extreme slide
+                        '& .MuiListItemIcon-root': {
+                            color: 'primary.main',
+                            transform: 'scale(1.05)' // Subtler scale
+                        },
+                        '& .MuiTypography-root': {
+                            color: 'primary.main'
+                        }
+                    }
+                },
+                '& .MuiListItemIcon-root': {
+                    color: 'rgba(255,255,255,0.7)',
+                    minWidth: 40,
+                    transition: 'all 0.2s ease'
+                },
+                '& .MuiTypography-root': {
+                    fontWeight: 500,
+                    fontSize: '0.95rem',
+                    transition: 'all 0.2s ease'
+                },
+                '& .MuiDivider-root': {
+                    my: 1,
+                    mx: 1.5,
+                    borderColor: 'rgba(255,255,255,0.1)'
+                }
+            }}
         >
             <MenuItem
                 component={Link}
