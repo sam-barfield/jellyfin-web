@@ -1,5 +1,5 @@
 import { SyncPlayUserAccessType } from '@jellyfin/sdk/lib/generated-client/models/sync-play-user-access-type';
-import Groups from '@mui/icons-material/Groups';
+import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React, { useCallback, useState } from 'react';
@@ -10,6 +10,18 @@ import globalize from 'lib/globalize';
 import { PluginType } from 'types/plugin';
 
 import AppSyncPlayMenu, { ID } from './menus/SyncPlayMenu';
+
+const navIconSx = {
+    color: 'rgba(255,255,255,0.75)',
+    padding: '8px',
+    transition: 'color 0.2s ease, transform 0.2s ease',
+    '&:hover': {
+        color: '#00a4dc',
+        transform: 'scale(1.15)',
+        backgroundColor: 'transparent'
+    },
+    '&:focus-visible': { outline: '2px solid #00a4dc', outlineOffset: '2px', borderRadius: '8px' }
+};
 
 const SyncPlayButton = () => {
     const { user } = useApi();
@@ -38,14 +50,15 @@ const SyncPlayButton = () => {
         <>
             <Tooltip title={globalize.translate('ButtonSyncPlay')}>
                 <IconButton
-                    size='large'
                     aria-label={globalize.translate('ButtonSyncPlay')}
                     aria-controls={ID}
                     aria-haspopup='true'
                     onClick={onSyncPlayButtonClick}
                     color='inherit'
+                    disableRipple
+                    sx={navIconSx}
                 >
-                    <Groups />
+                    <GroupsRoundedIcon />
                 </IconButton>
             </Tooltip>
 

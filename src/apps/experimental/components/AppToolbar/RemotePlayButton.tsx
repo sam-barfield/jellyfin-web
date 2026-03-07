@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import CastConnected from '@mui/icons-material/CastConnected';
+import CastConnectedRoundedIcon from '@mui/icons-material/CastConnectedRounded';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Cast from '@mui/icons-material/Cast';
+import CastRoundedIcon from '@mui/icons-material/CastRounded';
 import IconButton from '@mui/material/IconButton';
+import type { Theme } from '@mui/material/styles';
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -13,6 +14,18 @@ import Events from 'utils/events';
 
 import RemotePlayMenu, { ID } from './menus/RemotePlayMenu';
 import RemotePlayActiveMenu, { ID as ACTIVE_ID } from './menus/RemotePlayActiveMenu';
+
+const navIconSx = {
+    color: 'rgba(255,255,255,0.75)',
+    padding: '8px',
+    transition: 'color 0.2s ease, transform 0.2s ease',
+    '&:hover': {
+        color: '#00a4dc',
+        transform: 'scale(1.15)',
+        backgroundColor: 'transparent'
+    },
+    '&:focus-visible': { outline: '2px solid #00a4dc', outlineOffset: '2px', borderRadius: '8px' }
+};
 
 const RemotePlayButton = () => {
     const [ playerInfo, setPlayerInfo ] = useState(playbackManager.getPlayerInfo());
@@ -51,6 +64,19 @@ const RemotePlayButton = () => {
         setRemotePlayActiveMenuAnchorEl(null);
     }, [ setRemotePlayActiveMenuAnchorEl ]);
 
+    const activeCastButtonSx = useCallback((theme: Theme) => ({
+        color: theme.vars.palette.primary.main,
+        textTransform: 'none' as const,
+        fontWeight: 600,
+        borderRadius: '12px',
+        px: 2,
+        '&:hover': {
+            backgroundColor: 'rgba(0, 164, 220, 0.08)',
+            transform: 'scale(1.05)'
+        },
+        transition: 'all 0.2s ease'
+    }), []);
+
     return (
         <>
             {(playerInfo && !playerInfo.isLocalPlayer) ? (
@@ -62,17 +88,13 @@ const RemotePlayButton = () => {
                     <Tooltip title={globalize.translate('ButtonCast')}>
                         <Button
                             variant='text'
-                            size='large'
-                            startIcon={<CastConnected />}
+                            startIcon={<CastConnectedRoundedIcon />}
                             aria-label={globalize.translate('ButtonCast')}
                             aria-controls={ACTIVE_ID}
                             aria-haspopup='true'
                             onClick={onRemotePlayActiveButtonClick}
                             color='inherit'
-                            // eslint-disable-next-line react/jsx-no-bind
-                            sx={(theme) => ({
-                                color: theme.vars.palette.primary.main
-                            })}
+                            sx={activeCastButtonSx}
                         >
                             {playerInfo.deviceName || playerInfo.name}
                         </Button>
@@ -81,14 +103,15 @@ const RemotePlayButton = () => {
             ) : (
                 <Tooltip title={globalize.translate('ButtonCast')}>
                     <IconButton
-                        size='large'
                         aria-label={globalize.translate('ButtonCast')}
                         aria-controls={ID}
                         aria-haspopup='true'
                         onClick={onRemotePlayButtonClick}
                         color='inherit'
+                        disableRipple
+                        sx={navIconSx}
                     >
-                        <Cast />
+                        <CastRoundedIcon />
                     </IconButton>
                 </Tooltip>
             )}
