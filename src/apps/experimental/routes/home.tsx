@@ -309,6 +309,7 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
     const [activeTab, setActiveTab] = React.useState(initialTabIndex);
     const [ heroIndex, setHeroIndex ] = useState(0);
     const [ favoritesBgColor, setFavoritesBgColor ] = useState<string | null>(null);
+    const [ lastHeroInteraction, setLastHeroInteraction ] = useState(0);
 
     // Advance hero every HERO_INTERVAL_MS — CSS animation handles the smooth progress bar
     useEffect(() => {
@@ -317,7 +318,24 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
             setHeroIndex(prev => (prev + 1) % heroItems.length);
         }, HERO_INTERVAL_MS);
         return () => clearInterval(id);
-    }, [ heroItems.length ]);
+    }, [ heroItems.length, lastHeroInteraction ]);
+
+    const handleSwipeLeft = useCallback(() => {
+        if (heroItems.length <= 1) return;
+        setHeroIndex(prev => (prev + 1) % heroItems.length);
+        setLastHeroInteraction(Date.now());
+    }, [heroItems.length]);
+
+    const handleSwipeRight = useCallback(() => {
+        if (heroItems.length <= 1) return;
+        setHeroIndex(prev => (prev === 0 ? heroItems.length - 1 : prev - 1));
+        setLastHeroInteraction(Date.now());
+    }, [heroItems.length]);
+
+    const handleHeroSelect = useCallback((index: number) => {
+        setHeroIndex(index);
+        setLastHeroInteraction(Date.now());
+    }, []);
 
     const handleTabChange = useCallback((index: number) => {
         setActiveTab(index);
@@ -371,7 +389,15 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
                     <Grid container spacing={4}>
                         {/* Main Content Column */}
                         <Grid size={{ xs: 12, lg: 9 }}>
-                            <HeroSection item={heroItem} isPending={isPending} heroItems={heroItems} heroIndex={heroIndex} />
+                            <HeroSection
+                                item={heroItem}
+                                isPending={isPending}
+                                heroItems={heroItems}
+                                heroIndex={heroIndex}
+                                onSwipeLeft={handleSwipeLeft}
+                                onSwipeRight={handleSwipeRight}
+                                onSelect={handleHeroSelect}
+                            />
 
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <MediaRow
