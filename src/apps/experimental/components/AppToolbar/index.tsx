@@ -25,8 +25,8 @@ const ExperimentalAppToolbar: FC<AppToolbarProps> = ({
 }) => {
     const location = useLocation();
 
-    // The video osd does not show the standard toolbar
-    if (location.pathname === '/video') return null;
+    // The video osd and home page do not show the standard toolbar
+    if (location.pathname === '/video' || location.pathname === '/home') return null;
 
     // Only show the back button in apps when appropriate
     const isBackButtonAvailable = window.NativeShell && appRouter.canGoBack(location.pathname);
