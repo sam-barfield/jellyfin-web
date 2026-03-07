@@ -31,6 +31,7 @@ const TabButton = ({ tab, idx, activeTab, onClick }: { tab: { label: string }, i
     return (
         <ButtonBase
             onClick={handleTabClick}
+            className='home-nav-item'
             sx={{
                 px: 2.5,
                 py: 1,

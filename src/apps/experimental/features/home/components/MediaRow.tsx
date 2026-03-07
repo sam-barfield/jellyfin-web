@@ -12,6 +12,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import { useToggleFavoriteMutation, useTogglePlayedMutation } from 'hooks/useFetchItems';
 import { useQueryClient } from '@tanstack/react-query';
+import { appRouter } from 'components/router/appRouter';
 
 interface MediaRowProps {
     title: string;
@@ -76,15 +77,36 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
     const aspectRatioMap: Record<string, string> = { backdrop: '16/9', portrait: '2/3', square: '1/1' };
     const dynamicAspectRatio = aspectRatioMap[shape] ?? '16/9';
 
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            appRouter.showItem(item);
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            const next = e.currentTarget.nextElementSibling as HTMLElement | null;
+            next?.focus();
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const prev = e.currentTarget.previousElementSibling as HTMLElement | null;
+            prev?.focus();
+        }
+    }, [item]);
+
     return (
         <Box
+            className='media-card-root'
+            tabIndex={0}
+            role='button'
+            aria-label={item.Name ?? 'Media item'}
+            onKeyDown={handleKeyDown}
             sx={{
                 position: 'relative',
                 flexShrink: 0,
                 width: shape === 'backdrop' ? { xs: 200, md: 280 } : { xs: 120, md: 160 },
                 transition: 'transform 0.3s ease',
+                cursor: 'pointer',
                 '&:hover': { transform: 'scale(1.05)', zIndex: 1 },
-                // Show action buttons on hover
+                // Show action buttons on hover OR keyboard focus
                 '&:hover .card-actions': { opacity: 1, transform: 'translateY(0)' }
             }}
         >
@@ -203,6 +225,18 @@ export function MediaRow({ title, items, shape = 'backdrop', onViewAll, cardOpti
     const handleScrollLeft = React.useCallback(() => handleArrowScroll('left'), [handleArrowScroll]);
     const handleScrollRight = React.useCallback(() => handleArrowScroll('right'), [handleArrowScroll]);
 
+    // D-pad / arrow key handler: when a card inside the row is focused,
+    // left/right arrow keys scroll the container to reveal more items
+    const handleContainerKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            handleArrowScroll('right');
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            handleArrowScroll('left');
+        }
+    }, [handleArrowScroll]);
+
     if (!items || items.length === 0) return null;
 
     return (
@@ -261,6 +295,9 @@ export function MediaRow({ title, items, shape = 'backdrop', onViewAll, cardOpti
                     onMouseUp={endDrag}
                     onMouseMove={onMouseMove}
                     onScroll={updateScrollState}
+                    onKeyDown={handleContainerKeyDown}
+                    role='list'
+                    aria-label={title}
                     sx={{
                         display: 'flex', gap: 2.5, overflowX: 'auto',
                         pb: 3, pt: 3, pl: 2, pr: 4,
