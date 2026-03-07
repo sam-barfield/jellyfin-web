@@ -144,6 +144,7 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     px: { xs: 4, md: 8 },
+                    pb: { xs: 12, md: 0 }, // Increased padding to push content higher on mobile
                     zIndex: 1
                 }}
             >
@@ -158,7 +159,7 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                     {logoUrl && !logoLoadFailed ? (
                         <ButtonBase
                             onClick={onTitleClick}
-                            sx={{ alignSelf: 'flex-start', mb: 3 }}
+                            sx={{ alignSelf: 'flex-start', mb: { xs: 1.5, md: 3 } }}
                             disableRipple
                         >
                             <img
@@ -166,7 +167,7 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                                 alt={item.Name ?? undefined}
                                 onError={handleLogoError}
                                 style={{
-                                    maxHeight: 150,
+                                    maxHeight: 120, // Slightly smaller on mobile
                                     maxWidth: '100%',
                                     objectFit: 'contain',
                                     filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))'
@@ -200,7 +201,7 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                         </ButtonBase>
                     )}
 
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: { xs: 1.5, md: 3 }, alignItems: 'center' }}>
                         <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '1rem' }}>
                             {item.ProductionYear}
                         </Typography>
@@ -222,9 +223,9 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                     <Typography
                         variant='body1'
                         sx={{
-                            mb: 4,
+                            mb: { xs: 2.5, md: 4 },
                             display: '-webkit-box',
-                            WebkitLineClamp: 3,
+                            WebkitLineClamp: { xs: 2, md: 3 },
                             WebkitBoxOrient: 'vertical',
                             overflow: 'hidden',
                             opacity: 0.8,
@@ -235,7 +236,12 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                         {item.Overview}
                     </Typography>
 
-                    <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{
+                        display: 'flex',
+                        gap: 1.2,
+                        flexDirection: 'row',
+                        width: 'auto'
+                    }}>
                         <Button
                             variant='contained'
                             size='large'
@@ -243,16 +249,17 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                             onClick={onPlayClick}
                             sx={{
                                 borderRadius: '12px',
-                                px: 4,
-                                py: 1.5,
-                                fontSize: '1.1rem',
+                                px: { xs: 2, sm: 4 },
+                                py: { xs: 1.2, sm: 1.5 },
+                                fontSize: { xs: '0.95rem', sm: '1.1rem' },
                                 fontWeight: 'bold',
                                 textTransform: 'none',
                                 backgroundColor: '#00A4DC', // Jellyfin Blue
                                 '&:hover': {
                                     backgroundColor: '#0084B0'
                                 },
-                                boxShadow: '0 8px 16px rgba(0,164,220,0.3)'
+                                boxShadow: '0 8px 16px rgba(0,164,220,0.3)',
+                                width: 'auto'
                             }}
                         >
                             Play
@@ -264,9 +271,9 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                             onClick={onFavoriteClick}
                             sx={{
                                 borderRadius: '12px',
-                                px: 4,
-                                py: 1.5,
-                                fontSize: '1.1rem',
+                                px: { xs: 2, sm: 4 },
+                                py: { xs: 1.2, sm: 1.5 },
+                                fontSize: { xs: '0.95rem', sm: '1.1rem' },
                                 fontWeight: 'bold',
                                 textTransform: 'none',
                                 color: 'white',
@@ -276,7 +283,8 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                                 '&:hover': {
                                     borderColor: 'rgba(255,255,255,0.5)',
                                     backgroundColor: 'rgba(255,255,255,0.2)'
-                                }
+                                },
+                                width: 'auto'
                             }}
                         >
                             {isFavorite ? 'In Favourites' : 'Favourite'}

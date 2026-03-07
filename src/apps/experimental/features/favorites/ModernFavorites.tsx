@@ -188,12 +188,24 @@ export const ModernFavorites = ({ onColorChange }: { onColorChange?: (color: str
             )}
 
             {!isPending && !isError && items.length > 0 && (
-                <Grid container spacing={3} sx={{ mt: 2 }}>
+                <Grid
+                    container
+                    spacing={{ xs: 2, sm: 3 }}
+                    justifyContent={{ xs: 'center', sm: 'flex-start' }}
+                    sx={{ mt: 2 }}
+                >
                     {items.map((item) => {
                         const isPortrait = !['Episode', 'Audio', 'MusicVideo'].includes(item.Type || '');
                         const shape = isPortrait ? 'portrait' : 'backdrop';
                         return (
-                            <Grid key={item.Id} size='auto'>
+                            <Grid
+                                key={item.Id}
+                                size='auto'
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center'
+                                }}
+                            >
                                 <MediaCard
                                     item={item}
                                     shape={shape}
