@@ -1,6 +1,7 @@
 import React, { StrictMode, useCallback, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { type Theme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -13,6 +14,8 @@ import { useApi } from 'hooks/useApi';
 
 import AppToolbar from './components/AppToolbar';
 import AppDrawer, { isDrawerPath } from './components/drawers/AppDrawer';
+import MainDrawerContent from './components/drawers/MainDrawerContent';
+import { NavContext } from './contexts/NavContext';
 
 import './AppOverrides.scss';
 
@@ -22,7 +25,8 @@ export const Component = () => {
     const location = useLocation();
 
     const isMediumScreen = useMediaQuery((t: Theme) => t.breakpoints.up('md'));
-    const isDrawerAvailable = isDrawerPath(location.pathname) && Boolean(user) && !isMediumScreen;
+    const isHomePage = location.pathname === '/home';
+    const isDrawerAvailable = Boolean(user) && (isHomePage || (isDrawerPath(location.pathname) && !isMediumScreen));
     const isDrawerOpen = isDrawerActive && isDrawerAvailable;
 
     const onToggleDrawer = useCallback(() => {
@@ -30,26 +34,43 @@ export const Component = () => {
     }, [ isDrawerActive, setIsDrawerActive ]);
 
     return (
-        <>
+        <NavContext.Provider value={{ isDrawerOpen, isDrawerAvailable, onToggleDrawer }}>
             <Box sx={{ position: 'relative', display: 'flex', height: '100%' }}>
                 <StrictMode>
-                    <ElevationScroll elevate={false}>
-                        <AppBar
-                            position='fixed'
-                            sx={{
-                                width: '100%',
-                                ml: 0
-                            }}
-                        >
-                            <AppToolbar
-                                isDrawerAvailable={!isMediumScreen && isDrawerAvailable}
-                                isDrawerOpen={isDrawerOpen}
-                                onDrawerButtonClick={onToggleDrawer}
-                            />
-                        </AppBar>
-                    </ElevationScroll>
+                    {/* Hide the legacy AppBar on the home page — UnifiedNav handles it there */}
+                    {!isHomePage && (
+                        <ElevationScroll elevate={false}>
+                            <AppBar
+                                position='fixed'
+                                sx={{ width: '100%', ml: 0 }}
+                            >
+                                <AppToolbar
+                                    isDrawerAvailable={!isMediumScreen && isDrawerAvailable}
+                                    isDrawerOpen={isDrawerOpen}
+                                    onDrawerButtonClick={onToggleDrawer}
+                                />
+                            </AppBar>
+                        </ElevationScroll>
+                    )}
 
-                    {
+                    {/* On the home page use a SwipeableDrawer overlay so it toggles properly.
+                        On other pages use the standard AppDrawer (permanent on desktop). */}
+                    {isHomePage ? (
+                        <SwipeableDrawer
+                            anchor='left'
+                            open={isDrawerOpen}
+                            onClose={onToggleDrawer}
+                            onOpen={onToggleDrawer}
+                            ModalProps={{ keepMounted: true }}
+                        >
+                            <Box
+                                role='presentation'
+                                sx={{ width: 240, height: '100%' }}
+                            >
+                                <MainDrawerContent />
+                            </Box>
+                        </SwipeableDrawer>
+                    ) : (
                         isDrawerAvailable && (
                             <AppDrawer
                                 open={isDrawerOpen}
@@ -57,7 +78,7 @@ export const Component = () => {
                                 onOpen={onToggleDrawer}
                             />
                         )
-                    }
+                    )}
                 </StrictMode>
 
                 <Box
@@ -74,6 +95,6 @@ export const Component = () => {
             </Box>
             <ThemeCss />
             <CustomCss />
-        </>
+        </NavContext.Provider>
     );
 };

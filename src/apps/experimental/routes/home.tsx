@@ -7,7 +7,7 @@ import { clearBackdrop } from '../../../components/backdrop/backdrop';
 import { EventType } from 'constants/eventType';
 import Events from 'utils/events';
 import { HeroSection } from '../features/home/components/HeroSection';
-import { ModernTopNav } from '../features/home/components/ModernTopNav';
+import { UnifiedNav } from '../features/home/components/ModernTopNav';
 import { HomeSidebar } from '../features/home/components/HomeSidebar';
 import { MediaRow } from '../features/home/components/MediaRow';
 import { LibraryLatestRow } from '../features/home/components/LibraryLatestRow';
@@ -46,15 +46,20 @@ const Home = () => {
         void setTitle();
         clearBackdrop();
 
-        // Hide legacy Home/Favorites buttons and style modern cards
-        const skinHeader = documentRef.current.querySelector('.skinHeader');
+        // Completely hide the legacy skinHeader — our UnifiedNav replaces it on home
+        const skinHeader = documentRef.current.querySelector('.skinHeader') as HTMLElement | null;
         if (skinHeader) {
-            skinHeader.classList.add('noHomeButtonHeader');
+            skinHeader.style.display = 'none';
             // Inject CSS if not present
             if (!documentRef.current.getElementById('modern-home-styles')) {
                 const style = documentRef.current.createElement('style');
                 style.id = 'modern-home-styles';
                 style.innerHTML = `
+                    /* Remove padding-top added by AppOverrides.scss for the legacy fixed AppBar */
+                    .homePage.libraryPage.withTabs,
+                    .homePage.libraryPage {
+                        padding-top: 0 !important;
+                    }
                     .noHomeButtonHeader .headerHomeButton,
                     .noHomeButtonHeader .headerFavoritesButton {
                         display: none !important;
@@ -238,7 +243,9 @@ const Home = () => {
     }, [ setTitle ]);
 
     const onPause = useCallback(() => {
-        (documentRef.current.querySelector('.skinHeader') as HTMLDivElement).classList.remove('noHomeButtonHeader');
+        // Restore the legacy skinHeader when leaving home page
+        const skinHeader = documentRef.current.querySelector('.skinHeader') as HTMLElement | null;
+        if (skinHeader) skinHeader.style.display = '';
     }, []);
 
     const renderHome = useCallback(() => {
@@ -391,64 +398,67 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
     return (
         <Box
             sx={{
-                px: { xs: 1.5, sm: 3, md: 6 },
-                pb: 6,
-                mt: -8,
-                pt: 8,
                 position: 'relative',
                 transition: 'background 1.2s ease',
                 ...(bgColor && activeTab === 0 ? {
-                    background: `radial-gradient(ellipse 120% 55% at 50% 0%, rgba(${bgColor},0.4) 0%, transparent 65%)`
+                    background: `radial-gradient(ellipse 120% 45% at 50% 0%, rgba(${bgColor},0.4) 0%, transparent 60%)`
                 } : {})
             }}
         >
-            <ModernTopNav
+            <UnifiedNav
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
                 libraries={libraries}
             />
 
-            {activeTab === 1 && <ModernFavorites />}
+            <Box
+                sx={{
+                    px: { xs: 1.5, sm: 3, md: 6 },
+                    pb: { xs: 'calc(6rem + 56px)', md: '6rem' }
+                }}
+            >
+                {activeTab === 1 && <ModernFavorites />}
 
-            {activeTab === 0 && (
-                <Grid container spacing={4}>
-                    {/* Main Content Column */}
-                    <Grid size={{ xs: 12, lg: 9 }}>
-                        <HeroSection item={heroItem} isPending={isPending} heroItems={heroItems} heroIndex={heroIndex} />
+                {activeTab === 0 && (
+                    <Grid container spacing={4}>
+                        {/* Main Content Column */}
+                        <Grid size={{ xs: 12, lg: 9 }}>
+                            <HeroSection item={heroItem} isPending={isPending} heroItems={heroItems} heroIndex={heroIndex} />
 
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <MediaRow
-                                title='Continue Watching'
-                                items={resumeItems}
-                                shape='backdrop'
-                                cardOptions={{
-                                    preferThumb: true,
-                                    inheritThumb: true,
-                                    lines: 2
-                                }}
-                            />
-                            <MediaRow
-                                title='Next Up'
-                                items={nextUpItems}
-                                shape='backdrop'
-                                cardOptions={{
-                                    preferThumb: true,
-                                    inheritThumb: true,
-                                    lines: 2
-                                }}
-                            />
-                            {libraries?.map((library: ItemDto) => (
-                                <LibraryLatestRow key={library.Id} library={library} />
-                            ))}
-                        </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <MediaRow
+                                    title='Continue Watching'
+                                    items={resumeItems}
+                                    shape='backdrop'
+                                    cardOptions={{
+                                        preferThumb: true,
+                                        inheritThumb: true,
+                                        lines: 2
+                                    }}
+                                />
+                                <MediaRow
+                                    title='Next Up'
+                                    items={nextUpItems}
+                                    shape='backdrop'
+                                    cardOptions={{
+                                        preferThumb: true,
+                                        inheritThumb: true,
+                                        lines: 2
+                                    }}
+                                />
+                                {libraries?.map((library: ItemDto) => (
+                                    <LibraryLatestRow key={library.Id} library={library} />
+                                ))}
+                            </Box>
+                        </Grid>
+
+                        {/* Sidebar Column */}
+                        <Grid size={{ xs: 12, lg: 3 }}>
+                            <HomeSidebar />
+                        </Grid>
                     </Grid>
-
-                    {/* Sidebar Column */}
-                    <Grid size={{ xs: 12, lg: 3 }}>
-                        <HomeSidebar />
-                    </Grid>
-                </Grid>
-            )}
+                )}
+            </Box>
         </Box>
     );
 };
