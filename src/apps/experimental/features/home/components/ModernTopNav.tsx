@@ -26,9 +26,23 @@ const NavItem = function({
     active?: boolean,
     onClick?: () => void
 }) {
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            const next = e.currentTarget.parentElement?.nextElementSibling?.querySelector('[tabindex="0"], button') as HTMLElement | null;
+            next?.focus();
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const prev = e.currentTarget.parentElement?.previousElementSibling?.querySelector('[tabindex="0"], button') as HTMLElement | null;
+            prev?.focus();
+        }
+    }, []);
+
     return (
         <ButtonBase
             onClick={onClick}
+            onKeyDown={handleKeyDown}
+            className='home-nav-item'
             sx={{
                 display: 'flex',
                 flexDirection: 'column',

@@ -73,9 +73,29 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
         } catch { setOptPlayed(null); }
     }, [isPlayed, item.Id, queryClient, togglePlayed]);
 
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleRowClick();
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            const next = e.currentTarget.nextElementSibling as HTMLElement | null;
+            next?.focus();
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const prev = e.currentTarget.previousElementSibling as HTMLElement | null;
+            prev?.focus();
+        }
+    }, [handleRowClick]);
+
     return (
         <Box
             onClick={handleRowClick}
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            role='button'
+            aria-label={item.Name ?? 'Trending item'}
+            className='trending-row-item'
             sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -90,7 +110,7 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
                 maxWidth: { xs: 160, sm: 'unset' },
                 flexShrink: 0,
                 flexDirection: { xs: 'column', sm: 'row' },
-                '&:hover': {
+                '&:hover, &:focus-visible': {
                     '& .trending-poster': {
                         transform: 'scale(1.05) translateY(-2px)',
                         boxShadow: '0 14px 36px rgba(0,0,0,0.75)'

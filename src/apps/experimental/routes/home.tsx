@@ -195,6 +195,42 @@ const Home = () => {
                     html:has(.videoPlayerContainer-onTop) .headerAnnouncementsButtonContainer {
                         display: none !important;
                     }
+                    /* ── TV / Controller Focus Styles ─────────────────────────── */
+                    /* Global: remove outline only for mouse, keep for keyboard/controller */
+                    :focus { outline: none; }
+                    :focus-visible {
+                        outline: 3px solid #00a4dc !important;
+                        outline-offset: 3px !important;
+                        border-radius: 6px !important;
+                        box-shadow: 0 0 0 6px rgba(0,164,220,0.25) !important;
+                    }
+                    /* Focused media card — scale up and highlight */
+                    .homePage .media-card-root:focus-visible {
+                        transform: scale(1.08) !important;
+                        outline: 3px solid #00a4dc !important;
+                        outline-offset: 4px !important;
+                        box-shadow: 0 0 20px rgba(0,164,220,0.5) !important;
+                        border-radius: 10px !important;
+                        z-index: 10 !important;
+                    }
+                    /* Card actions visible when card is focused */
+                    .homePage .media-card-root:focus-visible .card-actions {
+                        opacity: 1 !important;
+                        transform: translateY(0) !important;
+                    }
+                    /* Nav Items */
+                    .home-nav-item:focus-visible {
+                        outline: 3px solid #00a4dc !important;
+                        background: rgba(0,164,220,0.15) !important;
+                        border-radius: 8px !important;
+                        box-shadow: 0 0 12px rgba(0,164,220,0.3) !important;
+                    }
+                    /* Trending rows */
+                    .trending-row-item:focus-visible {
+                        outline: 3px solid #00a4dc !important;
+                        background: rgba(0,164,220,0.12) !important;
+                        border-radius: 10px !important;
+                    }
                 `;
                 documentRef.current.head.appendChild(style);
             }
