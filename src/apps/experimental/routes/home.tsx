@@ -237,6 +237,69 @@ const Home = () => {
                         background: rgba(0,164,220,0.12) !important;
                         border-radius: 10px !important;
                     }
+                    /* ── Legacy Sidebar Modernization (Home Page Only) ── */
+                    .mainDrawer.touch-menu-la {
+                        background: rgba(20, 20, 25, 0.75) !important;
+                        background-color: rgba(20, 20, 25, 0.75) !important;
+                        backdrop-filter: blur(20px) !important;
+                        -webkit-backdrop-filter: blur(20px) !important;
+                        border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+                        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
+                        width: 280px !important; /* Slightly wider than React drawer for legacy content */
+                    }
+                    .mainDrawer-scrollContainer {
+                        padding: 12px 0 !important;
+                    }
+                    .mainDrawer .navMenuOption {
+                        border-radius: 10px !important;
+                        margin: 4px 12px !important;
+                        padding: 10px 16px !important;
+                        color: rgba(255, 255, 255, 0.7) !important;
+                        background: transparent !important;
+                        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        text-decoration: none !important;
+                    }
+                    .mainDrawer .navMenuOption:hover {
+                        background-color: rgba(255, 255, 255, 0.08) !important;
+                        color: #fff !important;
+                        transform: translateX(4px) !important;
+                    }
+                    .mainDrawer .navMenuOption-selected, 
+                    .mainDrawer .navMenuOption.selected {
+                        background-color: rgba(0, 164, 220, 0.15) !important;
+                        color: #00a4dc !important;
+                        font-weight: 700 !important;
+                    }
+                    .mainDrawer .navMenuOptionIcon {
+                        margin-right: 14px !important;
+                        color: inherit !important;
+                        font-size: 24px !important;
+                        transition: transform 0.2s ease !important;
+                    }
+                    .mainDrawer .navMenuOption:hover .navMenuOptionIcon {
+                        color: #00a4dc !important;
+                        transform: scale(1.1) !important;
+                    }
+                    .mainDrawer .sidebarHeader {
+                        padding: 20px 24px 8px !important;
+                        font-size: 0.72rem !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 0.15em !important;
+                        color: rgba(255, 255, 255, 0.4) !important;
+                        font-weight: 800 !important;
+                        margin: 0 !important;
+                    }
+                    .tmla-mask {
+                        background-color: rgba(0, 0, 0, 0.45) !important;
+                        backdrop-filter: blur(4px) !important;
+                        -webkit-backdrop-filter: blur(4px) !important;
+                    }
+                    /* Hide scrollbar */
+                    .mainDrawer-scrollContainer::-webkit-scrollbar {
+                        display: none !important;
+                    }
                 `;
                 documentRef.current.head.appendChild(style);
             }

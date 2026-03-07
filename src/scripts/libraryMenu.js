@@ -498,12 +498,6 @@ function updateLibraryMenu(user) {
                                     <span class="sectionName navMenuOptionText">${escapeHtml(i.Name)}</span>
                                   </a>`;
             }).join('');
-
-            html += `<a is="emby-linkbutton" data-itemid="calendar" class="lnkMediaFolder navMenuOption" href="#/calendar">
-                                <span class="material-icons navMenuOptionIcon calendar_month" aria-hidden="true"></span>
-                                <span class="sectionName navMenuOptionText">Calendar</span>
-                              </a>`;
-
             libraryMenuOptions.innerHTML = html;
             const elem = libraryMenuOptions;
             const sidebarLinks = elem.querySelectorAll('.navMenuOption');
