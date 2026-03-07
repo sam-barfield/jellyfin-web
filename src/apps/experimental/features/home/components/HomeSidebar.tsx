@@ -39,7 +39,7 @@ export const HomeSidebar = () => {
             {/* Estimated Schedule Section at the Bottom */}
             <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                    <Typography variant='h6' component='h2' sx={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
+                    <Typography variant='h6' component='h2' sx={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.5rem' }}>
                         Estimated Schedule
                     </Typography>
                     <IconButton

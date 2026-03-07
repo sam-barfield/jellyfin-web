@@ -30,6 +30,8 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
     const isFavorite = optFavorite ?? (item.UserData?.IsFavorite ?? false);
     const isPlayed = optPlayed ?? (item.UserData?.Played ?? false);
 
+    console.log(item);
+
     // Uniform size for all rows
     const imgW = 72;
     const imgH = 108;
@@ -138,24 +140,34 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
             {/* Details — hidden on mobile horizontal strip */}
             <Box sx={{ flexGrow: 1, minWidth: 0, pr: 8, display: { xs: 'none', sm: 'block' } }}>
                 <Typography
-                    sx={{ fontWeight: 700, fontSize: '0.85rem', lineHeight: 1.3, mb: 0.5, letterSpacing: '0.01em' }}
+                    sx={{ fontWeight: 700, fontSize: '1rem', lineHeight: 1.3, mb: 0.5, letterSpacing: '0.01em' }}
                     noWrap
                 >
                     {item.Name}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     {!!item.ProductionYear && (
-                        <Typography variant='caption' color='text.secondary' sx={{ opacity: 0.7, fontWeight: 600 }}>
+                        <Typography variant='body2' color='text.secondary' sx={{ opacity: 0.7, fontWeight: 600, fontSize: '0.8rem' }}>
                             {item.ProductionYear}
                         </Typography>
                     )}
                     {!!item.CommunityRating && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <FavoriteIcon sx={{ fontSize: 9, color: 'error.main' }} />
-                            <Typography variant='caption' color='text.secondary' sx={{ fontWeight: 600 }}>
+                            <FavoriteIcon sx={{ fontSize: 12, color: 'error.main' }} />
+                            <Typography variant='body2' color='text.secondary' sx={{ fontWeight: 600, fontSize: '0.8rem' }}>
                                 {item.CommunityRating.toFixed(1)}
                             </Typography>
                         </Box>
+                    )}
+                    {item.Type === 'Series' && !!item.ChildCount && (
+                        <Typography variant='body2' color='text.secondary' sx={{ opacity: 0.7, fontWeight: 600, fontSize: '0.8rem' }}>
+                            {item.ChildCount} Season{item.ChildCount !== 1 ? 's' : ''}
+                        </Typography>
+                    )}
+                    {item.Type !== 'Series' && !!item.RunTimeTicks && item.RunTimeTicks > 0 && (
+                        <Typography variant='body2' color='text.secondary' sx={{ opacity: 0.7, fontWeight: 600, fontSize: '0.8rem' }}>
+                            {Math.floor(item.RunTimeTicks / 600000000)}m
+                        </Typography>
                     )}
                 </Box>
             </Box>
@@ -217,7 +229,7 @@ export const TrendingWidget = ({ trendingMovies, trendingShows }: TrendingWidget
     return (
         <Box sx={{ mb: 4 }}>
             <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography variant='h6' component='h2' sx={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
+                <Typography variant='h6' component='h2' sx={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.5rem' }}>
                     Top Trending
                 </Typography>
                 <IconButton

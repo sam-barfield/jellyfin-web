@@ -302,7 +302,18 @@ export const ReleaseCalendar = ({ title = 'Estimated Schedule', showTimestamp = 
                     </IconButton>
                 </Box>
 
-                <Box sx={{ mt: 1, pb: 1 }}>
+                <Box sx={{
+                    mt: 1,
+                    pb: 1,
+                    pr: 1,
+                    maxHeight: 400,
+                    overflowY: 'auto',
+                    scrollbarWidth: 'none',
+                    '&::-webkit-scrollbar': { display: { xs: 'none', sm: 'block' }, width: 4 },
+                    '&::-webkit-scrollbar-track': { background: 'transparent' },
+                    '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.15)', borderRadius: 2 },
+                    '&::-webkit-scrollbar-thumb:hover': { background: 'rgba(255,255,255,0.3)' }
+                }}>
                     {renderContent()}
                 </Box>
             </Paper>

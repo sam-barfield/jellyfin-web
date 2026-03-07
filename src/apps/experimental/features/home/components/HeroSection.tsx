@@ -201,19 +201,19 @@ export const HeroSection = ({ item, isPending, heroItems = [], heroIndex = 0 }: 
                     )}
 
                     <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
-                        <Typography variant='subtitle1' sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                        <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '1rem' }}>
                             {item.ProductionYear}
                         </Typography>
                         {item.CommunityRating && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 <FavoriteIcon sx={{ fontSize: 16, color: 'error.main' }} />
-                                <Typography variant='subtitle2' sx={{ fontWeight: 'bold' }}>
+                                <Typography variant='subtitle2' sx={{ fontWeight: 600, fontSize: '1rem' }}>
                                     {item.CommunityRating.toFixed(1)}
                                 </Typography>
                             </Box>
                         )}
                         {!!item.RunTimeTicks && item.RunTimeTicks > 0 && (
-                            <Typography variant='subtitle2' sx={{ opacity: 0.7 }}>
+                            <Typography variant='subtitle2' sx={{ opacity: 0.7, fontWeight: 600, fontSize: '1rem' }}>
                                 {Math.floor(item.RunTimeTicks / 600000000)} min
                             </Typography>
                         )}

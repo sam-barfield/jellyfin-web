@@ -81,7 +81,7 @@ const AnnouncementsList = ({ onClose }: { onClose: () => void }) => {
 
     if (isPending) {
         return (
-            <Box sx={{ p: 4, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ width: { xs: '100vw', sm: 350 }, maxWidth: '100%', p: 4, display: 'flex', justifyContent: 'center' }}>
                 <CircularProgress />
             </Box>
         );
@@ -89,7 +89,7 @@ const AnnouncementsList = ({ onClose }: { onClose: () => void }) => {
 
     if (!announcements || announcements.length === 0) {
         return (
-            <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Box sx={{ width: { xs: '100vw', sm: 350 }, maxWidth: '100%', p: 3, textAlign: 'center' }}>
                 <Typography color='text.secondary'>
                     No announcements
                 </Typography>
@@ -98,7 +98,7 @@ const AnnouncementsList = ({ onClose }: { onClose: () => void }) => {
     }
 
     return (
-        <Box sx={{ width: 350, maxHeight: 500, display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ width: { xs: '100vw', sm: 350 }, maxWidth: '100%', maxHeight: 500, display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid', borderColor: 'divider' }}>
                 <Typography variant='h6'>
                     Announcements
@@ -169,6 +169,11 @@ const AnnouncementsButton = () => {
                 transformOrigin={{
                     vertical: 'top',
                     horizontal: 'right'
+                }}
+                slotProps={{
+                    paper: {
+                        sx: { maxWidth: 'calc(100vw - 16px)' }
+                    }
                 }}
             >
                 {open && <AnnouncementsList onClose={handleClose} />}

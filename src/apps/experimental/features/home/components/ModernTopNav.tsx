@@ -115,7 +115,7 @@ export const ModernTopNav = ({ activeTab, onTabChange, libraries = [] }: ModernT
         <Box
             sx={{
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: { xs: 'flex-start', md: 'center' },
                 gap: { xs: 0.5, sm: 2, md: 4 },
                 mb: 4,
                 width: '100%',

@@ -253,6 +253,21 @@ const Home = () => {
                         box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
                         z-index: 5;
                     }
+                    /* Duplicate Hover Buttons Fix */
+                    .homePage .cardOverlayContainer > div.cardOverlayButton-br > button[is="emby-ratingbutton"],
+                    .homePage .cardOverlayContainer > div.cardOverlayButton-br > button[is="emby-playstatebutton"] {
+                        display: none !important;
+                    }
+                    /* Force React CardHoverMenu Style to Bottom Right */
+                    .homePage .cardOverlayContainer .cardOverlayButton-br.flex {
+                        position: absolute !important;
+                        top: auto !important;
+                        bottom: 0 !important;
+                        right: 0 !important;
+                        padding: 8px !important;
+                        display: flex !important;
+                        gap: 2px !important;
+                    }
                 `;
                 documentRef.current.head.appendChild(style);
             }

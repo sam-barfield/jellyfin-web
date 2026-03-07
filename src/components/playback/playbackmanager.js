@@ -81,6 +81,10 @@ function reportPlayback(playbackManagerInstance, state, player, reportPlaylist, 
     }
 
     const info = Object.assign({}, state.PlayState);
+    if (!state.NowPlayingItem) {
+        console.warn('[PlaybackManager] reportPlayback called without NowPlayingItem');
+        return;
+    }
     info.ItemId = state.NowPlayingItem.Id;
 
     if (progressEventName) {
@@ -92,6 +96,7 @@ function reportPlayback(playbackManagerInstance, state, player, reportPlaylist, 
     }
 
     const apiClient = ServerConnections.getApiClient(serverId);
+    console.debug(`[PlaybackManager] reportPlayback method ${method} for ItemId ${info.ItemId} on server ${serverId}`);
     const reportPlaybackPromise = apiClient[method](info);
     // Notify that report has been sent
     reportPlaybackPromise.then(() => {
@@ -2133,7 +2138,8 @@ export class PlaybackManager {
 
         function getPlayerData(player) {
             if (!player) {
-                return {};
+                // Return an empty object to avoid crashes, but ensure it's handled as "no data"
+                return { isMock: true };
             }
             if (!player.name) {
                 throw new Error('player name cannot be null');
