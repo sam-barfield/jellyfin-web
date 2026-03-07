@@ -98,16 +98,15 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
             className='trending-row-item'
             sx={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
+                alignItems: { xs: 'flex-start', sm: 'center' }, // Top-align on mobile so title sits nicely
+                gap: { xs: 0.5, sm: 1.5 }, // Reduced gap on mobile
                 cursor: 'pointer',
                 position: 'relative',
                 py: 0.5,
                 overflow: 'visible',
                 transition: 'all 0.2s ease',
-                // Mobile: fixed-width card for horizontal scroll
-                minWidth: { xs: 140, sm: 'unset' },
-                maxWidth: { xs: 160, sm: 'unset' },
+                // Mobile: tight fixed-width card for horizontal scroll
+                width: { xs: 80, sm: 'unset' }, // Replaced minWidth/maxWidth with tight standard width
                 flexShrink: 0,
                 flexDirection: { xs: 'column', sm: 'row' },
                 '&:hover, &:focus-visible': {
@@ -119,6 +118,24 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
                 }
             }}
         >
+            {/* Mobile Title - Renders above poster */}
+            <Typography
+                sx={{
+                    display: { xs: '-webkit-box', sm: 'none' },
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    lineHeight: 1.2,
+                    mb: 0.5,
+                    width: '100%',
+                    minHeight: '2.4em', // Enforce height of 2 lines so posters align perfectly
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                }}
+            >
+                {item.Name}
+            </Typography>
+
             {/* Poster with rank overlaid */}
             <Box
                 className='trending-poster'
