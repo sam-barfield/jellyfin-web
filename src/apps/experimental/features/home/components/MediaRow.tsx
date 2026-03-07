@@ -10,9 +10,11 @@ import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
+import PlayArrow from '@mui/icons-material/PlayArrow';
 import { useToggleFavoriteMutation, useTogglePlayedMutation } from 'hooks/useFetchItems';
 import { useQueryClient } from '@tanstack/react-query';
 import { appRouter } from 'components/router/appRouter';
+import { playbackManager } from 'components/playback/playbackmanager';
 
 interface MediaRowProps {
     title: string;
@@ -58,6 +60,11 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
         } catch { setOptPlayed(null); }
     }, [isPlayed, item.Id, queryClient, togglePlayed]);
 
+    const handlePlay = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        playbackManager.play({ items: [item] }).catch(console.error);
+    }, [item]);
+
     const cardOpts = useMemo(() => ({
         ...cardOptions,
         shape: shape === 'backdrop' ? CardShape.Backdrop : CardShape.Portrait,
@@ -66,7 +73,9 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
         showYear: Boolean(cardOptions?.showYear ?? true),
         centerText: Boolean(cardOptions?.centerText ?? true),
         overlayText: Boolean(cardOptions?.overlayText ?? false),
-        overlayPlayButton: Boolean(cardOptions?.overlayPlayButton ?? true),
+        overlayPlayButton: false, // Disabled default so we can use our custom action bar
+        centerPlayButton: false, // Disable the big central play button
+        disableHoverMenu: true, // Disable desktop hover menu which renders another play button
         enableMoreOptions: false,
         enablePlayedButton: false,
         enableRatingButton: false,
@@ -103,9 +112,12 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
                 position: 'relative',
                 flexShrink: 0,
                 width: shape === 'backdrop' ? { xs: 200, md: 280 } : { xs: 120, md: 160 },
-                transition: 'transform 0.3s ease',
+                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'pointer',
-                '&:hover': { transform: 'scale(1.05)', zIndex: 1 },
+                willChange: 'transform',
+                backfaceVisibility: 'hidden', // Prevent rendering flicker at end of animation
+                WebkitFontSmoothing: 'subpixel-antialiased',
+                '&:hover': { transform: 'scale(1.05)', zIndex: 2 },
                 // Show action buttons on hover OR keyboard focus
                 '&:hover .card-actions': { opacity: 1, transform: 'translateY(0)' }
             }}
@@ -134,6 +146,25 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
                     zIndex: 5
                 }}
             >
+                <IconButton
+                    size='small'
+                    onClick={handlePlay}
+                    title='Play'
+                    sx={{
+                        pointerEvents: 'auto',
+                        color: 'white',
+                        backgroundColor: 'rgba(0,164,220,0.25)', // Using primary brand color base for play
+                        backdropFilter: 'blur(6px)',
+                        width: 30,
+                        height: 30,
+                        '&:hover': {
+                            backgroundColor: 'primary.main',
+                            color: 'white'
+                        }
+                    }}
+                >
+                    <PlayArrow sx={{ fontSize: 18 }} />
+                </IconButton>
                 <IconButton
                     size='small'
                     onClick={handleFavorite}

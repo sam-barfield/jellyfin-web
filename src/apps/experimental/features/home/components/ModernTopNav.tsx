@@ -149,7 +149,7 @@ const NavTab = ({
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: 0.5,
-                        px: 4,
+                        px: { xs: 2.5, sm: 4 }, // Reduced horizontal space on mobile
                         py: 1,
                         borderRadius: 2,
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',

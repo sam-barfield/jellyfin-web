@@ -48,7 +48,7 @@ export function LibraryLatestRow({ library }: Readonly<LibraryLatestRowProps>) {
 
     return (
         <MediaRow
-            title={`Recently Added: ${library.Name}`}
+            title={`Recently Added ${library.Name}`}
             items={latestItems}
             shape={shape}
             onViewAll={handleViewAll}
