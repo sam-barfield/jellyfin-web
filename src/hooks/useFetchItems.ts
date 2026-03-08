@@ -325,7 +325,11 @@ const fetchGetItemsViewByType = async (
                         startIndex: libraryViewSettings.StartIndex
                     },
                     {
-                        signal: options?.signal
+                        signal: options?.signal,
+                        params: {
+                            dubStatuses: libraryViewSettings?.Filters?.dubStatuses?.join(','),
+                            subStatuses: libraryViewSettings?.Filters?.subStatuses?.join(',')
+                        }
                     }
                 );
                 break;
@@ -346,7 +350,11 @@ const fetchGetItemsViewByType = async (
                         startIndex: libraryViewSettings.StartIndex
                     },
                     {
-                        signal: options?.signal
+                        signal: options?.signal,
+                        params: {
+                            dubStatuses: libraryViewSettings?.Filters?.dubStatuses?.join(','),
+                            subStatuses: libraryViewSettings?.Filters?.subStatuses?.join(',')
+                        }
                     }
                 );
                 break;
@@ -413,7 +421,11 @@ const fetchGetItemsViewByType = async (
                         startIndex: libraryViewSettings.StartIndex
                     },
                     {
-                        signal: options?.signal
+                        signal: options?.signal,
+                        params: {
+                            dubStatuses: libraryViewSettings?.Filters?.dubStatuses?.join(','),
+                            subStatuses: libraryViewSettings?.Filters?.subStatuses?.join(',')
+                        }
                     }
                 );
                 break;

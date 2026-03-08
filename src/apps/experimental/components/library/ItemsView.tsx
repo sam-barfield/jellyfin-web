@@ -216,8 +216,8 @@ const ItemsView: FC<ItemsViewProps> = ({
                 gridTemplateColumns: {
                     xs: 'repeat(3, 1fr)',
                     sm: mediaShape === 'portrait' ?
-                        'repeat(auto-fill, minmax(150px, 1fr))' :
-                        'repeat(auto-fill, minmax(260px, 1fr))'
+                        'repeat(auto-fill, minmax(180px, 1fr))' :
+                        'repeat(auto-fill, minmax(280px, 1fr))'
                 },
                 gap: { xs: 0.5, sm: 2 },
                 width: '100%',

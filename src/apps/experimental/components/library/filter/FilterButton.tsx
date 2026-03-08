@@ -4,6 +4,7 @@ import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import FilterAlt from '@mui/icons-material/FilterAlt';
 import Button from '@mui/material/Button';
 import Popover from '@mui/material/Popover';
+import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models/base-item-dto';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, {
@@ -14,6 +15,8 @@ import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import { useGetQueryFiltersLegacy, useGetStudios } from 'hooks/useFetchItems';
+import { useApi } from 'hooks/useApi';
+import { useUserViews } from 'hooks/useUserViews';
 import globalize from 'lib/globalize';
 
 import FiltersFeatures from './FiltersFeatures';
@@ -26,6 +29,8 @@ import FiltersStudios from './FiltersStudios';
 import FiltersTags from './FiltersTags';
 import FiltersVideoTypes from './FiltersVideoTypes';
 import FiltersYears from './FiltersYears';
+import FiltersDubStatuses from './FiltersDubStatuses';
+import FiltersSubStatuses from './FiltersSubStatuses';
 
 import { LibraryViewSettings, ParentId } from 'types/library';
 import { LibraryTab } from 'types/libraryTab';
@@ -99,6 +104,13 @@ const FilterButton: FC<FilterButtonProps> = ({
 
     const { data } = useGetQueryFiltersLegacy(parentId, itemType);
     const { data: studios } = useGetStudios(parentId, itemType);
+    const { user } = useApi();
+    const { data: userViews } = useUserViews(user?.Id);
+
+    const isDubbingEnabledAcrossLibrary = () => {
+        const currentView = userViews?.Items?.find((v: BaseItemDto) => v.Id === parentId) as BaseItemDto & { DubbingEnabled?: boolean };
+        return currentView?.DubbingEnabled === true;
+    };
 
     const handleChange =
         (panel: string) =>
@@ -479,6 +491,48 @@ const FilterButton: FC<FilterButtonProps> = ({
                             />
                         </AccordionDetails>
                     </Accordion>
+                )}
+                {isDubbingEnabledAcrossLibrary() && (
+                    <>
+                        <Accordion
+                            expanded={expanded === 'filtersDubStatuses'}
+                            onChange={handleChange('filtersDubStatuses')}
+                        >
+                            <AccordionSummary
+                                aria-controls='filtersDubStatuses-content'
+                                id='filtersDubStatuses-header'
+                            >
+                                <Typography>
+                                    Audio Dubbing
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <FiltersDubStatuses
+                                    libraryViewSettings={libraryViewSettings}
+                                    setLibraryViewSettings={setLibraryViewSettings}
+                                />
+                            </AccordionDetails>
+                        </Accordion>
+                        <Accordion
+                            expanded={expanded === 'filtersSubStatuses'}
+                            onChange={handleChange('filtersSubStatuses')}
+                        >
+                            <AccordionSummary
+                                aria-controls='filtersSubStatuses-content'
+                                id='filtersSubStatuses-header'
+                            >
+                                <Typography>
+                                    Subtitles
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <FiltersSubStatuses
+                                    libraryViewSettings={libraryViewSettings}
+                                    setLibraryViewSettings={setLibraryViewSettings}
+                                />
+                            </AccordionDetails>
+                        </Accordion>
+                    </>
                 )}
             </Popover>
         </>
