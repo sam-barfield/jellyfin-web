@@ -53,7 +53,10 @@ const fetchGetItems = async (
     }
 };
 
-export const useGetItems = (parametersOptions: ItemsApiGetItemsRequest, queryOptions?: { enabled?: boolean }) => {
+export const useGetItems = (
+    parametersOptions: ItemsApiGetItemsRequest,
+    queryOptions?: { enabled?: boolean; refetchOnWindowFocus?: boolean | 'always'; staleTime?: number }
+) => {
     const currentApi = useApi();
     return useQuery({
         queryKey: [
@@ -65,6 +68,9 @@ export const useGetItems = (parametersOptions: ItemsApiGetItemsRequest, queryOpt
         queryFn: ({ signal }) =>
             fetchGetItems(currentApi, parametersOptions, { signal }),
         gcTime: parametersOptions.sortBy?.includes(ItemSortBy.Random) ? 0 : undefined,
+        refetchOnWindowFocus: queryOptions?.refetchOnWindowFocus ?? (parametersOptions.sortBy?.includes(ItemSortBy.Random) ? false : undefined),
+        refetchOnReconnect: parametersOptions.sortBy?.includes(ItemSortBy.Random) ? false : undefined,
+        staleTime: queryOptions?.staleTime,
         enabled: (queryOptions?.enabled !== false) && !!currentApi.api && !!currentApi.user?.Id
     });
 };
