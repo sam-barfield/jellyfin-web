@@ -1,0 +1,160 @@
+.modernDialog {
+    background: rgba(18, 18, 18, 0.85) !important;
+    backdrop-filter: blur(45px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(45px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+    overflow: hidden !important;
+    max-width: 600px !important;
+    width: 95vw !important;
+    /* Allow the dialog to shrink to content */
+    display: flex !important;
+    flex-direction: column !important;
+
+    .formDialogHeader {
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1.5em 2em;
+        flex-shrink: 0 !important;
+
+        .formDialogHeaderTitle {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .btnCancel {
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            margin-right: 1.2em;
+            &:hover {
+                color: #fff;
+                transform: scale(1.1);
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+
+    .formDialogContent {
+        padding: 2em 2em 1em 2em !important;
+        background: transparent !important;
+        overflow-y: auto !important;
+        flex-grow: 0 !important; /* Don't force growth */
+    }
+
+    .dialogContentInner {
+        padding: 0 !important;
+        max-width: 100% !important;
+        /* Force remove legacy padding-bottom */
+        padding-bottom: 0 !important;
+    }
+
+    .newCollectionForm {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5em;
+    }
+
+    /* Help text */
+    form > div:first-child {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 0.2em;
+    }
+
+    .inputContainer, .selectContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6em;
+    }
+
+    /* Style emby-input */
+    .emby-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        color: #fff !important;
+        padding: 0.9em 1.1em !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+
+        &:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: #00a4dc !important;
+            box-shadow: 0 0 0 4px rgba(0, 164, 220, 0.15) !important;
+        }
+    }
+
+    label[for], .fieldDescription {
+        color: rgba(255, 255, 255, 0.5) !important;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Checkbox styling - FIXED ALIGNMENT */
+    .checkboxContainer {
+        display: flex !important;
+        align-items: center !important; /* CENTERED */
+        gap: 20px !important;
+        cursor: pointer;
+        padding: 0.5em 0 !important;
+        margin: 0 !important;
+
+        input[is="emby-checkbox"] {
+            margin: 0 !important;
+            width: 20px !important;
+            height: 20px !important;
+            flex-shrink: 0 !important;
+            cursor: pointer;
+            accent-color: #00a4dc;
+            position: static !important;
+            opacity: 1 !important;
+        }
+
+        span {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            user-select: none;
+        }
+    }
+
+    /* Footer / Submit Button - FIXED SPACING */
+    .formDialogFooter {
+        position: static !important;
+        padding: 0.5em 2em 1.5em !important; /* MUCH TIGHTER BOTTOM */
+        background: transparent !important;
+        margin-top: 0 !important;
+        flex-shrink: 0 !important;
+    }
+
+    .button-submit {
+        background: linear-gradient(135deg, #00a4dc 0%, #0077b5 100%) !important;
+        border: none !important;
+        border-radius: 16px !important;
+        color: #fff !important;
+        font-weight: 700 !important;
+        font-size: 1.05rem !important;
+        padding: 1.1em !important;
+        text-transform: none !important;
+        box-shadow: 0 8px 20px rgba(0, 164, 220, 0.35) !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        width: 100% !important;
+
+        &:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 25px rgba(0, 164, 220, 0.45) !important;
+            filter: brightness(1.1);
+        }
+    }
+}
