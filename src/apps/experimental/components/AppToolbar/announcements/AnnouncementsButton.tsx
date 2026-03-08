@@ -75,6 +75,7 @@ const AnnouncementItem = ({ announcement, onClose }: { announcement: Announcemen
             <ListItemText
                 primary={
                     <Typography
+                        component='div'
                         variant='subtitle2'
                         fontWeight={isUnread ? 'bold' : 'normal'}
                     >
@@ -82,7 +83,7 @@ const AnnouncementItem = ({ announcement, onClose }: { announcement: Announcemen
                     </Typography>
                 }
                 secondary={
-                    <React.Fragment>
+                    <Box component='span'>
                         <Typography
                             component='span'
                             variant='body2'
@@ -91,10 +92,10 @@ const AnnouncementItem = ({ announcement, onClose }: { announcement: Announcemen
                         >
                             {format(new Date(announcement.DateCreatedUtc), 'PPp')}
                         </Typography>
-                        <Typography variant='body2' color='text.secondary'>
+                        <Typography component='span' variant='body2' color='text.secondary'>
                             {announcement.Text}
                         </Typography>
-                    </React.Fragment>
+                    </Box>
                 }
             />
         </ListItemButton>
