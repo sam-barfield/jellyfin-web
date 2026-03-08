@@ -57,6 +57,8 @@ const tvShowsTabMapping: LibraryTabMapping = {
     5: episodesTabContent
 };
 
+import { ModernLibraryLayout } from '../../components/library/ModernLibraryLayout';
+
 const Shows: FC = () => {
     const { libraryId, activeTab } = useCurrentTab();
     const currentTab = tvShowsTabMapping[activeTab];
@@ -64,14 +66,16 @@ const Shows: FC = () => {
     return (
         <Page
             id='tvshowsPage'
-            className='mainAnimatedPage libraryPage backdropPage collectionEditorPage pageWithAbsoluteTabs withTabs'
+            className='mainAnimatedPage libraryPage backdropPage collectionEditorPage pageWithAbsoluteTabs withTabs homePage'
             backDropType='series'
         >
-            <PageTabContent
-                key={`${currentTab.viewType} - ${libraryId}`}
-                currentTab={currentTab}
-                parentId={libraryId}
-            />
+            <ModernLibraryLayout libraryId={libraryId ?? ''}>
+                <PageTabContent
+                    key={`${currentTab.viewType} - ${libraryId}`}
+                    currentTab={currentTab}
+                    parentId={libraryId}
+                />
+            </ModernLibraryLayout>
         </Page>
     );
 };

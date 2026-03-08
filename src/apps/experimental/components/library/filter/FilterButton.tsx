@@ -162,6 +162,7 @@ const FilterButton: FC<FilterButtonProps> = ({
                 title={globalize.translate('Filter')}
                 aria-describedby={id}
                 onClick={handleClick}
+                sx={{ borderRadius: '14px' }}
             >
                 <Badge color='info' variant='dot' invisible={!hasFilters}>
                     <FilterAlt />
@@ -182,9 +183,41 @@ const FilterButton: FC<FilterButtonProps> = ({
                 }}
                 slotProps={{
                     paper: {
-                        style: {
-                            maxHeight: '50%',
-                            width: 250
+                        sx: {
+                            maxHeight: '50vh',
+                            width: 250,
+                            mt: 1.5,
+                            background: 'rgba(20, 20, 25, 0.75)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
+                            '& .MuiAccordion-root': {
+                                background: 'transparent',
+                                color: 'rgba(255, 255, 255, 0.85)'
+                            },
+                            '& .MuiAccordionSummary-root': {
+                                background: 'transparent',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.05)'
+                                }
+                            },
+                            '& .MuiAccordionDetails-root': {
+                                background: 'rgba(0, 0, 0, 0.2)',
+                                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                                '& .MuiFormControlLabel-root': {
+                                    transition: 'all 0.2s',
+                                    padding: '4px 8px',
+                                    borderRadius: '8px',
+                                    marginRight: '8px',
+                                    '&:hover': {
+                                        background: 'rgba(255, 255, 255, 0.08)'
+                                    }
+                                }
+                            }
                         }
                     }
                 }}

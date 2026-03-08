@@ -1,7 +1,7 @@
 import { ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models/item-sort-by';
 import React, { FC, useCallback } from 'react';
 import Shuffle from '@mui/icons-material/Shuffle';
-import Button from '@mui/material/Button';
+import Button, { ButtonProps } from '@mui/material/Button';
 
 import { playbackManager } from 'components/playback/playbackmanager';
 import globalize from 'lib/globalize';
@@ -10,7 +10,7 @@ import { LibraryViewSettings } from 'types/library';
 import { LibraryTab } from 'types/libraryTab';
 import type { ItemDto } from 'types/base/models/item-dto';
 
-interface ShuffleButtonProps {
+interface ShuffleButtonProps extends ButtonProps {
     item: ItemDto | undefined
     items: ItemDto[]
     viewType: LibraryTab
@@ -25,7 +25,8 @@ const ShuffleButton: FC<ShuffleButtonProps> = ({
     viewType,
     hasFilters,
     isTextVisible,
-    libraryViewSettings
+    libraryViewSettings,
+    ...props
 }) => {
     const shuffle = useCallback(() => {
         if (item && !hasFilters) {
@@ -50,6 +51,7 @@ const ShuffleButton: FC<ShuffleButtonProps> = ({
             title={globalize.translate('Shuffle')}
             startIcon={isTextVisible ? <Shuffle /> : undefined}
             onClick={shuffle}
+            {...props}
         >
             {isTextVisible ? (
                 globalize.translate('Shuffle')

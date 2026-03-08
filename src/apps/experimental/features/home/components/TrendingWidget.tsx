@@ -35,6 +35,9 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
     const imgH = 108;
     const rankFontSize = '2rem';
 
+    // Type-safe mapping for custom anime metadata attached by backend
+    const tagItem = item as ItemDto & { IsAnime?: boolean; DubAvailable?: string; SubAvailable?: string };
+
     const thumbUrl = useMemo(() => {
         if (!item || !api) return '';
         const apiClient = ServerConnections.currentApiClient();
@@ -170,6 +173,24 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
                 }}>
                     {index + 1}
                 </Typography>
+
+                {Boolean(tagItem.IsAnime && (tagItem.DubAvailable || tagItem.SubAvailable)) && (
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '4px',
+                        left: '4px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.5,
+                        zIndex: 2,
+                        pointerEvents: 'none'
+                    }}>
+                        {tagItem.DubAvailable === 'Full' && <Box sx={{ backgroundColor: 'rgba(43, 179, 66, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.6rem', fontWeight: 800, px: 0.75, py: 0.15, borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
+                        {tagItem.DubAvailable === 'Partial' && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.6rem', fontWeight: 800, px: 0.75, py: 0.15, borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
+                        {tagItem.SubAvailable === 'Full' && <Box sx={{ backgroundColor: 'rgba(153, 53, 192, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.6rem', fontWeight: 800, px: 0.75, py: 0.15, borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
+                        {tagItem.SubAvailable === 'Partial' && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.6rem', fontWeight: 800, px: 0.75, py: 0.15, borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
+                    </Box>
+                )}
             </Box>
 
             {/* Details — hidden on mobile horizontal strip */}

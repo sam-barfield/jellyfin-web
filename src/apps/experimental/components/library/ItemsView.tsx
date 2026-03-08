@@ -19,12 +19,12 @@ import { playbackManager } from 'components/playback/playbackmanager';
 import ItemsContainer from 'elements/emby-itemscontainer/ItemsContainer';
 import NoItemsMessage from 'components/common/NoItemsMessage';
 import Lists from 'components/listview/List/Lists';
-import Cards from 'components/cardbuilder/Card/Cards';
 import { LibraryTab } from 'types/libraryTab';
 import { type LibraryViewSettings, type ParentId, ViewMode } from 'types/library';
 import type { CardOptions } from 'types/cardOptions';
 import type { ListOptions } from 'types/listOptions';
 import { useItem } from 'hooks/useItem';
+import { MediaCard } from '../../features/home/components/MediaRow';
 
 import AlphabetPicker from './AlphabetPicker';
 import FilterButton from './filter/FilterButton';
@@ -202,11 +202,40 @@ const ItemsView: FC<ItemsViewProps> = ({
                 />
             );
         }
+        const shapeStr = getCardOptions().shape;
+        let mediaShape: 'portrait' | 'backdrop' | 'square' = 'portrait';
+        if (shapeStr === CardShape.Backdrop) mediaShape = 'backdrop';
+        else if (shapeStr === CardShape.Square) mediaShape = 'square';
+        else if (viewType === LibraryTab.Movies) mediaShape = 'portrait'; // Default movies to portrait
+        else if (viewType === LibraryTab.Series) mediaShape = 'portrait'; // Default shows to portrait
+        else if (viewType === LibraryTab.Episodes) mediaShape = 'backdrop'; // Default episodes to backdrop
+
         return (
-            <Cards
-                items={itemsResult?.Items ?? []}
-                cardOptions={getCardOptions()}
-            />
+            <Box sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                    xs: 'repeat(3, 1fr)',
+                    sm: mediaShape === 'portrait' ?
+                        'repeat(auto-fill, minmax(150px, 1fr))' :
+                        'repeat(auto-fill, minmax(260px, 1fr))'
+                },
+                gap: { xs: 0.5, sm: 2 },
+                width: '100%',
+                px: { xs: 0.5, sm: 2 },
+                pb: 4,
+                mt: { xs: 1, sm: 4 }
+            }}>
+                {itemsResult?.Items?.map(mappedItem => (
+                    <Box key={mappedItem.Id} sx={{ minWidth: 0, width: '100%', position: 'relative' }}>
+                        <MediaCard
+                            item={mappedItem}
+                            shape={mediaShape}
+                            cardOptions={getCardOptions() as Record<string, unknown>}
+                            fullWidth={true}
+                        />
+                    </Box>
+                ))}
+            </Box>
         );
     }, [
         libraryViewSettings.ViewMode,
@@ -224,7 +253,7 @@ const ItemsView: FC<ItemsViewProps> = ({
     const hasSortName = libraryViewSettings.SortBy !== ItemSortBy.Random;
 
     const itemsContainerClass = classNames(
-        'centered padded-left padded-right padded-right-withalphapicker',
+        'centered padded-left padded-right',
         libraryViewSettings.ViewMode === ViewMode.ListView ?
             'vertical-list' :
             'vertical-wrap'
@@ -233,34 +262,55 @@ const ItemsView: FC<ItemsViewProps> = ({
     return (
         <Box className='padded-bottom-page'>
             <Box
-                className={classNames(
-                    'padded-top padded-left padded-right',
-                    { 'padded-right-withalphapicker': isAlphabetPickerEnabled }
-                )}
                 sx={{
                     display: 'flex',
-                    flexWrap: 'wrap',
-                    alignItems: 'center'
+                    flexDirection: 'column',
+                    gap: 1,
+                    px: { xs: 1, sm: 3, md: 6 },
+                    pt: 2
                 }}
             >
-                <Box
-                    sx={{ marginRight: 1 }}
-                >
-                    <LibraryViewMenu />
-                </Box>
+                {/* Row 1: Title & Main Filter/Sort Buttons */}
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 1
+                }}>
+                    <Box>
+                        <LibraryViewMenu />
+                    </Box>
 
-                <Box
-                    sx={{
-                        flexGrow: {
-                            xs: 1,
-                            sm: 0
-                        },
-                        marginRight: 1
-                    }}
-                >
                     <ButtonGroup
                         color='inherit'
-                        variant='text'
+                        variant='outlined'
+                        sx={{
+                            borderRadius: '14px',
+                            '& .MuiButton-root': {
+                                background: 'rgba(255, 255, 255, 0.03)',
+                                backdropFilter: 'blur(12px)',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                color: 'rgba(255, 255, 255, 0.6)',
+                                textTransform: 'none',
+                                px: { xs: 1.5, sm: 2 },
+                                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.08)',
+                                    color: 'white',
+                                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                                    transform: 'translateY(-2px)'
+                                }
+                            },
+                            '& .MuiButton-root:first-of-type': {
+                                borderTopLeftRadius: '14px !important',
+                                borderBottomLeftRadius: '14px !important'
+                            },
+                            '& .MuiButton-root:last-of-type': {
+                                borderTopRightRadius: '14px !important',
+                                borderBottomRightRadius: '14px !important'
+                            }
+                        }}
                     >
                         {isBtnFilterEnabled && (
                             <FilterButton
@@ -272,7 +322,6 @@ const ItemsView: FC<ItemsViewProps> = ({
                                 setLibraryViewSettings={setLibraryViewSettings}
                             />
                         )}
-
                         {isBtnSortEnabled && (
                             <SortButton
                                 viewType={viewType}
@@ -280,7 +329,6 @@ const ItemsView: FC<ItemsViewProps> = ({
                                 setLibraryViewSettings={setLibraryViewSettings}
                             />
                         )}
-
                         {isBtnGridListEnabled && (
                             <ViewSettingsButton
                                 viewType={viewType}
@@ -291,20 +339,45 @@ const ItemsView: FC<ItemsViewProps> = ({
                     </ButtonGroup>
                 </Box>
 
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexGrow: {
-                            xs: 1,
-                            sm: 0
-                        },
-                        justifyContent: 'flex-end'
-                    }}
-                >
-                    {!isPending && (
-                        <>
+                {/* Row 2: Playback Actions & Pagination */}
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 1,
+                    flexDirection: { xs: 'row-reverse', sm: 'row' }
+                }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {!isPending && (
                             <ButtonGroup
-                                variant='contained'
+                                variant='outlined'
+                                sx={{
+                                    borderRadius: '14px',
+                                    '& .MuiButton-root': {
+                                        background: 'rgba(255, 255, 255, 0.03)',
+                                        backdropFilter: 'blur(12px)',
+                                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                                        color: 'rgba(255, 255, 255, 0.6)',
+                                        textTransform: 'none',
+                                        px: { xs: 2.5, sm: 3 },
+                                        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                        '&:hover': {
+                                            background: 'rgba(255, 255, 255, 0.08)',
+                                            color: 'white',
+                                            borderColor: 'rgba(255, 255, 255, 0.15)',
+                                            transform: 'translateY(-1px)'
+                                        }
+                                    },
+                                    '& .MuiButton-root:first-of-type': {
+                                        borderTopLeftRadius: '14px !important',
+                                        borderBottomLeftRadius: '14px !important'
+                                    },
+                                    '& .MuiButton-root:last-of-type': {
+                                        borderTopRightRadius: '14px !important',
+                                        borderBottomRightRadius: '14px !important'
+                                    }
+                                }}
                             >
                                 {isBtnPlayAllEnabled && (
                                     <PlayAllButton
@@ -316,7 +389,6 @@ const ItemsView: FC<ItemsViewProps> = ({
                                         libraryViewSettings={libraryViewSettings}
                                     />
                                 )}
-
                                 {isBtnShuffleEnabled && totalRecordCount > 1 && (
                                     <ShuffleButton
                                         item={item}
@@ -327,7 +399,6 @@ const ItemsView: FC<ItemsViewProps> = ({
                                         libraryViewSettings={libraryViewSettings}
                                     />
                                 )}
-
                                 {isBtnQueueEnabled && item && playbackManager.canQueue(item) && (
                                     <QueueButton
                                         item={item}
@@ -337,34 +408,22 @@ const ItemsView: FC<ItemsViewProps> = ({
                                     />
                                 )}
                             </ButtonGroup>
+                        )}
 
-                            {isBtnNewCollectionEnabled && <NewCollectionButton isTextVisible={isSmallScreen} />}
-                        </>
-                    )}
-                </Box>
+                        {isBtnNewCollectionEnabled && (
+                            <NewCollectionButton isTextVisible={isSmallScreen} />
+                        )}
+                    </Box>
 
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'end',
-                        flexBasis: {
-                            xs: '100%',
-                            sm: 'auto'
-                        },
-                        flexGrow: 1,
-                        marginTop: {
-                            xs: 0.5,
-                            sm: 0
-                        }
-                    }}
-                >
                     {!isPending && isPaginationEnabled && (
-                        <Pagination
-                            totalRecordCount={totalRecordCount}
-                            libraryViewSettings={libraryViewSettings}
-                            isPlaceholderData={isPlaceholderData}
-                            setLibraryViewSettings={setLibraryViewSettings}
-                        />
+                        <Box sx={{ flexGrow: { xs: 1, sm: 0 }, display: 'flex', justifyContent: 'center' }}>
+                            <Pagination
+                                totalRecordCount={totalRecordCount}
+                                libraryViewSettings={libraryViewSettings}
+                                isPlaceholderData={isPlaceholderData}
+                                setLibraryViewSettings={setLibraryViewSettings}
+                            />
+                        </Box>
                     )}
                 </Box>
             </Box>
@@ -391,10 +450,7 @@ const ItemsView: FC<ItemsViewProps> = ({
 
             {!isPending && isPaginationEnabled && (
                 <Box
-                    className={classNames(
-                        'padded-left padded-right',
-                        { 'padded-right-withalphapicker': isAlphabetPickerEnabled }
-                    )}
+                    className='padded-left padded-right'
                     sx={{
                         display: 'flex',
                         justifyContent: 'flex-end'

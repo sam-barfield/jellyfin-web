@@ -36,8 +36,14 @@ const CardImageContainer: FC<CardImageContainerProps> = ({
         { 'coveredImage-contain': coveredImage && item.Type === ItemKind.TvChannel }
     );
 
-    // Type-safe mapping for custom anime metadata attached by useHomeData
-    const tagItem = item as ItemDto & { IsAnime?: boolean; DubAvailable?: string; SubAvailable?: string };
+    // Type-safe mapping for custom anime metadata attached by backend
+    const tagItem = item as ItemDto & {
+        IsAnime?: boolean;
+        DubAvailable?: string;
+        SubAvailable?: string;
+        DubAvailability?: string;
+        SubAvailability?: string;
+    };
 
     return (
         <div className={cardImageClass}>
@@ -64,7 +70,7 @@ const CardImageContainer: FC<CardImageContainerProps> = ({
                 </Box>
             )}
 
-            {Boolean(tagItem.IsAnime && (tagItem.DubAvailable || tagItem.SubAvailable)) && (
+            {Boolean(tagItem.IsAnime && (tagItem.DubAvailable || tagItem.SubAvailable || tagItem.DubAvailability || tagItem.SubAvailability)) && (
                 <Box sx={{
                     position: 'absolute',
                     bottom: '8px',
@@ -74,10 +80,10 @@ const CardImageContainer: FC<CardImageContainerProps> = ({
                     zIndex: 2,
                     pointerEvents: 'none'
                 }}>
-                    {tagItem.DubAvailable === 'Full' && <Box sx={{ backgroundColor: 'rgba(43, 179, 66, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
-                    {tagItem.DubAvailable === 'Partial' && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
-                    {tagItem.SubAvailable === 'Full' && <Box sx={{ backgroundColor: 'rgba(153, 53, 192, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
-                    {tagItem.SubAvailable === 'Partial' && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
+                    {(tagItem.DubAvailable === 'Full' || tagItem.DubAvailability === 'Full') && <Box sx={{ backgroundColor: 'rgba(43, 179, 66, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
+                    {(tagItem.DubAvailable === 'Partial' || tagItem.DubAvailability === 'Partial') && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>DUB</Box>}
+                    {(tagItem.SubAvailable === 'Full' || tagItem.SubAvailability === 'Full') && <Box sx={{ backgroundColor: 'rgba(153, 53, 192, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
+                    {(tagItem.SubAvailable === 'Partial' || tagItem.SubAvailability === 'Partial') && <Box sx={{ backgroundColor: 'rgba(201, 43, 64, 0.7)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '0.65rem', fontWeight: 800, px: 1, py: 0.25, borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '0.05em' }}>SUB</Box>}
                 </Box>
             )}
 

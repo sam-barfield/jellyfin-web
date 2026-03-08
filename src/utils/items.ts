@@ -95,6 +95,15 @@ const getItemFieldsEnum = (
         );
     }
 
+    // Custom fields for Anime badges
+    itemFields.push(
+        'IsAnime' as ItemFields,
+        'DubAvailable' as ItemFields,
+        'SubAvailable' as ItemFields,
+        'DubAvailability' as ItemFields,
+        'SubAvailability' as ItemFields
+    );
+
     return itemFields;
 };
 

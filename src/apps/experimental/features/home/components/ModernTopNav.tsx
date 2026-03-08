@@ -45,13 +45,13 @@ const HamburgerButton = () => {
     const { isDrawerOpen } = useNavContext();
 
     const handleHamburgerClick = useCallback(() => {
-        const win = window as any;
+        const win = window as unknown as Record<string, unknown>;
         // 1. Try modern React-based drawer toggle via global bridge
-        if (win.jellyfinToggleDrawer) {
-            win.jellyfinToggleDrawer();
-        } else if (win.LibraryMenu?.onHardwareMenuButtonClick) {
+        if (typeof win.jellyfinToggleDrawer === 'function') {
+            (win.jellyfinToggleDrawer as () => void)();
+        } else if (win.LibraryMenu && typeof (win.LibraryMenu as Record<string, unknown>).onHardwareMenuButtonClick === 'function') {
             // 2. Fallback to legacy drawer toggle if modern layout bridge is missing
-            win.LibraryMenu.onHardwareMenuButtonClick();
+            ((win.LibraryMenu as Record<string, unknown>).onHardwareMenuButtonClick as () => void)();
         } else {
             // 3. Last resort: trigger global event
             Events.trigger(window, 'jellyfin-toggle-drawer');
@@ -205,28 +205,41 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
     const handleHomeClick = useCallback(() => onTabChange(0), [onTabChange]);
     const handleFavouritesClick = useCallback(() => onTabChange(1), [onTabChange]);
     const handleLibraryClick = useCallback((lib: ItemDto) => {
-        appRouter.showItem(lib);
+        // Guarantee CollectionType exists so appRouter doesn't fall back to legacy '#/list' view
+        const targetLib = { ...lib };
+        if (!targetLib.CollectionType) {
+            const name = (targetLib.Name || '').toLowerCase();
+            if (name.includes('movie')) targetLib.CollectionType = 'movies';
+            else if (name.includes('tv') || name.includes('show')) targetLib.CollectionType = 'tvshows';
+            else if (name.includes('music')) targetLib.CollectionType = 'music';
+            else if (name.includes('video')) targetLib.CollectionType = 'homevideos';
+            else if (name.includes('live')) targetLib.CollectionType = 'livetv';
+        }
+        appRouter.showItem(targetLib);
     }, []);
 
     const getLibraryIcon = (item: ItemDto): React.ElementType<SvgIconProps> => {
         const type = item.CollectionType;
         const name = item.Name?.toLowerCase() || '';
-        if (type === 'movies') return LocalMoviesRoundedIcon;
-        if (name.includes('anime')) return AutoAwesomeRoundedIcon;
-        if (type === 'tvshows') return TvRoundedIcon;
-        if (type === 'livetv') return LiveTvRoundedIcon;
-        if (type === 'music' || type === 'musicvideos') return QueueMusicRoundedIcon;
-        return VideoLibraryRoundedIcon;
+        let Icon: React.ElementType<SvgIconProps> = VideoLibraryRoundedIcon;
+
+        if (type === 'movies') Icon = LocalMoviesRoundedIcon;
+        else if (name.includes('anime')) Icon = AutoAwesomeRoundedIcon;
+        else if (type === 'tvshows') Icon = TvRoundedIcon;
+        else if (type === 'livetv') Icon = LiveTvRoundedIcon;
+        else if (type === 'music' || type === 'musicvideos') Icon = QueueMusicRoundedIcon;
+        
+        return Icon;
     };
 
     const allTabs = [
         { icon: HomeRoundedIcon, label: 'Home', onClick: handleHomeClick, active: activeTab === 0 },
         { icon: FavoriteRoundedIcon, label: 'Favourites', onClick: handleFavouritesClick, active: activeTab === 1 },
-        ...libraries.map(lib => ({
+        ...libraries.map((lib, idx) => ({
             icon: getLibraryIcon(lib),
             label: lib.Name || '',
             onClick: () => handleLibraryClick(lib),
-            active: false
+            active: activeTab === idx + 2
         }))
     ];
 

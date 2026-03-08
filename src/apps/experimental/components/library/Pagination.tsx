@@ -64,17 +64,35 @@ const Pagination: FC<PaginationProps> = ({
                 },
                 marginLeft: {
                     xs: 0,
-                    sm: 0.5
+                    sm: 1
                 }
             }}
         >
             {!isSmallScreen && (
                 <Button
                     color='inherit'
-                    variant='text'
+                    variant='outlined'
                     title={globalize.translate('Previous')}
                     disabled={!showControls || startIndex == 0 || isPlaceholderData}
                     onClick={onPreviousPageClick}
+                    sx={{
+                        minWidth: 48,
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        borderRadius: 3,
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            transform: 'translateY(-2px) scale(1.02)',
+                            borderColor: 'rgba(255, 255, 255, 0.15)'
+                        },
+                        '&.Mui-disabled': {
+                            border: '1px solid rgba(255, 255, 255, 0.03)',
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        }
+                    }}
                 >
                     <ArrowBackIcon />
                 </Button>
@@ -86,11 +104,10 @@ const Pagination: FC<PaginationProps> = ({
                     flexGrow: 1,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginLeft: 1,
-                    marginRight: 1
+                    mx: 2
                 }}
             >
-                <Typography variant='body2'>
+                <Typography variant='body2' sx={{ color: 'text.primary', letterSpacing: 0.5 }}>
                     {globalize.translate(
                         'ListPaging',
                         recordsStart,
@@ -103,12 +120,42 @@ const Pagination: FC<PaginationProps> = ({
             {isSmallScreen && (
                 <ButtonGroup
                     color='inherit'
-                    variant='text'
+                    variant='outlined'
+                    sx={{
+                        '& .MuiButton-root': {
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            backdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            color: 'rgba(255, 255, 255, 0.6)',
+                            transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            '&:hover': {
+                                background: 'rgba(255, 255, 255, 0.08)',
+                                color: 'white',
+                                borderColor: 'rgba(255, 255, 255, 0.15)',
+                                transform: 'translateY(-2px) scale(1.02)'
+                            },
+                            '&.Mui-disabled': {
+                                borderColor: 'rgba(255, 255, 255, 0.03)',
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            }
+                        },
+                        '& .MuiButtonGroup-firstButton': {
+                            borderTopLeftRadius: 14,
+                            borderBottomLeftRadius: 14
+                        },
+                        '& .MuiButtonGroup-lastButton': {
+                            borderTopRightRadius: 14,
+                            borderBottomRightRadius: 14
+                        }
+                    }}
                 >
                     <Button
                         title={globalize.translate('Previous')}
                         disabled={!showControls || startIndex == 0 || isPlaceholderData}
                         onClick={onPreviousPageClick}
+                        sx={{
+                            ml: 1
+                        }}
                     >
                         <ArrowBackIcon />
                     </Button>
@@ -126,10 +173,28 @@ const Pagination: FC<PaginationProps> = ({
             {!isSmallScreen && (
                 <Button
                     color='inherit'
-                    variant='text'
+                    variant='outlined'
                     title={globalize.translate('Next')}
                     disabled={!showControls || startIndex + limit >= totalRecordCount || isPlaceholderData }
                     onClick={onNextPageClick}
+                    sx={{
+                        minWidth: 48,
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        borderRadius: 3,
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            transform: 'translateY(-2px) scale(1.02)',
+                            borderColor: 'rgba(255, 255, 255, 0.15)'
+                        },
+                        '&.Mui-disabled': {
+                            border: '1px solid rgba(255, 255, 255, 0.03)',
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        }
+                    }}
                 >
                     <ArrowForwardIcon />
                 </Button>

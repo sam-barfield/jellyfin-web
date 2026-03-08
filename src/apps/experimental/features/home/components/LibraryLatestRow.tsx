@@ -22,7 +22,10 @@ export function LibraryLatestRow({ library }: Readonly<LibraryLatestRowProps>) {
                 ItemFields.PrimaryImageAspectRatio,
                 'Path' as ItemFields,
                 'IsAnime' as ItemFields,
-                'DubAvailability' as ItemFields
+                'DubAvailable' as ItemFields,
+                'SubAvailable' as ItemFields,
+                'DubAvailability' as ItemFields,
+                'SubAvailability' as ItemFields
             ],
             enableImageTypes: [ImageType.Primary, ImageType.Backdrop, ImageType.Thumb],
             imageTypeLimit: 1,

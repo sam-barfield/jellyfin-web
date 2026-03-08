@@ -67,6 +67,8 @@ const musicTabMapping: LibraryTabMapping = {
     6: genresTabContent
 };
 
+import { ModernLibraryLayout } from '../../components/library/ModernLibraryLayout';
+
 const Music: FC = () => {
     const { libraryId, activeTab } = useCurrentTab();
     const currentTab = musicTabMapping[activeTab];
@@ -74,17 +76,19 @@ const Music: FC = () => {
     return (
         <Page
             id='musicPage'
-            className='mainAnimatedPage libraryPage backdropPage collectionEditorPage pageWithAbsoluteTabs withTabs'
+            className='mainAnimatedPage libraryPage backdropPage collectionEditorPage pageWithAbsoluteTabs withTabs homePage'
             backDropType='musicartist'
         >
-            <PageTabContent
-                key={`${currentTab.viewType} - ${libraryId}`}
-                currentTab={currentTab}
-                parentId={
-                    // Playlists exist outside of the scope of the library
-                    currentTab.viewType === LibraryTab.Playlists ? undefined : libraryId
-                }
-            />
+            <ModernLibraryLayout libraryId={libraryId ?? ''}>
+                <PageTabContent
+                    key={`${currentTab.viewType} - ${libraryId}`}
+                    currentTab={currentTab}
+                    parentId={
+                        // Playlists exist outside of the scope of the library
+                        currentTab.viewType === LibraryTab.Playlists ? undefined : libraryId
+                    }
+                />
+            </ModernLibraryLayout>
         </Page>
     );
 };
