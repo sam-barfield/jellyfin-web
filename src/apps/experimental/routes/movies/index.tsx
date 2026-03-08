@@ -51,6 +51,8 @@ const moviesTabMapping: LibraryTabMapping = {
     4: genresTabContent
 };
 
+import { ModernLibraryLayout } from '../../components/library/ModernLibraryLayout';
+
 const Movies: FC = () => {
     const { libraryId, activeTab } = useCurrentTab();
     const currentTab = moviesTabMapping[activeTab];
@@ -58,14 +60,16 @@ const Movies: FC = () => {
     return (
         <Page
             id='moviesPage'
-            className='mainAnimatedPage libraryPage backdropPage collectionEditorPage pageWithAbsoluteTabs withTabs'
+            className='mainAnimatedPage libraryPage backdropPage collectionEditorPage pageWithAbsoluteTabs withTabs homePage'
             backDropType='movie'
         >
-            <PageTabContent
-                key={`${currentTab.viewType} - ${libraryId}`}
-                currentTab={currentTab}
-                parentId={libraryId}
-            />
+            <ModernLibraryLayout libraryId={libraryId ?? ''}>
+                <PageTabContent
+                    key={`${currentTab.viewType} - ${libraryId}`}
+                    currentTab={currentTab}
+                    parentId={libraryId}
+                />
+            </ModernLibraryLayout>
         </Page>
     );
 };

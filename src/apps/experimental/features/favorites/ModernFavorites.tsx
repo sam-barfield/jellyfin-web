@@ -115,7 +115,10 @@ export const ModernFavorites = ({ onColorChange }: { onColorChange?: (color: str
             'ImageTags' as ItemFields,
             'ServerId' as ItemFields,
             'IsAnime' as ItemFields,
-            'DubAvailability' as ItemFields
+            'DubAvailable' as ItemFields,
+            'SubAvailable' as ItemFields,
+            'DubAvailability' as ItemFields,
+            'SubAvailability' as ItemFields
         ],
         enableUserData: true,
         enableImageTypes: [ImageType.Primary, ImageType.Thumb, ImageType.Backdrop],

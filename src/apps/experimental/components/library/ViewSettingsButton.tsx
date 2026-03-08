@@ -107,6 +107,7 @@ const ViewSettingsButton: FC<ViewSettingsButtonProps> = ({
                 title={globalize.translate('ViewSettings')}
                 aria-describedby={id}
                 onClick={handleClick}
+                sx={{ borderRadius: '14px' }}
             >
                 <MoreVert />
             </Button>
@@ -126,8 +127,46 @@ const ViewSettingsButton: FC<ViewSettingsButtonProps> = ({
                 sx={{
                     '& .MuiFormControl-root': { m: 1, width: 220 }
                 }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            mt: 1.5,
+                            background: 'rgba(20, 20, 25, 0.75)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                            overflow: 'hidden',
+                            '& .MuiMenuItem-root': {
+                                transition: 'all 0.2s',
+                                borderRadius: '8px',
+                                m: 0.75,
+                                px: 2,
+                                py: 1,
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.08)',
+                                    color: 'white'
+                                }
+                            },
+                            '& .MuiFormControlLabel-root': {
+                                transition: 'all 0.2s',
+                                borderRadius: '8px',
+                                m: 0.5,
+                                px: 1.5,
+                                py: 0.5,
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                }}
             >
-                <MenuList>
+                <MenuList sx={{ p: 0.25 }}>
 
                     <MenuItem
                         onClick={onGridViewClick}
@@ -165,6 +204,32 @@ const ViewSettingsButton: FC<ViewSettingsButtonProps> = ({
                                             value={libraryViewSettings.ImageType}
                                             label={globalize.translate('LabelImageType')}
                                             onChange={onSelectChange}
+                                            MenuProps={{
+                                                slotProps: {
+                                                    paper: {
+                                                        sx: {
+                                                            background: 'rgba(20, 20, 25, 0.75)',
+                                                            backdropFilter: 'blur(20px)',
+                                                            WebkitBackdropFilter: 'blur(20px)',
+                                                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                                                            borderRadius: '8px',
+                                                            mt: 0.5,
+                                                            '& .MuiMenuItem-root': {
+                                                                transition: 'all 0.2s',
+                                                                borderRadius: '6px',
+                                                                m: 0.5,
+                                                                px: 2,
+                                                                py: 1,
+                                                                color: 'rgba(255, 255, 255, 0.8)',
+                                                                '&:hover': {
+                                                                    background: 'rgba(255, 255, 255, 0.08)',
+                                                                    color: 'white'
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }}
                                         >
                                             {imageTypesOptions.map((imageType) => (
                                                 <MenuItem

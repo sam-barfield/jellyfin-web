@@ -181,6 +181,20 @@ const SortButton: FC<SortButtonProps> = ({
                 sx={{
                     '& .MuiFormControl-root': { m: 1, width: 200 }
                 }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            mt: 1.5,
+                            background: 'rgba(20, 20, 25, 0.75)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                            overflow: 'hidden'
+                        }
+                    }
+                }}
             >
                 <FormControl fullWidth>
                     <InputLabel id='select-sort-label'>
@@ -195,6 +209,32 @@ const SortButton: FC<SortButtonProps> = ({
                         label={globalize.translate('LabelSortBy')}
                         name='SortBy'
                         onChange={onSelectChange}
+                        MenuProps={{
+                            slotProps: {
+                                paper: {
+                                    sx: {
+                                        background: 'rgba(20, 20, 25, 0.75)',
+                                        backdropFilter: 'blur(20px)',
+                                        WebkitBackdropFilter: 'blur(20px)',
+                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        borderRadius: '12px',
+                                        mt: 0.5,
+                                        '& .MuiMenuItem-root': {
+                                            transition: 'all 0.2s',
+                                            borderRadius: '8px',
+                                            m: 0.5,
+                                            px: 2,
+                                            py: 1,
+                                            color: 'rgba(255, 255, 255, 0.8)',
+                                            '&:hover': {
+                                                background: 'rgba(255, 255, 255, 0.08)',
+                                                color: 'white'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }}
                     >
                         {sortMenuOptions
                             .map((option) => (
@@ -224,6 +264,32 @@ const SortButton: FC<SortButtonProps> = ({
                         label={globalize.translate('LabelSortOrder')}
                         name='SortOrder'
                         onChange={onSelectChange}
+                        MenuProps={{
+                            slotProps: {
+                                paper: {
+                                    sx: {
+                                        background: 'rgba(20, 20, 25, 0.75)',
+                                        backdropFilter: 'blur(20px)',
+                                        WebkitBackdropFilter: 'blur(20px)',
+                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        borderRadius: '12px',
+                                        mt: 0.5,
+                                        '& .MuiMenuItem-root': {
+                                            transition: 'all 0.2s',
+                                            borderRadius: '8px',
+                                            m: 0.5,
+                                            px: 2,
+                                            py: 1,
+                                            color: 'rgba(255, 255, 255, 0.8)',
+                                            '&:hover': {
+                                                background: 'rgba(255, 255, 255, 0.08)',
+                                                color: 'white'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }}
                     >
                         {sortOrderMenuOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>

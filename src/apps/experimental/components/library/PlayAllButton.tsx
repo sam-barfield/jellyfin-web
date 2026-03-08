@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import Button from '@mui/material/Button';
+import Button, { ButtonProps } from '@mui/material/Button';
 import PlayArrow from '@mui/icons-material/PlayArrow';
 
 import { playbackManager } from 'components/playback/playbackmanager';
@@ -9,7 +9,7 @@ import { LibraryViewSettings } from 'types/library';
 import { LibraryTab } from 'types/libraryTab';
 import type { ItemDto } from 'types/base/models/item-dto';
 
-interface PlayAllButtonProps {
+interface PlayAllButtonProps extends ButtonProps {
     item: ItemDto | undefined
     items: ItemDto[]
     viewType: LibraryTab
@@ -24,7 +24,8 @@ const PlayAllButton: FC<PlayAllButtonProps> = ({
     viewType,
     hasFilters,
     isTextVisible,
-    libraryViewSettings
+    libraryViewSettings,
+    ...props
 }) => {
     const play = useCallback(() => {
         if (item && !hasFilters) {
@@ -59,6 +60,7 @@ const PlayAllButton: FC<PlayAllButtonProps> = ({
             title={globalize.translate('HeaderPlayAll')}
             startIcon={isTextVisible ? <PlayArrow /> : undefined}
             onClick={play}
+            {...props}
         >
             {isTextVisible ? (
                 globalize.translate('HeaderPlayAll')

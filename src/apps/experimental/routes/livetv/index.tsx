@@ -50,6 +50,8 @@ const liveTvTabMapping: LibraryTabMapping = {
     5: seriestimersTabContent
 };
 
+import { ModernLibraryLayout } from '../../components/library/ModernLibraryLayout';
+
 const LiveTv: FC = () => {
     const { libraryId, activeTab } = useCurrentTab();
     const currentTab = liveTvTabMapping[activeTab];
@@ -57,13 +59,15 @@ const LiveTv: FC = () => {
     return (
         <Page
             id='liveTvPage'
-            className='mainAnimatedPage libraryPage collectionEditorPage pageWithAbsoluteTabs withTabs'
+            className='mainAnimatedPage libraryPage collectionEditorPage pageWithAbsoluteTabs withTabs homePage'
         >
-            <PageTabContent
-                key={`${currentTab.viewType} - ${libraryId}`}
-                currentTab={currentTab}
-                parentId={libraryId}
-            />
+            <ModernLibraryLayout libraryId={libraryId ?? ''}>
+                <PageTabContent
+                    key={`${currentTab.viewType} - ${libraryId}`}
+                    currentTab={currentTab}
+                    parentId={libraryId}
+                />
+            </ModernLibraryLayout>
         </Page>
     );
 };

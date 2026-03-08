@@ -27,7 +27,7 @@ interface MediaRowProps {
 /**
  * A single card with hover-reveal favourite + played buttons.
  */
-export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: string; cardOptions?: Record<string, unknown> }) => {
+export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { item: ItemDto; shape: string; cardOptions?: Record<string, unknown>; fullWidth?: boolean }) => {
     const queryClient = useQueryClient();
     const { mutateAsync: toggleFavorite } = useToggleFavoriteMutation();
     const { mutateAsync: togglePlayed } = useTogglePlayedMutation();
@@ -101,6 +101,11 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
         }
     }, [item]);
 
+    let cardWidth: string | Record<string, number> = fullWidth ? '100%' : { xs: 120, md: 160 };
+    if (!fullWidth && shape === 'backdrop') {
+        cardWidth = { xs: 200, md: 280 };
+    }
+
     return (
         <Box
             className='media-card-root'
@@ -111,7 +116,7 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
             sx={{
                 position: 'relative',
                 flexShrink: 0,
-                width: shape === 'backdrop' ? { xs: 200, md: 280 } : { xs: 120, md: 160 },
+                width: cardWidth,
                 transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'pointer',
                 willChange: 'transform',
@@ -119,7 +124,12 @@ export const MediaCard = ({ item, shape, cardOptions }: { item: ItemDto; shape: 
                 WebkitFontSmoothing: 'subpixel-antialiased',
                 '&:hover': { transform: 'scale(1.05)', zIndex: 2 },
                 // Show action buttons on hover OR keyboard focus
-                '&:hover .card-actions': { opacity: 1, transform: 'translateY(0)' }
+                '&:hover .card-actions': { opacity: 1, transform: 'translateY(0)' },
+                // Adjust spacing and weight for title text
+                '& .cardText-first': {
+                    marginTop: 0.5,
+                    fontWeight: 500
+                }
             }}
         >
             <Card item={item} cardOptions={cardOpts} />
@@ -271,20 +281,24 @@ export function MediaRow({ title, items, shape = 'backdrop', onViewAll, cardOpti
     if (!items || items.length === 0) return null;
 
     return (
-        <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, px: 1 }}>
-                <Typography variant='h6' sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-                    {title}
-                </Typography>
-                {Boolean(onViewAll) && (
-                    <ButtonBase
-                        onClick={onViewAll}
-                        sx={{ color: 'text.secondary', fontSize: '0.8rem', fontWeight: 'bold', '&:hover': { color: 'text.primary' } }}
-                    >
-                        VIEW ALL
-                    </ButtonBase>
-                )}
-            </Box>
+        <Box sx={{ mb: 1 }}>
+            {Boolean(title || onViewAll) && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, px: 1 }}>
+                    {Boolean(title) && (
+                        <Typography variant='h6' sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                            {title}
+                        </Typography>
+                    )}
+                    {Boolean(onViewAll) && (
+                        <ButtonBase
+                            onClick={onViewAll}
+                            sx={{ color: 'text.secondary', fontSize: '0.8rem', fontWeight: 'bold', '&:hover': { color: 'text.primary' } }}
+                        >
+                            VIEW ALL
+                        </ButtonBase>
+                    )}
+                </Box>
+            )}
 
             <Box
                 sx={{ position: 'relative' }}
@@ -331,7 +345,7 @@ export function MediaRow({ title, items, shape = 'backdrop', onViewAll, cardOpti
                     aria-label={title}
                     sx={{
                         display: 'flex', gap: 2.5, overflowX: 'auto',
-                        pb: 3, pt: 3, pl: 2, pr: 4,
+                        pb: 2, pt: 1, pl: 2, pr: 4,
                         cursor: 'grab',
                         scrollbarWidth: 'none',
                         '&::-webkit-scrollbar': { display: 'none' }

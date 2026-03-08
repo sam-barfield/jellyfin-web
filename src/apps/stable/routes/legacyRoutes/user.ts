@@ -14,22 +14,10 @@ export const LEGACY_USER_ROUTES: LegacyRoute[] = [
             view: 'list.html'
         }
     }, {
-        path: 'livetv',
-        pageProps: {
-            controller: 'livetv/livetvsuggested',
-            view: 'livetv.html'
-        }
-    }, {
         path: 'lyrics',
         pageProps: {
             controller: 'lyrics',
             view: 'lyrics.html'
-        }
-    }, {
-        path: 'music',
-        pageProps: {
-            controller: 'music/musicrecommended',
-            view: 'music/music.html'
         }
     }, {
         path: 'mypreferencescontrols',
@@ -62,12 +50,6 @@ export const LEGACY_USER_ROUTES: LegacyRoute[] = [
             view: 'user/subtitles/index.html'
         }
     }, {
-        path: 'tv',
-        pageProps: {
-            controller: 'shows/tvrecommended',
-            view: 'shows/tvrecommended.html'
-        }
-    }, {
         path: 'video',
         pageProps: {
             controller: 'playback/video/index',
@@ -91,12 +73,6 @@ export const LEGACY_USER_ROUTES: LegacyRoute[] = [
         pageProps: {
             controller: 'home',
             view: 'home.html'
-        }
-    }, {
-        path: 'movies',
-        pageProps: {
-            controller: 'movies/moviesrecommended',
-            view: 'movies/movies.html'
         }
     }
 ];

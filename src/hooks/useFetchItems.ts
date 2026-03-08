@@ -157,7 +157,12 @@ const fetchGetMovieRecommendations = async (
                 userId: user.Id,
                 fields: [
                     ItemFields.PrimaryImageAspectRatio,
-                    ItemFields.MediaSourceCount
+                    ItemFields.MediaSourceCount,
+                    'IsAnime' as ItemFields,
+                    'DubAvailable' as ItemFields,
+                    'SubAvailable' as ItemFields,
+                    'DubAvailability' as ItemFields,
+                    'SubAvailability' as ItemFields
                 ],
                 parentId: parentId ?? undefined,
                 categoryLimit: 6,
@@ -758,7 +763,12 @@ const fetchGetSectionItems = async (
                             fields: [
                                 ItemFields.ChannelInfo,
                                 ItemFields.PrimaryImageAspectRatio,
-                                ItemFields.MediaSourceCount
+                                ItemFields.MediaSourceCount,
+                                'IsAnime' as ItemFields,
+                                'DubAvailable' as ItemFields,
+                                'SubAvailable' as ItemFields,
+                                'DubAvailability' as ItemFields,
+                                'SubAvailability' as ItemFields
                             ],
                             ...section.parametersOptions
                         },
@@ -780,7 +790,12 @@ const fetchGetSectionItems = async (
                             enableTotalRecordCount: false,
                             fields: [
                                 ItemFields.ChannelInfo,
-                                ItemFields.PrimaryImageAspectRatio
+                                ItemFields.PrimaryImageAspectRatio,
+                                'IsAnime' as ItemFields,
+                                'DubAvailable' as ItemFields,
+                                'SubAvailable' as ItemFields,
+                                'DubAvailability' as ItemFields,
+                                'SubAvailability' as ItemFields
                             ],
                             ...section.parametersOptions
                         },
@@ -832,7 +847,12 @@ const fetchGetSectionItems = async (
                             limit: 25,
                             fields: [
                                 ItemFields.PrimaryImageAspectRatio,
-                                ItemFields.MediaSourceCount
+                                ItemFields.MediaSourceCount,
+                                'IsAnime' as ItemFields,
+                                'DubAvailable' as ItemFields,
+                                'SubAvailable' as ItemFields,
+                                'DubAvailability' as ItemFields,
+                                'SubAvailability' as ItemFields
                             ],
                             parentId: parentId ?? undefined,
                             imageTypeLimit: 1,
@@ -859,7 +879,12 @@ const fetchGetSectionItems = async (
                             parentId: parentId ?? undefined,
                             fields: [
                                 ItemFields.PrimaryImageAspectRatio,
-                                ItemFields.MediaSourceCount
+                                ItemFields.MediaSourceCount,
+                                'IsAnime' as ItemFields,
+                                'DubAvailable' as ItemFields,
+                                'SubAvailable' as ItemFields,
+                                'DubAvailability' as ItemFields,
+                                'SubAvailability' as ItemFields
                             ],
                             imageTypeLimit: 1,
                             enableImageTypes: [
@@ -884,7 +909,12 @@ const fetchGetSectionItems = async (
                             userId: user.Id,
                             fields: [
                                 ItemFields.PrimaryImageAspectRatio,
-                                ItemFields.MediaSourceCount
+                                ItemFields.MediaSourceCount,
+                                'IsAnime' as ItemFields,
+                                'DubAvailable' as ItemFields,
+                                'SubAvailable' as ItemFields,
+                                'DubAvailability' as ItemFields,
+                                'SubAvailability' as ItemFields
                             ],
                             parentId: parentId ?? undefined,
                             imageTypeLimit: 1,
@@ -907,6 +937,15 @@ const fetchGetSectionItems = async (
                             recursive: true,
                             limit: 25,
                             enableTotalRecordCount: false,
+                            fields: [
+                                ItemFields.PrimaryImageAspectRatio,
+                                ItemFields.MediaSourceCount,
+                                'IsAnime' as ItemFields,
+                                'DubAvailable' as ItemFields,
+                                'SubAvailable' as ItemFields,
+                                'DubAvailability' as ItemFields,
+                                'SubAvailability' as ItemFields
+                            ],
                             ...section.parametersOptions
                         },
                         {

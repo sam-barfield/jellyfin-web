@@ -94,8 +94,6 @@ button::-moz-focus-inner {
     /* These both are needed in case cardBox is a button */
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     outline: none !important;
-    contain: layout;
-    contain: style;
 }
 
 .card.show-animation .cardBox {
@@ -182,7 +180,6 @@ button::-moz-focus-inner {
 .cardScalable .cardImageContainer {
     height: 100%;
     width: 100%;
-    contain: strict;
 }
 
 .chapterCardImageContainer {
@@ -195,7 +192,6 @@ button::-moz-focus-inner {
 }
 
 .cardContent {
-    overflow: hidden;
     position: absolute;
     top: 0;
     left: 0;
@@ -218,7 +214,6 @@ button::-moz-focus-inner {
     height: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     outline: none !important;
-    contain: strict;
 }
 
 .defaultCardBackground {
