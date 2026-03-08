@@ -180,14 +180,7 @@ const ItemsView: FC<ItemsViewProps> = ({
         }
 
         return cardOptions;
-    }, [
-        libraryViewSettings.ShowTitle,
-        libraryViewSettings.ImageType,
-        libraryViewSettings.ShowYear,
-        libraryViewSettings.CardLayout,
-        collectionType,
-        viewType
-    ]);
+    }, [libraryViewSettings.ImageType, libraryViewSettings.ShowTitle, libraryViewSettings.ShowYear, libraryViewSettings.CardLayout, collectionType, __legacyApiClient__, viewType]);
 
     const getItems = useCallback(() => {
         if (!itemsResult?.Items?.length) {
@@ -237,13 +230,7 @@ const ItemsView: FC<ItemsViewProps> = ({
                 ))}
             </Box>
         );
-    }, [
-        libraryViewSettings.ViewMode,
-        itemsResult?.Items,
-        getListOptions,
-        getCardOptions,
-        noItemsMessage
-    ]);
+    }, [itemsResult?.Items, libraryViewSettings.ViewMode, getCardOptions, viewType, noItemsMessage, getListOptions]);
 
     const totalRecordCount = itemsResult?.TotalRecordCount ?? 0;
     const items = itemsResult?.Items ?? [];

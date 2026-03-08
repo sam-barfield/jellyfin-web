@@ -106,6 +106,16 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
         cardWidth = { xs: 200, md: 280 };
     }
 
+    const handleContextMenu = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        import('scripts/inputManager').then(({ default: inputManager }) => {
+            inputManager.handleCommand('menu', {
+                sourceElement: e.currentTarget
+            });
+        }).catch(console.error);
+    }, []);
+
     return (
         <Box
             className='media-card-root'
@@ -113,6 +123,12 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
             role='button'
             aria-label={item.Name ?? 'Media item'}
             onKeyDown={handleKeyDown}
+            onContextMenu={handleContextMenu}
+            data-id={item.Id}
+            data-serverid={item.ServerId}
+            data-type={item.Type}
+            data-mediatype={item.MediaType}
+            data-isfolder={item.IsFolder ? 'true' : 'false'}
             sx={{
                 position: 'relative',
                 flexShrink: 0,

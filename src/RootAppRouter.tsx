@@ -52,6 +52,22 @@ function RootAppLayout() {
         .some(path => location.pathname.startsWith(`/${path}`));
 
     React.useEffect(() => {
+        let shortcutsModule: { on: (context: Document | HTMLElement) => void; off: (context: Document | HTMLElement) => void } | null = null;
+        import('components/shortcuts').then(({ default: shortcuts }) => {
+            shortcutsModule = shortcuts;
+            shortcuts.on(document);
+        }).catch(err => {
+            console.error('Failed to load shortcuts module:', err);
+        });
+
+        return () => {
+            if (shortcutsModule) {
+                shortcutsModule.off(document);
+            }
+        };
+    }, []);
+
+    React.useEffect(() => {
         if (!document.getElementById('modern-home-styles')) {
             const style = document.createElement('style');
             style.id = 'modern-home-styles';
