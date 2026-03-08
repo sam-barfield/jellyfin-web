@@ -29,9 +29,27 @@ const NewCollectionButton: FC<NewCollectionButtonProps> = ({
 
     return (
         <Button
-            variant='contained'
+            variant='outlined'
             startIcon={isTextVisible ? <Add /> : undefined}
             onClick={showCollectionEditor}
+            sx={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textTransform: 'none',
+                borderRadius: '14px',
+                px: isTextVisible ? { xs: 2.5, sm: 3 } : { xs: 1.5, sm: 2 },
+                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                    transform: 'translateY(-1px)'
+                },
+                minWidth: isTextVisible ? undefined : '48px',
+                height: isTextVisible ? undefined : '42px'
+            }}
         >
             {isTextVisible ? (
                 globalize.translate('NewCollection')

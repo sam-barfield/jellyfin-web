@@ -2,9 +2,14 @@
     display: flex;
     justify-content: center;
     padding: 0;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(18, 18, 18, 0.75) !important;
+    backdrop-filter: blur(30px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
     max-height: 84%;
-    border-radius: 0.1em !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6) !important;
+    overflow: hidden !important;
 }
 
 .actionsheet-not-fullscreen {
@@ -33,11 +38,27 @@
 }
 
 .actionSheetMenuItem {
-    font-weight: inherit;
+    font-weight: 500;
     box-shadow: none;
     flex-shrink: 0;
-    border-radius: 0;
-    margin: 0;
+    border-radius: 10px !important;
+    margin: 4px 0 !important;
+    padding: 0 8px !important;
+    transition: all 0.2s ease !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+
+    &:hover, &:focus {
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
+        transform: none !important;
+    }
+
+    &:active {
+        background: rgba(255, 255, 255, 0.12) !important;
+        transform: scale(0.98) !important;
+    }
 }
 
 .actionSheetMenuItem:focus {
@@ -88,6 +109,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    padding: 0 8px;
+    box-sizing: border-box;
 }
 
 .actionSheetScroller-tv {
@@ -97,15 +120,20 @@
 }
 
 .actionsheetDivider {
-    height: 0.07em;
-    margin: 0.25em 0;
+    height: 1px;
+    margin: 6px 4px;
     flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .actionSheetTitle {
-    margin: 0.6em 0 0.7em !important;
-    padding: 0 0.75rem;
+    margin: 0.8em 0 0.8em !important;
+    padding: 0 1.25rem;
     flex-grow: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    opacity: 0.9;
 }
 
 .actionSheetText {
@@ -116,14 +144,21 @@
 
 .actionsheetMenuItemIcon {
     padding: 0 !important;
+    font-size: 1.25rem !important;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 
     [dir="ltr"] & {
-        margin: 0 0.85em 0 0.45em !important;
+        margin: 0 1em 0 0.6em !important;
     }
 
     [dir="rtl"] & {
-        margin: 0 0.45em 0 0.85em !important;
+        margin: 0 0.6em 0 1em !important;
     }
+}
+
+.actionSheetMenuItem:hover .actionsheetMenuItemIcon {
+    opacity: 1;
 }
 
 .actionsheet-xlargeFont {

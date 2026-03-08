@@ -222,7 +222,7 @@ class CollectionEditor {
 
         const dlg = dialogHelper.createDialog(dialogOptions);
 
-        dlg.classList.add('formDialog');
+        dlg.classList.add('formDialog', 'modernDialog', 'modernCollectionDialog');
 
         let html = '';
         const title = items.length ? globalize.translate('HeaderAddToCollection') : globalize.translate('NewCollection');
