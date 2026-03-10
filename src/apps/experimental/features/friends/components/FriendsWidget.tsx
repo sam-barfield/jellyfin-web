@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { type SxProps, type Theme, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -123,7 +125,7 @@ const FriendCard = ({ friend }: { friend: FriendDto }) => {
         undefined;
 
     const thumbUrl = (NowPlaying?.ItemId && apiClient) ?
-        apiClient.getScaledImageUrl(NowPlaying.ItemId, { type: 'Primary', maxWidth: 80, quality: 85 }) :
+        apiClient.getScaledImageUrl(NowPlaying.SeriesId || NowPlaying.ItemId, { type: 'Primary', maxWidth: 80, quality: 85 }) :
         null;
 
     const progressPct = (NowPlaying?.PositionTicks && NowPlaying?.RunTimeTicks) ?
@@ -181,7 +183,7 @@ const FriendCard = ({ friend }: { friend: FriendDto }) => {
 
                 {NowPlaying ? (
                     <>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, mt: 0.25 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, mt: 0.5 }}>
                             <PlayArrowRoundedIcon sx={{ fontSize: 12, color: 'primary.main', flexShrink: 0 }} />
                             <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary', lineHeight: 1.2 }} noWrap>
                                 {nowPlayingLabel}
@@ -250,8 +252,13 @@ const RequestCard = ({ req, onAccept, onDecline, globalBusy }: RequestCardProps)
         }
     }, [req, onDecline]);
 
-    const handleAcceptClick = useCallback(() => { void handleAccept(); }, [handleAccept]);
-    const handleDeclineClick = useCallback(() => { void handleDecline(); }, [handleDecline]);
+    const handleAcceptClick = useCallback(() => {
+        void handleAccept();
+    }, [handleAccept]);
+
+    const handleDeclineClick = useCallback(() => {
+        void handleDecline();
+    }, [handleDecline]);
 
     return (
         <Paper
@@ -311,19 +318,9 @@ interface RequestsDrawerProps {
     onMutated: () => void;
 }
 
-const drawerPaperSx = {
-    width: { xs: '100vw', sm: 380 },
-    background: 'rgba(16, 16, 20, 0.88)',
-    backdropFilter: 'blur(24px)',
-    WebkitBackdropFilter: 'blur(24px)',
-    borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
-    p: 3,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0
-};
-
 const RequestsDrawer = ({ open, onClose, onMutated }: RequestsDrawerProps) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { data: requests, isLoading, refetch } = useFriendRequests();
     const { mutateAsync: accept } = useAcceptFriendRequest();
     const { mutateAsync: decline } = useDeclineFriendRequest();
@@ -381,7 +378,9 @@ const RequestsDrawer = ({ open, onClose, onMutated }: RequestsDrawerProps) => {
         }
     }, [addUsername, sendRequest]);
 
-    const handleSendClick = useCallback(() => { void handleSend(); }, [handleSend]);
+    const handleSendClick = useCallback(() => {
+        void handleSend();
+    }, [handleSend]);
 
     const handleAddKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Enter') void handleSend();
@@ -393,15 +392,50 @@ const RequestsDrawer = ({ open, onClose, onMutated }: RequestsDrawerProps) => {
         setAddSuccess(false);
     }, []);
 
-    const handleClose = useCallback(() => { onClose(); }, [onClose]);
+    const handleClose = useCallback(() => {
+        onClose();
+    }, [onClose]);
+
+    const drawerPaperSx: SxProps<Theme> = isMobile ? {
+        maxHeight: '85dvh',
+        background: 'rgba(16, 16, 20, 0.96)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderRadius: '20px 20px 0 0',
+        p: 2,
+        pb: 'max(env(safe-area-inset-bottom), 16px)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0,
+        overflowY: 'auto',
+        overflowX: 'hidden'
+    } : {
+        width: 380,
+        background: 'rgba(16, 16, 20, 0.88)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+        p: 3,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0
+    };
 
     return (
         <Drawer
-            anchor='right'
+            anchor={isMobile ? 'bottom' : 'right'}
             open={open}
             onClose={handleClose}
             slotProps={{ paper: { sx: drawerPaperSx } }}
         >
+            {/* Mobile drag handle */}
+            {isMobile && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5, mt: 0.5 }}>
+                    <Box sx={{ width: 36, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)' }} />
+                </Box>
+            )}
+
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant='h6' sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
@@ -443,7 +477,7 @@ const RequestsDrawer = ({ open, onClose, onMutated }: RequestsDrawerProps) => {
                             height: 6,
                             borderRadius: '50%',
                             backgroundColor: 'currentColor',
-                            marginRight: '8px',
+                            marginRight: '8px'
                         }
                     }
                 }}

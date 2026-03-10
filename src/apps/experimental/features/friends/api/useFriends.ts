@@ -12,6 +12,7 @@ import serverNotifications from 'scripts/serverNotifications';
 export interface NowPlayingFriendDto {
     ItemId: string;
     Name: string;
+    SeriesId?: string;
     SeriesName?: string;
     PositionTicks?: number;
     RunTimeTicks?: number;
