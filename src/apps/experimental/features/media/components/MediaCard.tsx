@@ -131,9 +131,22 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
                 // Show action buttons on hover OR keyboard focus
                 '&:hover .card-actions': { opacity: 1, transform: 'translateY(0)' },
                 // Adjust spacing and weight for title text
+                '& .cardText:first-child': {
+                    fontSize: { xs: '0.68rem', sm: '0.8rem', md: '0.9rem' },
+                    lineHeight: 1.2
+                },
+                '& .cardText-secondary': {
+                    fontSize: { xs: '0.6rem', sm: '0.7rem' },
+                    lineHeight: 1.2
+                },
                 '& .cardText-first': {
-                    marginTop: 0.5,
+                    marginTop: { xs: '-2px', sm: 0 },
+                    paddingTop: 0, // Override legacy 0.24em
                     fontWeight: 500
+                },
+                '& .cardFooter': {
+                    paddingTop: 0,
+                    paddingBottom: 0 // Override legacy 0.5em
                 }
             }}
         >

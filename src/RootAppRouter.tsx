@@ -109,7 +109,7 @@ function RootAppLayout() {
                     backdrop-filter: none !important;
                     -webkit-backdrop-filter: none !important;
                     position: relative !important;
-                    padding: 12px 4px 0 4px !important;
+                    padding: 4px 4px 0 4px !important;
                     border: none !important;
                     text-align: center !important;
                 }
@@ -138,7 +138,6 @@ function RootAppLayout() {
                 }
                 .homePage .cardText:not(:first-child) {
                     font-weight: 500;
-                    font-size: 0.8rem !important;
                     color: rgba(255,255,255,0.5) !important;
                     margin-top: 2px !important;
                 }
@@ -278,7 +277,7 @@ function RootAppLayout() {
                     color: #fff !important;
                     transform: translateX(4px) !important;
                 }
-                .mainDrawer .navMenuOption-selected, 
+                .mainDrawer .navMenuOption-selected,
                 .mainDrawer .navMenuOption.selected {
                     background-color: rgba(0, 164, 220, 0.15) !important;
                     color: #00a4dc !important;
