@@ -95,6 +95,10 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
         cardWidth = { xs: 200, md: 280 };
     }
 
+    const handleCardImageClick = useCallback(() => {
+        appRouter.showItem(item);
+    }, [item]);
+
     const handleContextMenu = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -129,9 +133,9 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
                 WebkitFontSmoothing: 'subpixel-antialiased',
                 '&:hover': { transform: 'scale(1.05)', zIndex: 2 },
                 // Show action buttons on hover OR keyboard focus
-                '&:hover .card-actions': { opacity: 1, transform: 'translateY(0)' },
+                '&:hover .card-actions': { opacity: 1, transform: 'translateY(0) translateZ(0)' },
                 // Adjust spacing and weight for title text
-                '& .cardText:first-child': {
+                '& .cardText:first-of-type': {
                     fontSize: { xs: '0.68rem', sm: '0.8rem', md: '0.9rem' },
                     lineHeight: 1.2
                 },
@@ -154,6 +158,7 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
 
             <Box
                 className='card-actions'
+                onClick={handleCardImageClick}
                 sx={{
                     position: 'absolute',
                     top: 0,
@@ -161,7 +166,7 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
                     width: '100%',
                     boxSizing: 'border-box',
                     aspectRatio: dynamicAspectRatio,
-                    pointerEvents: 'none',
+                    cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'flex-end',
@@ -169,8 +174,10 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
                     p: 1,
                     gap: 0.5,
                     opacity: 0,
-                    transform: 'translateY(4px)',
+                    transform: 'translateY(4px) translateZ(0)',
                     transition: 'opacity 0.2s ease, transform 0.2s ease',
+                    willChange: 'opacity, transform',
+                    backfaceVisibility: 'hidden',
                     zIndex: 5
                 }}
             >
@@ -181,12 +188,12 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
                     sx={{
                         pointerEvents: 'auto',
                         color: 'white',
-                        backgroundColor: 'rgba(0,164,220,0.25)', // Using primary brand color base for play
+                        backgroundColor: 'primary.main',
                         backdropFilter: 'blur(6px)',
                         width: 30,
                         height: 30,
                         '&:hover': {
-                            backgroundColor: 'primary.main',
+                            backgroundColor: 'primary.dark',
                             color: 'white'
                         }
                     }}
