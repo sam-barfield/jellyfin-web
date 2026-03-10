@@ -376,11 +376,12 @@ export const TrendingWidget = ({ trendingMovies, trendingShows }: TrendingWidget
                         maxHeight: { xs: 'none', sm: 520 },
                         pb: { xs: 1, sm: 0.5 },
                         pr: { xs: 0, sm: 0.5 },
-                        scrollbarWidth: 'none',
+                        '@media (max-width: 599px)': { scrollbarWidth: 'none' },
+                        '@media (min-width: 600px)': { scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' },
                         '&::-webkit-scrollbar': { display: { xs: 'none', sm: 'block' }, width: 4 },
                         '&::-webkit-scrollbar-track': { background: 'transparent' },
-                        '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.15)', borderRadius: 2 },
-                        '&::-webkit-scrollbar-thumb:hover': { background: 'rgba(255,255,255,0.3)' }
+                        '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.2)', borderRadius: 2 },
+                        '&::-webkit-scrollbar-thumb:hover': { background: 'rgba(255,255,255,0.35)' }
                     }}>
                         {activeItems.length > 0 ? (
                             activeItems.map((item, index) => (
