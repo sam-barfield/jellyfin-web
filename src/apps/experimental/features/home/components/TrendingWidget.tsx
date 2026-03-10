@@ -236,7 +236,8 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
                 className='hover-actions'
                 sx={{
                     position: 'absolute', right: 0, bottom: 4,
-                    display: 'flex', alignItems: 'center', gap: 0.5,
+                    display: { xs: 'none', sm: 'flex' },
+                    alignItems: 'center', gap: 0.5,
                     opacity: 0, transform: 'translateY(4px)',
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     pr: 0.5
