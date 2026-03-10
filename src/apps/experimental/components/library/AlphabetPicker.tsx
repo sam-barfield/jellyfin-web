@@ -35,7 +35,7 @@ const AlphabetPicker: React.FC<AlphabetPickerProps> = ({
     return (
         <Box
             sx={{
-                zIndex: 1000,
+                zIndex: 50,
                 transition: 'all 0.3s ease',
                 // Desktop Style (Floating on right)
                 display: { xs: 'none', md: 'flex' },
