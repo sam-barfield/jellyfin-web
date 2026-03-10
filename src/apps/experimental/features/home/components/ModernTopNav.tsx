@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
@@ -202,6 +202,26 @@ interface UnifiedNavProps {
     libraries?: ItemDto[];
 }
 
+const LIBRARY_ICON_MAP: Record<string, React.FC<SvgIconProps>> = {
+    anime: (props) => <AutoAwesomeRoundedIcon {...props} />,
+    movies: (props) => <LocalMoviesRoundedIcon {...props} />,
+    tvshows: (props) => <TvRoundedIcon {...props} />,
+    livetv: (props) => <LiveTvRoundedIcon {...props} />,
+    music: (props) => <QueueMusicRoundedIcon {...props} />,
+    musicvideos: (props) => <QueueMusicRoundedIcon {...props} />,
+    default: (props) => <VideoLibraryRoundedIcon {...props} />
+};
+
+function getLibraryIcon(item: ItemDto): React.FC<SvgIconProps> {
+    const type = item.CollectionType;
+    const name = item.Name?.toLowerCase() || '';
+
+    if (name.includes('anime')) return LIBRARY_ICON_MAP.anime;
+    if (type && LIBRARY_ICON_MAP[type]) return LIBRARY_ICON_MAP[type];
+
+    return LIBRARY_ICON_MAP.default;
+}
+
 export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNavProps) => {
     const handleHomeClick = useCallback(() => onTabChange(0), [onTabChange]);
     const handleFavouritesClick = useCallback(() => onTabChange(1), [onTabChange]);
@@ -218,22 +238,7 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
         }
         appRouter.showItem(targetLib);
     }, []);
-
-    const getLibraryIcon = (item: ItemDto): React.ElementType<SvgIconProps> => {
-        const type = item.CollectionType;
-        const name = item.Name?.toLowerCase() || '';
-        let Icon: React.ElementType<SvgIconProps> = VideoLibraryRoundedIcon;
-
-        if (type === 'movies') Icon = LocalMoviesRoundedIcon;
-        else if (name.includes('anime')) Icon = AutoAwesomeRoundedIcon;
-        else if (type === 'tvshows') Icon = TvRoundedIcon;
-        else if (type === 'livetv') Icon = LiveTvRoundedIcon;
-        else if (type === 'music' || type === 'musicvideos') Icon = QueueMusicRoundedIcon;
-
-        return Icon;
-    };
-
-    const allTabs = [
+    const allTabs = useMemo(() => [
         { icon: HomeRoundedIcon, label: 'Home', onClick: handleHomeClick, active: activeTab === 0 },
         { icon: FavoriteRoundedIcon, label: 'Favourites', onClick: handleFavouritesClick, active: activeTab === 1 },
         ...libraries.map((lib, idx) => ({
@@ -242,7 +247,7 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
             onClick: () => handleLibraryClick(lib),
             active: activeTab === idx + 2
         }))
-    ];
+    ], [activeTab, handleHomeClick, handleFavouritesClick, handleLibraryClick, libraries]);
 
     return (
         <>

@@ -10,7 +10,8 @@ import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import ChevronRight from '@mui/icons-material/ChevronRight';
-import PlayArrow from '@mui/icons-material/PlayArrow';
+import LocalMovies from '@mui/icons-material/LocalMovies';
+import Tv from '@mui/icons-material/Tv';
 import { useCalendar, ReleaseCalendarItem, ReleaseCalendarType } from 'apps/dashboard/features/calendar/api/useCalendar';
 import { format, startOfDay, endOfDay, isSameDay, addDays, startOfWeek, eachDayOfInterval } from 'date-fns';
 
@@ -31,17 +32,28 @@ const DateTab = React.memo(({ date, active, onClick }: { date: Date; active: boo
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                borderRadius: '24px',
-                backgroundColor: active ? 'primary.main' : 'transparent',
-                color: active ? 'primary.contrastText' : 'text.secondary',
+                borderRadius: '8px',
+                position: 'relative',
+                backgroundColor: 'transparent',
+                color: active ? 'primary.main' : 'text.secondary',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
-                    backgroundColor: active ? 'primary.main' : 'rgba(255, 255, 255, 0.08)',
-                    color: active ? 'primary.contrastText' : 'text.primary',
-                    transform: active ? 'none' : 'translateY(-2px)'
+                    color: active ? 'primary.main' : 'text.primary',
+                    transform: 'translateY(-2px)'
                 },
                 ...(active && {
-                    boxShadow: '0 4px 15px rgba(0, 164, 220, 0.4)'
+                    '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        bottom: 2,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '20px',
+                        height: '3px',
+                        backgroundColor: 'primary.main',
+                        borderRadius: '2px',
+                        boxShadow: '0 0 10px rgba(0,164,220,0.5)'
+                    }
                 })
             }}
         >
@@ -61,7 +73,6 @@ const ReleaseRow = ({ item }: { item: ReleaseCalendarItem }) => {
     const isMovie = item.Type === ReleaseCalendarType.Movie;
     const date = new Date(item.AirDateUtc);
     const time = date.getMinutes() === 0 ? format(date, 'ha') : format(date, 'h:mma');
-    const typeLabel = isMovie ? 'Movie' : `Ep ${item.EpisodeNumber || '?'}`;
 
     return (
         <Paper
@@ -100,20 +111,20 @@ const ReleaseRow = ({ item }: { item: ReleaseCalendarItem }) => {
                 <Paper
                     variant='outlined'
                     sx={{
-                        px: { xs: 1.5, sm: 2 },
+                        px: { xs: 1, sm: 1.5 },
                         py: 0.5,
                         display: 'flex',
                         alignItems: 'center',
                         gap: 0.5,
-                        backgroundColor: 'rgba(0, 164, 220, 0.1)',
-                        borderColor: 'transparent',
-                        borderRadius: '12px',
-                        color: 'primary.main'
+                        backgroundColor: isMovie ? 'rgba(0, 164, 220, 0.12)' : 'rgba(76, 175, 80, 0.12)',
+                        borderColor: isMovie ? 'rgba(0, 164, 220, 0.25)' : 'rgba(76, 175, 80, 0.25)',
+                        borderRadius: '10px',
+                        color: isMovie ? 'primary.main' : '#4caf50'
                     }}
                 >
-                    <PlayArrow sx={{ fontSize: 16 }} />
-                    <Typography variant='caption' sx={{ fontWeight: 700, fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
-                        {typeLabel}
+                    {isMovie ? <LocalMovies sx={{ fontSize: 14 }} /> : <Tv sx={{ fontSize: 14 }} />}
+                    <Typography variant='caption' sx={{ fontWeight: 700, fontSize: { xs: '0.65rem', sm: '0.7rem' } }}>
+                        {isMovie ? 'Movie' : 'Episode'}
                     </Typography>
                 </Paper>
             </Box>
@@ -308,11 +319,12 @@ export const ReleaseCalendar = ({ title = 'Estimated Schedule', showTimestamp = 
                     pr: 1,
                     maxHeight: 400,
                     overflowY: 'auto',
-                    scrollbarWidth: 'none',
+                    '@media (max-width: 599px)': { scrollbarWidth: 'none' },
+                    '@media (min-width: 600px)': { scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' },
                     '&::-webkit-scrollbar': { display: { xs: 'none', sm: 'block' }, width: 4 },
                     '&::-webkit-scrollbar-track': { background: 'transparent' },
-                    '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.15)', borderRadius: 2 },
-                    '&::-webkit-scrollbar-thumb:hover': { background: 'rgba(255,255,255,0.3)' }
+                    '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.2)', borderRadius: 2 },
+                    '&::-webkit-scrollbar-thumb:hover': { background: 'rgba(255,255,255,0.35)' }
                 }}>
                     {renderContent()}
                 </Box>
