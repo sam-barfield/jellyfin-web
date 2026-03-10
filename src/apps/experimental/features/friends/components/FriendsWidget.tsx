@@ -26,7 +26,7 @@ import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 
 import {
-    useFriendsWidget,
+    useLiveFriendsWidget,
     useFriendRequests,
     useAcceptFriendRequest,
     useDeclineFriendRequest,
@@ -118,6 +118,10 @@ const FriendCard = ({ friend }: { friend: FriendDto }) => {
     const { NowPlaying } = friend;
     const apiClient = ServerConnections.currentApiClient();
 
+    const profileImageUrl = (friend.HasProfileImage && apiClient) ?
+        apiClient.getUserImageUrl(friend.UserId, { type: 'Primary', width: 76 }) :
+        undefined;
+
     const thumbUrl = (NowPlaying?.ItemId && apiClient) ?
         apiClient.getScaledImageUrl(NowPlaying.ItemId, { type: 'Primary', maxWidth: 80, quality: 85 }) :
         null;
@@ -156,7 +160,10 @@ const FriendCard = ({ friend }: { friend: FriendDto }) => {
             }}
         >
             <Box sx={{ position: 'relative', flexShrink: 0 }}>
-                <Avatar sx={{ width: 38, height: 38, fontSize: '0.85rem', fontWeight: 700, backgroundColor: avatarColor(friend.Username) }}>
+                <Avatar
+                    src={profileImageUrl}
+                    sx={{ width: 38, height: 38, fontSize: '0.85rem', fontWeight: 700, backgroundColor: avatarColor(friend.Username) }}
+                >
                     {getInitials(friend.Username)}
                 </Avatar>
                 <Box sx={{
@@ -521,7 +528,7 @@ const RequestsDrawer = ({ open, onClose, onMutated }: RequestsDrawerProps) => {
 const FRIENDS_STORAGE_KEY = 'home_friends_collapsed';
 
 export const FriendsWidget = () => {
-    const { data: widget, refetch } = useFriendsWidget();
+    const { data: widget, refetch } = useLiveFriendsWidget();
     // const navigate = useNavigate();
 
     const [isCollapsed, setIsCollapsed] = useState(() => {
