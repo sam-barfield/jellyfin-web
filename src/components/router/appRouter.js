@@ -137,6 +137,11 @@ class AppRouter {
         if (typeof item === 'string') {
             const apiClient = serverId ? ServerConnections.getApiClient(serverId) : ServerConnections.currentApiClient();
             const api = toApi(apiClient);
+
+            if (!apiClient || !api) {
+                return;
+            }
+
             const userId = apiClient.getCurrentUserId();
 
             queryClient
@@ -504,6 +509,10 @@ class AppRouter {
 
     showFavorites() {
         return this.show('home?tab=1');
+    }
+
+    showFriends() {
+        return this.show('friends');
     }
 }
 

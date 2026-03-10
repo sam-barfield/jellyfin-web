@@ -12,5 +12,6 @@ export const ASYNC_USER_ROUTES: AsyncRoute[] = [
     { path: 'search', page: 'search' },
     { path: 'calendar', type: AppType.Experimental },
     { path: 'tv', page: 'shows', type: AppType.Experimental },
-    { path: 'userprofile', page: 'user/userprofile' }
+    { path: 'userprofile', page: 'user/userprofile' },
+    { path: 'friends', type: AppType.Experimental }
 ];

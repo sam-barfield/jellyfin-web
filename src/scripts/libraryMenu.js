@@ -412,8 +412,13 @@ function onSidebarLinkClick() {
 }
 
 function getUserViews(apiClient, userId) {
+    const api = toApi(apiClient);
+    if (!api) {
+        return Promise.resolve([]);
+    }
+
     return queryClient
-        .fetchQuery(getUserViewsQuery(toApi(apiClient), userId))
+        .fetchQuery(getUserViewsQuery(api, userId))
         .then(function (result) {
             const items = result.Items;
             const list = [];
