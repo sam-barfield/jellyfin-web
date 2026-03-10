@@ -1,7 +1,11 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useApi } from 'hooks/useApi';
 import { queryClient } from 'utils/query/queryClient';
 import type { Api } from '@jellyfin/sdk/lib/api';
+import type { ApiClient } from 'jellyfin-apiclient';
+import Events, { type Event as JfEvent } from 'utils/events';
+import serverNotifications from 'scripts/serverNotifications';
 
 // ─── DTOs — PascalCase to match the Jellyfin .NET backend serialisation ───────
 
@@ -20,6 +24,7 @@ export interface FriendDto {
     IsOnline: boolean;
     NowPlaying?: NowPlayingFriendDto;
     HoursWatchedLastMonth: number;
+    HasProfileImage: boolean;
 }
 
 export interface FriendRequestDto {
@@ -64,6 +69,60 @@ export const useFriendsWidget = () => {
         staleTime: 30_000,
         refetchOnWindowFocus: true
     });
+};
+
+/**
+ * Extends useFriendsWidget with real-time WebSocket updates via FriendActivity push messages.
+ * Subscribes on mount, unsubscribes on unmount, and replaces cache state on each push.
+ */
+export const useLiveFriendsWidget = () => {
+    const { __legacyApiClient__ } = useApi();
+    const query = useFriendsWidget();
+
+    useEffect(() => {
+        if (!__legacyApiClient__) return;
+
+        const onFriendActivity = (_evt: JfEvent, _apiClient: ApiClient, data: FriendWidgetDto) => {
+            queryClient.setQueryData([FRIENDS_WIDGET_QUERY_KEY], data);
+        };
+
+        __legacyApiClient__.sendMessage('FriendActivityStart', '0,5000');
+        Events.on(serverNotifications, 'FriendActivity', onFriendActivity);
+
+        return () => {
+            __legacyApiClient__.sendMessage('FriendActivityStop', '');
+            Events.off(serverNotifications, 'FriendActivity', onFriendActivity);
+        };
+    }, [__legacyApiClient__]);
+
+    return query;
+};
+
+/**
+ * Extends useFriendsList with real-time WebSocket updates via FriendActivity push messages.
+ * Subscribes on mount, unsubscribes on unmount, and replaces cache state on each push.
+ */
+export const useLiveFriendsList = () => {
+    const { __legacyApiClient__ } = useApi();
+    const query = useFriendsList();
+
+    useEffect(() => {
+        if (!__legacyApiClient__) return;
+
+        const onFriendActivity = (_evt: JfEvent, _apiClient: ApiClient, data: FriendWidgetDto) => {
+            queryClient.setQueryData([FRIENDS_LIST_QUERY_KEY], data.Friends);
+        };
+
+        __legacyApiClient__.sendMessage('FriendActivityStart', '0,5000');
+        Events.on(serverNotifications, 'FriendActivity', onFriendActivity);
+
+        return () => {
+            __legacyApiClient__.sendMessage('FriendActivityStop', '');
+            Events.off(serverNotifications, 'FriendActivity', onFriendActivity);
+        };
+    }, [__legacyApiClient__]);
+
+    return query;
 };
 
 export const useFriendsList = () => {

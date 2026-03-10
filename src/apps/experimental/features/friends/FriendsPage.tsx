@@ -21,7 +21,7 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 import {
-    useFriendsList,
+    useLiveFriendsList,
     useFriendRequests,
     useSendFriendRequest,
     useRemoveFriend,
@@ -112,6 +112,10 @@ const FriendRow = ({ friend, onRemove }: { friend: FriendDto; onRemove: (id: str
     const { NowPlaying } = friend;
     const apiClient = ServerConnections.currentApiClient();
 
+    const profileImageUrl = (friend.HasProfileImage && apiClient) ?
+        apiClient.getUserImageUrl(friend.UserId, { type: 'Primary', width: 92 }) :
+        undefined;
+
     const thumbUrl = (NowPlaying?.ItemId && apiClient) ?
         apiClient.getScaledImageUrl(NowPlaying.ItemId, { type: 'Primary', maxWidth: 100, quality: 85 }) :
         null;
@@ -150,7 +154,10 @@ const FriendRow = ({ friend, onRemove }: { friend: FriendDto; onRemove: (id: str
         >
             {/* Avatar + online dot */}
             <Box sx={{ position: 'relative', flexShrink: 0 }}>
-                <Avatar sx={{ width: 46, height: 46, fontSize: '1rem', fontWeight: 700, backgroundColor: avatarColor(friend.Username) }}>
+                <Avatar
+                    src={profileImageUrl}
+                    sx={{ width: 46, height: 46, fontSize: '1rem', fontWeight: 700, backgroundColor: avatarColor(friend.Username) }}
+                >
                     {getInitials(friend.Username)}
                 </Avatar>
                 <Box sx={{
@@ -322,7 +329,7 @@ interface FriendsPageProps {
 }
 
 export const FriendsPage = ({ onColorChange }: FriendsPageProps) => {
-    const { data: friends, isLoading: loadingFriends, refetch: refetchFriends } = useFriendsList();
+    const { data: friends, isLoading: loadingFriends, refetch: refetchFriends } = useLiveFriendsList();
     const { data: requests, refetch: refetchRequests } = useFriendRequests();
 
     const { mutateAsync: removeFriend } = useRemoveFriend();
