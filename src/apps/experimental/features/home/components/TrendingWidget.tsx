@@ -113,9 +113,11 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
                 flexShrink: 0,
                 flexDirection: { xs: 'column', sm: 'row' },
                 '&:hover, &:focus-visible': {
+                    zIndex: 10,
                     '& .trending-poster': {
                         transform: 'scale(1.05) translateY(-2px)',
-                        boxShadow: '0 14px 36px rgba(0,0,0,0.75)'
+                        boxShadow: '0 14px 36px rgba(0,0,0,0.75)',
+                        zIndex: 10
                     },
                     '& .hover-actions': { opacity: 1, transform: 'translateY(0)' }
                 }
@@ -151,7 +153,8 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
                     overflow: 'hidden',
                     backgroundColor: 'rgba(0,0,0,0.35)',
                     boxShadow: '0 6px 20px rgba(0,0,0,0.55)',
-                    transition: 'transform 0.25s ease, box-shadow 0.25s ease'
+                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                    zIndex: 10
                 }}
             >
                 {!!thumbUrl && (
@@ -194,7 +197,7 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
             </Box>
 
             {/* Details — hidden on mobile horizontal strip */}
-            <Box sx={{ flexGrow: 1, minWidth: 0, pr: 8, display: { xs: 'none', sm: 'block' } }}>
+            <Box sx={{ flexGrow: 1, minWidth: 0, display: { xs: 'none', sm: 'block' } }}>
                 <Typography
                     sx={{ fontWeight: 700, fontSize: '1rem', lineHeight: 1.3, mb: 0.5, letterSpacing: '0.01em' }}
                     noWrap
@@ -367,6 +370,8 @@ export const TrendingWidget = ({ trendingMovies, trendingShows }: TrendingWidget
                         // Mobile: horizontal scroll
                         overflowX: { xs: 'auto', sm: 'visible' },
                         overflowY: { xs: 'hidden', sm: 'auto' },
+                        mx: { xs: -1.5, sm: -0.5 }, // Pull container boundaries into parent padding
+                        px: { xs: 1.5, sm: 0.5 }, // Push content back to original alignment
                         maxHeight: { xs: 'none', sm: 520 },
                         pb: { xs: 1, sm: 0.5 },
                         pr: { xs: 0, sm: 0.5 },
