@@ -13,7 +13,7 @@ import Loading from 'components/loading/LoadingComponent';
 import NoItemsMessage from 'components/common/NoItemsMessage';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { MediaRow } from '../../features/home/components/MediaRow';
+import { MediaRow } from '../../features/media/components/MediaRow';
 import { CardShape } from 'utils/card';
 import type { ParentId } from 'types/library';
 import { SectionType } from 'types/sections';

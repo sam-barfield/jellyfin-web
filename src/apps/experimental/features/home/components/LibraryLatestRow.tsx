@@ -2,7 +2,7 @@ import React from 'react';
 import { ImageType } from '@jellyfin/sdk/lib/generated-client/models/image-type';
 import { ItemFields } from '@jellyfin/sdk/lib/generated-client/models/item-fields';
 import { useGetLatestItems } from '../../../../../hooks/useFetchItems';
-import { MediaRow } from './MediaRow';
+import { MediaRow } from '../../media/components/MediaRow';
 
 import { appRouter } from 'components/router/appRouter';
 import { type ItemDto } from 'types/base/models/item-dto';

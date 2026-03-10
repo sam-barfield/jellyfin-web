@@ -114,7 +114,7 @@ function RootAppLayout() {
                     text-align: center !important;
                 }
                 .homePage .cardText {
-                    font-family: "Inter", "Roboto", sans-serif;
+                    font-family: "Noto Sans", sans-serif;
                     text-align: center !important;
                     white-space: nowrap;
                     overflow: hidden;
