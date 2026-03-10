@@ -9,7 +9,7 @@ import Events from 'utils/events';
 import { HeroSection } from '../features/home/components/HeroSection';
 import { UnifiedNav } from '../features/home/components/ModernTopNav';
 import { HomeSidebar } from '../features/home/components/HomeSidebar';
-import { MediaRow } from '../features/home/components/MediaRow';
+import { MediaRow } from '../features/media/components/MediaRow';
 import { LibraryLatestRow } from '../features/home/components/LibraryLatestRow';
 import { useHomeData } from '../../../hooks/useHomeData';
 import { type ItemDto } from 'types/base/models/item-dto';

@@ -11,7 +11,7 @@ import { useGetItems } from 'hooks/useFetchItems';
 import Loading from 'components/loading/LoadingComponent';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { MediaRow } from '../../features/home/components/MediaRow';
+import { MediaRow } from '../../features/media/components/MediaRow';
 
 import type { ParentId } from 'types/library';
 import type { ItemDto } from 'types/base/models/item-dto';

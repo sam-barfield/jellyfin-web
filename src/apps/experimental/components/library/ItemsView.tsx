@@ -24,7 +24,7 @@ import { type LibraryViewSettings, type ParentId, ViewMode } from 'types/library
 import type { CardOptions } from 'types/cardOptions';
 import type { ListOptions } from 'types/listOptions';
 import { useItem } from 'hooks/useItem';
-import { MediaCard } from '../../features/home/components/MediaRow';
+import { MediaCard } from '../../features/media/components/MediaCard';
 
 import AlphabetPicker from './AlphabetPicker';
 import FilterButton from './filter/FilterButton';

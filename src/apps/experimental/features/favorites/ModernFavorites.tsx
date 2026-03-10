@@ -11,7 +11,7 @@ import { ImageType } from '@jellyfin/sdk/lib/generated-client/models/image-type'
 import { ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models/item-sort-by';
 import { SortOrder } from '@jellyfin/sdk/lib/generated-client/models/sort-order';
 import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
-import { MediaCard } from '../home/components/MediaRow';
+import { MediaCard } from '../media/components/MediaCard';
 import { useBackdropColor } from 'hooks/useBackdropColor';
 import { ServerConnections } from 'lib/jellyfin-apiclient';
 import type { ItemDto } from 'types/base/models/item-dto';
