@@ -159,7 +159,8 @@ const HeroSlide = React.memo(({ item }: { item: ItemDto }) => {
     const onPlayClick = useCallback(() => {
         if (!item) return;
         playbackManager.play({
-            items: [item]
+            items: [item],
+            startPositionTicks: item.UserData?.PlaybackPositionTicks || 0
         }).catch(err => {
             console.error('[HeroSection] failed to play', err);
         });

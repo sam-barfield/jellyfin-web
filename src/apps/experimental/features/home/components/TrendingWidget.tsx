@@ -51,7 +51,10 @@ const TrendingRow = ({ item, index }: { item: ItemDto; index: number }) => {
 
     const handlePlay = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
-        playbackManager.play({ items: [item] }).catch(console.error);
+        playbackManager.play({
+            items: [item],
+            startPositionTicks: item.UserData?.PlaybackPositionTicks || 0
+        }).catch(console.error);
     }, [item]);
 
     const handleFavorite = useCallback(async (e: React.MouseEvent) => {
