@@ -193,12 +193,13 @@ const NavTab = ({
 
 // ─── Bar styles ───────────────────────────────────────────────────────────────
 const TOP_BAR_HEIGHT = 64;
+const MOBILE_NAV_HEIGHT = 72;
 
 // ─── Main component ───────────────────────────────────────────────────────────
 interface UnifiedNavProps {
-    activeTab: number
-    onTabChange: (index: number) => void
-    libraries?: ItemDto[]
+    activeTab: number;
+    onTabChange: (index: number) => void;
+    libraries?: ItemDto[];
 }
 
 export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNavProps) => {
@@ -228,7 +229,7 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
         else if (type === 'tvshows') Icon = TvRoundedIcon;
         else if (type === 'livetv') Icon = LiveTvRoundedIcon;
         else if (type === 'music' || type === 'musicvideos') Icon = QueueMusicRoundedIcon;
-        
+
         return Icon;
     };
 
@@ -253,18 +254,18 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
                     position: 'sticky',
                     top: 0,
                     zIndex: 100,
-                    height: TOP_BAR_HEIGHT,
+                    height: { xs: MOBILE_NAV_HEIGHT - 8, md: TOP_BAR_HEIGHT },
                     display: 'flex',
                     alignItems: 'center',
                     px: { xs: 0.5, md: 1 },
-                    py: 1.5,
+                    py: { xs: 1, md: 1.5 },
                     gap: 0,
                     // Glass background for readability over hero media
                     background: 'rgba(10, 10, 15, 0.55)',
                     backdropFilter: 'blur(18px)',
                     WebkitBackdropFilter: 'blur(18px)',
                     borderBottom: '1px solid rgba(255,255,255,0.08)',
-                    mb: 4
+                    mb: { xs: 1, md: 4 }
                 }}
             >
                 {/* Left: hamburger only */}
@@ -311,6 +312,7 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
                     left: 0,
                     right: 0,
                     zIndex: 200,
+                    height: MOBILE_NAV_HEIGHT,
                     backgroundColor: 'rgba(12, 12, 16, 0.88)',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
@@ -318,13 +320,14 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
                     overflowX: 'auto',
                     scrollbarWidth: 'none',
                     '&::-webkit-scrollbar': { display: 'none' },
-                    py: 0.5,
-                    pb: 'max(0.5rem, env(safe-area-inset-bottom))',
-                    px: 0.5
+                    py: 0,
+                    pb: 'env(safe-area-inset-bottom)',
+                    px: 0.5,
+                    boxSizing: 'content-box'
                 }}
             >
                 {allTabs.map(tab => (
-                    <Box key={tab.label} sx={{ flexShrink: 0, flex: libraries.length < 4 ? 1 : 'none' }}>
+                    <Box key={tab.label} sx={{ display: 'flex', alignItems: 'center', height: '100%', flexShrink: 0, flex: libraries.length < 4 ? 1 : 'none' }}>
                         <NavTab
                             icon={tab.icon}
                             label={tab.label}

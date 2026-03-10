@@ -254,7 +254,7 @@ const ItemsView: FC<ItemsViewProps> = ({
                     flexDirection: 'column',
                     gap: 1,
                     px: { xs: 1, sm: 3, md: 6 },
-                    pt: 2
+                    pt: { xs: 1, sm: 2 }
                 }}
             >
                 {/* Row 1: Title & Main Filter/Sort Buttons */}
