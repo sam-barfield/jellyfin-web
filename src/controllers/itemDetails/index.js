@@ -60,6 +60,10 @@ function autoFocus(container) {
 }
 
 function getPromise(apiClient, params) {
+    if (!apiClient) {
+        return Promise.reject(new Error('apiClient is null'));
+    }
+
     const id = params.id;
 
     if (id) {

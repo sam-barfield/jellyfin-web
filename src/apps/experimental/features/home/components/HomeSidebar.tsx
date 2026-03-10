@@ -7,6 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { ReleaseCalendar } from '../../calendar/components/ReleaseCalendar';
 import { TrendingWidget } from './TrendingWidget';
+import { FriendsWidget } from '../../friends/components/FriendsWidget';
 import { useHomeData } from 'hooks/useHomeData';
 
 const STORAGE_KEY = 'home_schedule_collapsed';
@@ -30,6 +31,10 @@ export const HomeSidebar = () => {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ mb: 2 }}>
+                <FriendsWidget />
+            </Box>
+
             <Box sx={{ mb: 2 }}>
                 {!isPending && (
                     <TrendingWidget trendingMovies={trendingMovies} trendingShows={trendingShows} />
