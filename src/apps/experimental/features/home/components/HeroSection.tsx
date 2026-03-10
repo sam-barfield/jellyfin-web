@@ -76,9 +76,9 @@ export const HeroSection = ({ isPending, heroItems = [], heroIndex = 0, onSwipeL
 
     if (!heroItems || heroItems.length === 0) return null;
 
-    const itemCount = heroItems.length;
-    const containerWidth = `${itemCount * 100}%`;
-    const slideOffset = `translateX(-${(heroIndex / itemCount) * 100}%)`;
+    // Use integer multiples of 100% so translateX never produces a fractional
+    // pixel value — fractional percentages cause a 1px subpixel rendering gap.
+    const slideOffset = `translateX(-${heroIndex * 100}%)`;
 
     return (
         <Box
@@ -92,6 +92,9 @@ export const HeroSection = ({ isPending, heroItems = [], heroIndex = 0, onSwipeL
                 width: '100%',
                 borderRadius: 4,
                 overflow: 'hidden',
+                // Force a GPU compositing layer so overflow+border-radius clips
+                // transformed children correctly, eliminating the 1px edge artifact.
+                transform: 'translateZ(0)',
                 mb: 4,
                 boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
                 touchAction: 'pan-y', // Allow vertical scroll, capture horizontal swipe
@@ -99,18 +102,18 @@ export const HeroSection = ({ isPending, heroItems = [], heroIndex = 0, onSwipeL
                 cursor: touchStartX !== null ? 'grabbing' : 'grab'
             }}
         >
-            {/* Sliding Track */}
+            {/* Sliding Track — 100% wide, slides absolutely positioned at 100% intervals */}
             <Box
                 sx={{
-                    display: 'flex',
-                    width: containerWidth,
+                    position: 'relative',
+                    width: '100%',
                     height: '100%',
                     transform: slideOffset,
                     transition: touchStartX !== null ? 'none' : 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)'
                 }}
             >
-                {heroItems.map((item) => (
-                    <Box key={item.Id} sx={{ width: `${100 / itemCount}%`, height: '100%', flexShrink: 0 }}>
+                {heroItems.map((item, i) => (
+                    <Box key={item.Id} sx={{ position: 'absolute', left: `${i * 100}%`, width: '100%', height: '100%' }}>
                         <HeroSlide item={item} />
                     </Box>
                 ))}
@@ -307,9 +310,11 @@ const HeroSlide = React.memo(({ item }: { item: ItemDto }) => {
                     )}
 
                     <Box sx={{ display: 'flex', gap: 2, mb: { xs: 1.5, md: 3 }, alignItems: 'center' }}>
-                        <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '1rem' }}>
-                            {item.ProductionYear}
-                        </Typography>
+                        {!!item.ProductionYear && (
+                            <Typography variant='subtitle2' sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '1rem' }}>
+                                {item.ProductionYear}
+                            </Typography>
+                        )}
                         {item.CommunityRating && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 <FavoriteIcon sx={{ fontSize: 16, color: 'error.main' }} />
@@ -318,7 +323,12 @@ const HeroSlide = React.memo(({ item }: { item: ItemDto }) => {
                                 </Typography>
                             </Box>
                         )}
-                        {!!item.RunTimeTicks && item.RunTimeTicks > 0 && (
+                        {item.Type === 'Series' && !!item.ChildCount && (
+                            <Typography variant='subtitle2' sx={{ opacity: 0.7, fontWeight: 600, fontSize: '1rem' }}>
+                                {item.ChildCount} Season{item.ChildCount !== 1 ? 's' : ''}
+                            </Typography>
+                        )}
+                        {item.Type !== 'Series' && !!item.RunTimeTicks && item.RunTimeTicks > 0 && (
                             <Typography variant='subtitle2' sx={{ opacity: 0.7, fontWeight: 600, fontSize: '1rem' }}>
                                 {Math.floor(item.RunTimeTicks / 600000000)} min
                             </Typography>
