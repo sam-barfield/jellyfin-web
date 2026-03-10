@@ -33,7 +33,8 @@ export const useHomeData = () => {
             'ProductionYear' as ItemFields,
             'IsAnime' as ItemFields,
             'DubAvailability' as ItemFields,
-            'ServerId' as ItemFields
+            'ServerId' as ItemFields,
+            'ChildCount' as ItemFields
         ],
         enableUserData: true,
         imageTypeLimit: 1,
