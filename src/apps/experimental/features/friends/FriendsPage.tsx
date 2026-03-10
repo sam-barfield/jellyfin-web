@@ -117,7 +117,7 @@ const FriendRow = ({ friend, onRemove }: { friend: FriendDto; onRemove: (id: str
         undefined;
 
     const thumbUrl = (NowPlaying?.ItemId && apiClient) ?
-        apiClient.getScaledImageUrl(NowPlaying.ItemId, { type: 'Primary', maxWidth: 100, quality: 85 }) :
+        apiClient.getScaledImageUrl(NowPlaying.SeriesId || NowPlaying.ItemId, { type: 'Primary', maxWidth: 100, quality: 85 }) :
         null;
 
     const progressPct = (NowPlaying?.PositionTicks && NowPlaying?.RunTimeTicks) ?
