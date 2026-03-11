@@ -247,3 +247,50 @@ export const useRemoveFriend = () => {
         }
     });
 };
+
+// ─── Admin Hooks ──────────────────────────────────────────────────────────────
+
+export const ADMIN_FRIENDS_QUERY_KEY = 'AdminFriendsList';
+
+export const useAdminGetUserFriends = (userId: string | null) => {
+    const { api } = useApi();
+
+    return useQuery({
+        queryKey: [ADMIN_FRIENDS_QUERY_KEY, userId],
+        queryFn: async () => {
+            const url = api!.getUri(`/Friends/Admin/${encodeURIComponent(userId!)}`);
+            const response = await api!.axiosInstance.get<FriendDto[]>(url, getHeaders(api!));
+            return response.data;
+        },
+        enabled: !!api && !!userId,
+        staleTime: 30_000
+    });
+};
+
+export const useAdminAddFriendship = (userId: string | null) => {
+    const { api } = useApi();
+
+    return useMutation({
+        mutationFn: async (friendId: string) => {
+            const url = api!.getUri(`/Friends/Admin/${encodeURIComponent(userId!)}/${encodeURIComponent(friendId)}`);
+            await api!.axiosInstance.post(url, {}, getHeaders(api!));
+        },
+        onSuccess: () => {
+            void queryClient.invalidateQueries({ queryKey: [ADMIN_FRIENDS_QUERY_KEY, userId] });
+        }
+    });
+};
+
+export const useAdminRemoveFriendship = (userId: string | null) => {
+    const { api } = useApi();
+
+    return useMutation({
+        mutationFn: async (friendId: string) => {
+            const url = api!.getUri(`/Friends/Admin/${encodeURIComponent(userId!)}/${encodeURIComponent(friendId)}`);
+            await api!.axiosInstance.delete(url, getHeaders(api!));
+        },
+        onSuccess: () => {
+            void queryClient.invalidateQueries({ queryKey: [ADMIN_FRIENDS_QUERY_KEY, userId] });
+        }
+    });
+};
