@@ -3,7 +3,7 @@ import Fade from '@mui/material/Fade/Fade';
 import React, { useRef, type FC, useEffect, useState } from 'react';
 
 import RemotePlayButton from 'apps/experimental/components/AppToolbar/RemotePlayButton';
-import SyncPlayButton from 'apps/experimental/components/AppToolbar/SyncPlayButton';
+import FriendsSyncButton from 'apps/experimental/components/AppToolbar/FriendsSyncButton';
 import AppToolbar from 'components/toolbar/AppToolbar';
 import ViewManagerPage from 'components/viewManager/ViewManagerPage';
 import { EventType } from 'constants/eventType';
@@ -50,7 +50,7 @@ const VideoPage: FC = () => {
                         isUserMenuAvailable={false}
                         buttons={
                             <>
-                                <SyncPlayButton />
+                                <FriendsSyncButton />
                                 <RemotePlayButton />
                             </>
                         }

@@ -7,7 +7,7 @@ import AppToolbar from 'components/toolbar/AppToolbar';
 import ServerButton from 'components/toolbar/ServerButton';
 
 import RemotePlayButton from './RemotePlayButton';
-import SyncPlayButton from './SyncPlayButton';
+import FriendsSyncButton from './FriendsSyncButton';
 import SearchButton from './SearchButton';
 import AnnouncementsButton from './announcements/AnnouncementsButton';
 import UserViewNav from './userViews/UserViewNav';
@@ -40,7 +40,7 @@ const ExperimentalAppToolbar: FC<AppToolbarProps> = ({
                 <>
                     {/* Hide Announcements when in the video player */}
                     {!location.hash.startsWith('#/video') && !location.pathname.startsWith('/video') && <AnnouncementsButton />}
-                    <SyncPlayButton />
+                    <FriendsSyncButton />
                     <RemotePlayButton />
                     <SearchButton />
                 </>

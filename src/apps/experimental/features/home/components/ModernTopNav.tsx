@@ -23,7 +23,7 @@ import Events from 'utils/events';
 
 import SearchButton from '../../../components/AppToolbar/SearchButton';
 import AnnouncementsButton from '../../../components/AppToolbar/announcements/AnnouncementsButton';
-import SyncPlayButton from '../../../components/AppToolbar/SyncPlayButton';
+import FriendsSyncButton from '../../../components/AppToolbar/FriendsSyncButton';
 import RemotePlayButton from '../../../components/AppToolbar/RemotePlayButton';
 import UserMenuButton from 'components/toolbar/UserMenuButton';
 
@@ -106,7 +106,7 @@ const ActionButtons = () => (
         <SearchButton />
         <AnnouncementsButton />
         <RemotePlayButton />
-        <SyncPlayButton />
+        <FriendsSyncButton />
         <UserMenuButton />
     </Box>
 );

@@ -4,8 +4,6 @@ import { useApi } from 'hooks/useApi';
 import { queryClient } from 'utils/query/queryClient';
 import type { Api } from '@jellyfin/sdk/lib/api';
 import type { ApiClient } from 'jellyfin-apiclient';
-import Events, { type Event as JfEvent } from 'utils/events';
-import serverNotifications from 'scripts/serverNotifications';
 
 // ─── DTOs — PascalCase to match the Jellyfin .NET backend serialisation ───────
 
@@ -83,16 +81,31 @@ export const useLiveFriendsWidget = () => {
     useEffect(() => {
         if (!__legacyApiClient__) return;
 
-        const onFriendActivity = (_evt: JfEvent, _apiClient: ApiClient, data: FriendWidgetDto) => {
-            queryClient.setQueryData([FRIENDS_WIDGET_QUERY_KEY], data);
-        };
+        let cancelled = false;
+        let cleanup: (() => void) | undefined;
 
-        __legacyApiClient__.sendMessage('FriendActivityStart', '0,5000');
-        Events.on(serverNotifications, 'FriendActivity', onFriendActivity);
+        void Promise.all([
+            import('utils/events'),
+            import('scripts/serverNotifications')
+        ]).then(([{ default: Events }, { default: serverNotifications }]) => {
+            if (cancelled) return;
+
+            const onFriendActivity = (_evt: unknown, _apiClient: ApiClient, data: FriendWidgetDto) => {
+                queryClient.setQueryData([FRIENDS_WIDGET_QUERY_KEY], data);
+            };
+
+            __legacyApiClient__.sendMessage('FriendActivityStart', '0,5000');
+            Events.on(serverNotifications, 'FriendActivity', onFriendActivity);
+
+            cleanup = () => {
+                __legacyApiClient__.sendMessage('FriendActivityStop', '');
+                Events.off(serverNotifications, 'FriendActivity', onFriendActivity);
+            };
+        });
 
         return () => {
-            __legacyApiClient__.sendMessage('FriendActivityStop', '');
-            Events.off(serverNotifications, 'FriendActivity', onFriendActivity);
+            cancelled = true;
+            cleanup?.();
         };
     }, [__legacyApiClient__]);
 
@@ -110,16 +123,31 @@ export const useLiveFriendsList = () => {
     useEffect(() => {
         if (!__legacyApiClient__) return;
 
-        const onFriendActivity = (_evt: JfEvent, _apiClient: ApiClient, data: FriendWidgetDto) => {
-            queryClient.setQueryData([FRIENDS_LIST_QUERY_KEY], data.Friends);
-        };
+        let cancelled = false;
+        let cleanup: (() => void) | undefined;
 
-        __legacyApiClient__.sendMessage('FriendActivityStart', '0,5000');
-        Events.on(serverNotifications, 'FriendActivity', onFriendActivity);
+        void Promise.all([
+            import('utils/events'),
+            import('scripts/serverNotifications')
+        ]).then(([{ default: Events }, { default: serverNotifications }]) => {
+            if (cancelled) return;
+
+            const onFriendActivity = (_evt: unknown, _apiClient: ApiClient, data: FriendWidgetDto) => {
+                queryClient.setQueryData([FRIENDS_LIST_QUERY_KEY], data.Friends);
+            };
+
+            __legacyApiClient__.sendMessage('FriendActivityStart', '0,5000');
+            Events.on(serverNotifications, 'FriendActivity', onFriendActivity);
+
+            cleanup = () => {
+                __legacyApiClient__.sendMessage('FriendActivityStop', '');
+                Events.off(serverNotifications, 'FriendActivity', onFriendActivity);
+            };
+        });
 
         return () => {
-            __legacyApiClient__.sendMessage('FriendActivityStop', '');
-            Events.off(serverNotifications, 'FriendActivity', onFriendActivity);
+            cancelled = true;
+            cleanup?.();
         };
     }, [__legacyApiClient__]);
 
