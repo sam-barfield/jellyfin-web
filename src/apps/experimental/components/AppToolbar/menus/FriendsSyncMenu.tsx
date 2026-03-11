@@ -15,6 +15,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import type { ApiClient } from 'jellyfin-apiclient';
 import React, { FC, useCallback, useEffect, useState, ReactNode } from 'react';
 
@@ -130,14 +131,14 @@ const FriendsSyncMenu: FC<FriendsSyncMenuProps> = ({
         if (!syncPlay?.Manager.isPlaylistEmpty() && !syncPlay?.Manager.isPlaybackActive()) {
             items.push(
                 <MenuItem key='sync-play-start-playback' onClick={onStartGroupPlaybackClick}>
-                    <ListItemIcon><PlayCircle /></ListItemIcon>
+                    <ListItemIcon sx={{ color: '#00a4dc' }}><PlayCircle /></ListItemIcon>
                     <ListItemText primary={globalize.translate('LabelSyncPlayResumePlayback')} />
                 </MenuItem>
             );
         } else if (syncPlay?.Manager.isPlaybackActive()) {
             items.push(
                 <MenuItem key='sync-play-stop-playback' onClick={onStopGroupPlaybackClick}>
-                    <ListItemIcon><StopCircle /></ListItemIcon>
+                    <ListItemIcon sx={{ color: '#ff3d00' }}><StopCircle /></ListItemIcon>
                     <ListItemText primary={globalize.translate('LabelSyncPlayHaltPlayback')} />
                 </MenuItem>
             );
@@ -147,7 +148,7 @@ const FriendsSyncMenu: FC<FriendsSyncMenuProps> = ({
                 <ListItemIcon><Tune /></ListItemIcon>
                 <ListItemText primary={globalize.translate('Settings')} />
             </MenuItem>,
-            <Divider key='sync-play-controls-divider' />,
+            <Divider key='sync-play-controls-divider' sx={{ opacity: 0.05, my: 0.5 }} />,
             <MenuItem key='sync-play-exit' onClick={onGroupLeaveClick}>
                 <ListItemIcon><PersonRemove /></ListItemIcon>
                 <ListItemText primary={globalize.translate('LabelSyncPlayLeaveGroup')} />
@@ -157,7 +158,28 @@ const FriendsSyncMenu: FC<FriendsSyncMenuProps> = ({
 
     const renderSyncPlayItems = () => {
         if (!isSyncPlayAvailable) return null;
-        const items: ReactNode[] = [<Divider key='friends-divider' sx={{ my: 1, opacity: 0.1 }} />];
+        const items: ReactNode[] = [];
+
+        // SYNCPLAY Header
+        items.push(
+            <ListSubheader
+                key='syncplay-header'
+                component='div'
+                sx={{
+                    background: 'transparent',
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    lineHeight: '24px', // Reduced from 36px
+                    px: 2.5,
+                    mt: 0 // Removed mt: 0.5
+                }}
+            >
+                {isSyncPlayEnabled ? `SyncPlay — ${currentGroup?.GroupName}` : 'SyncPlay'}
+            </ListSubheader>
+        );
 
         if (isSyncPlayEnabled) {
             renderActiveGroupItems(items);
@@ -175,11 +197,15 @@ const FriendsSyncMenu: FC<FriendsSyncMenuProps> = ({
                     items.push(
                         <MenuItem key={group.GroupId} onClick={handleJoin}>
                             <ListItemIcon><PersonAdd /></ListItemIcon>
-                            <ListItemText primary={group.GroupName} secondary={group.Participants?.join(', ')} />
+                            <ListItemText
+                                primary={group.GroupName}
+                                secondary={group.Participants?.join(', ')}
+                                secondaryTypographyProps={{ sx: { fontSize: '0.7rem', opacity: 0.6 } }}
+                            />
                         </MenuItem>
                     );
                 });
-                items.push(<Divider key='sync-play-groups-divider' />);
+                items.push(<Divider key='sync-play-groups-divider' sx={{ opacity: 0.05, my: 0.5 }} />);
             }
             if (user?.Policy?.SyncPlayAccess === SyncPlayUserAccessType.CreateAndJoinGroups) {
                 items.push(
@@ -206,32 +232,50 @@ const FriendsSyncMenu: FC<FriendsSyncMenuProps> = ({
                 paper: {
                     sx: {
                         mt: 1.5,
-                        background: 'rgba(20, 20, 25, 0.75)',
+                        width: 280,
+                        background: 'rgba(20, 20, 25, 0.75)', // Matched with Announcements
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '16px',
                         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                         overflow: 'hidden',
+                        padding: '4px 0',
                         '& .MuiMenuItem-root': {
-                            py: 1.5,
-                            px: 2,
-                            transition: 'background-color 0.2s ease',
-                            '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.05)' }
+                            py: 1, // Reduced vertical spacing
+                            px: 2.5,
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                '& .MuiListItemIcon-root': { color: '#00a4dc' }
+                            },
+                            '& .MuiListItemText-primary': {
+                                fontSize: '0.875rem',
+                                fontWeight: 500
+                            },
+                            '& .MuiListItemIcon-root': {
+                                minWidth: '36px',
+                                transition: 'color 0.2s ease'
+                            }
                         }
                     }
                 }
             }}
         >
-            {isSyncPlayEnabled && (
-                <ListSubheader component='div' sx={{ background: 'transparent', color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: '32px', px: 2 }}>
-                    Group: {currentGroup?.GroupName}
-                </ListSubheader>
-            )}
-            <MenuItem key='friends-entry' onClick={handleFriendsClick}>
+            <MenuItem key='friends-entry' onClick={handleFriendsClick} sx={{ mb: 0.5, display: 'flex', alignItems: 'center' }}>
                 <ListItemIcon><PeopleIcon /></ListItemIcon>
-                <ListItemText primary={`Friends (${onlineCount})`} secondary={`${onlineCount} online`} />
+                <ListItemText
+                    primary='Friends'
+                    secondary={`${onlineCount} Online`}
+                    secondaryTypographyProps={{ sx: { fontSize: '0.7rem', color: onlineCount > 0 ? '#4caf50' : 'text.secondary', fontWeight: 600 } }}
+                />
+                <Typography variant='caption' sx={{ color: 'primary.main', fontWeight: 700, ml: 'auto', textTransform: 'uppercase', fontSize: '0.65rem' }}>
+                    View
+                </Typography>
             </MenuItem>
+
+            <Divider key='friends-divider' sx={{ opacity: 0.08, mx: 2, my: 0.5 }} />
+
             {renderSyncPlayItems()}
         </Menu>
     );

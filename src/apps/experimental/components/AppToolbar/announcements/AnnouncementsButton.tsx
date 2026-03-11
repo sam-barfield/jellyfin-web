@@ -223,8 +223,7 @@ const AnnouncementsButton = () => {
                     invisible={!unreadStatus?.HasUnread}
                     sx={{
                         '& .MuiBadge-badge': {
-                            backgroundColor: '#00a4dc',
-                            boxShadow: '0 0 0 2px rgba(10, 10, 15, 1)'
+                            backgroundColor: '#00a4dc'
                         }
                     }}
                 >
