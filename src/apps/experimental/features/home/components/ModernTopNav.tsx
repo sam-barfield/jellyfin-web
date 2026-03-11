@@ -22,7 +22,7 @@ import { useNavContext } from '../../../contexts/NavContext';
 import Events from 'utils/events';
 
 import SearchButton from '../../../components/AppToolbar/SearchButton';
-import AnnouncementsButton from '../../../components/AppToolbar/announcements/AnnouncementsButton';
+import ActivityButton from '../../../components/AppToolbar/activity/ActivityButton';
 import FriendsSyncButton from '../../../components/AppToolbar/FriendsSyncButton';
 import RemotePlayButton from '../../../components/AppToolbar/RemotePlayButton';
 import UserMenuButton from 'components/toolbar/UserMenuButton';
@@ -104,7 +104,7 @@ const HamburgerButton = () => {
 const ActionButtons = () => (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
         <SearchButton />
-        <AnnouncementsButton />
+        <ActivityButton />
         <RemotePlayButton />
         <FriendsSyncButton />
         <UserMenuButton />
