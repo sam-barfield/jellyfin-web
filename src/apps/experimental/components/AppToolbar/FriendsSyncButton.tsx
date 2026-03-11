@@ -71,8 +71,7 @@ const FriendsSyncButton = () => {
                                 fontSize: '0.65rem',
                                 height: 16,
                                 minWidth: 16,
-                                padding: '0 4px',
-                                border: '2px solid rgba(10, 10, 15, 1)',
+                                padding: '2px 4px',
                                 fontWeight: 800
                             }
                         }}
