@@ -207,9 +207,9 @@ function RootAppLayout() {
                     font-size: 22px !important;
                     margin: 0 !important;
                 }
-                /* Hide Announcements Button during video playback */
-                html:has(.videoPlayerContainer-onTop) button[aria-label="announcements"],
-                html:has(.videoPlayerContainer-onTop) .headerAnnouncementsButtonContainer {
+                /* Hide Activity Button during video playback */
+                html:has(.videoPlayerContainer-onTop) button[aria-label="activity"],
+                html:has(.videoPlayerContainer-onTop) .headerActivityButtonContainer {
                     display: none !important;
                 }
                 /* ── TV / Controller Focus Styles ─────────────────────────── */

@@ -46,7 +46,7 @@ function renderHeader() {
     html += '<h3 class="pageTitle" aria-hidden="true"></h3>';
     html += '</div>';
     html += '<div class="headerRight">';
-    html += '<div class="headerAnnouncementsButtonContainer headerButtonRight hide"></div>';
+    html += '<div class="headerActivityButtonContainer headerButtonRight hide"></div>';
     html += '<button is="paper-icon-button-light" class="headerSyncButton syncButton headerButton headerButtonRight hide"><span class="material-icons groups" aria-hidden="true"></span></button>';
     html += '<span class="headerSelectedPlayer"></span>';
     html += '<button is="paper-icon-button-light" class="headerAudioPlayerButton audioPlayerButton headerButton headerButtonRight hide"><span class="material-icons music_note" aria-hidden="true"></span></button>';
@@ -73,7 +73,7 @@ function renderHeader() {
     headerAudioPlayerButton = skinHeader.querySelector('.headerAudioPlayerButton');
     headerSearchButton = skinHeader.querySelector('.headerSearchButton');
     headerSyncButton = skinHeader.querySelector('.headerSyncButton');
-    headerAnnouncementsButtonContainer = skinHeader.querySelector('.headerAnnouncementsButtonContainer');
+    headerActivityButtonContainer = skinHeader.querySelector('.headerActivityButtonContainer');
     currentTimeText = skinHeader.querySelector('.currentTimeText');
 
     retranslateUi();
@@ -82,10 +82,10 @@ function renderHeader() {
     updateCastIcon();
     updateClock();
 
-    if (headerAnnouncementsButtonContainer) {
+    if (headerActivityButtonContainer) {
         import('../utils/reactUtils').then(({ renderComponent }) => {
-            import('../apps/experimental/components/AppToolbar/announcements/AnnouncementsButton').then(({ default: AnnouncementsButton }) => {
-                renderComponent(AnnouncementsButton, {}, headerAnnouncementsButtonContainer);
+            import('../apps/experimental/components/AppToolbar/activity/ActivityButton').then(({ default: ActivityButton }) => {
+                renderComponent(ActivityButton, {}, headerActivityButtonContainer);
             });
         });
     }
@@ -177,8 +177,8 @@ function updateUserInHeader(user) {
             headerCastButton.classList.remove('hide');
         }
 
-        if (headerAnnouncementsButtonContainer) {
-            headerAnnouncementsButtonContainer.classList.remove('hide');
+        if (headerActivityButtonContainer) {
+            headerActivityButtonContainer.classList.remove('hide');
         }
 
         const policy = user.Policy ? user.Policy : user.localUser.Policy;
@@ -198,8 +198,8 @@ function updateUserInHeader(user) {
         headerCastButton.classList.add('hide');
         headerSyncButton.classList.add('hide');
 
-        if (headerAnnouncementsButtonContainer) {
-            headerAnnouncementsButtonContainer.classList.add('hide');
+        if (headerActivityButtonContainer) {
+            headerActivityButtonContainer.classList.add('hide');
         }
 
         if (headerSearchButton) {
@@ -726,7 +726,7 @@ let headerCastButton;
 let headerSearchButton;
 let headerAudioPlayerButton;
 let headerSyncButton;
-let headerAnnouncementsButtonContainer;
+let headerActivityButtonContainer;
 let currentTimeText;
 const enableLibraryNavDrawer = layoutManager.desktop;
 const enableLibraryNavDrawerHome = !layoutManager.tv;
