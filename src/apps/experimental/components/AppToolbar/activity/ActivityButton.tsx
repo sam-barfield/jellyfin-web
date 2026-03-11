@@ -300,7 +300,7 @@ const ActivityMenuContent = ({ onClose }: { onClose: () => void }) => {
 
     return (
         <Box sx={{
-            width: { xs: '100vw', sm: 380 },
+            width: { xs: 'calc(100vw - 32px)', sm: 380 },
             maxWidth: '100%',
             height: 550,
             maxHeight: '70vh',
@@ -336,7 +336,16 @@ const ActivityMenuContent = ({ onClose }: { onClose: () => void }) => {
                 )}
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1, p: 1, background: 'rgba(255,255,255,0.03)', borderRadius: '14px', mb: 1.5, mx: 2.5 }}>
+            <Box sx={{
+                display: 'flex',
+                gap: 1,
+                p: 1,
+                background: 'rgba(255,255,255,0.03)',
+                borderRadius: '14px',
+                mb: 1.5,
+                mt: 1,
+                mx: 2.5
+            }}>
                 <TabButton
                     active={activeTab === 'notifications'}
                     label='Notifications'
