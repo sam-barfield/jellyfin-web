@@ -235,6 +235,8 @@ export const UnifiedNav = ({ activeTab, onTabChange, libraries = [] }: UnifiedNa
             else if (name.includes('music')) targetLib.CollectionType = 'music';
             else if (name.includes('video')) targetLib.CollectionType = 'homevideos';
             else if (name.includes('live')) targetLib.CollectionType = 'livetv';
+            else if (name.includes('collection')) targetLib.CollectionType = 'boxsets';
+            else if (name.includes('playlist')) targetLib.CollectionType = 'playlists';
         }
         appRouter.showItem(targetLib);
     }, []);
