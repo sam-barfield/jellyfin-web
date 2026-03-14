@@ -404,47 +404,65 @@ class AppRouter {
             return url;
         }
 
-        if (context !== 'folders' && !itemHelper.isLocalItem(item)) {
-            if (item.CollectionType == CollectionType.Movies) {
-                url = `#/movies?topParentId=${item.Id}&collectionType=${item.CollectionType}`;
-
-                if (options && options.section === 'latest') {
-                    url += '&tab=1';
-                }
-
-                return url;
+        if (!itemHelper.isLocalItem(item)) {
+            if (item.CollectionType === CollectionType.Boxsets) {
+                return '#/collections?topParentId=' + item.Id;
             }
 
-            if (item.CollectionType == CollectionType.Tvshows) {
-                url = `#/tv?topParentId=${item.Id}&collectionType=${item.CollectionType}`;
-
-                if (options && options.section === 'latest') {
-                    url += '&tab=1';
-                }
-
-                return url;
+            if (item.CollectionType === CollectionType.Playlists) {
+                return '#/playlists?topParentId=' + item.Id;
             }
 
-            if (item.CollectionType == CollectionType.Music) {
-                url = `#/music?topParentId=${item.Id}&collectionType=${item.CollectionType}`;
+            if (context !== 'folders') {
+                if (item.CollectionType === CollectionType.Movies) {
+                    url = `#/movies?topParentId=${item.Id}&collectionType=${item.CollectionType}`;
 
-                if (options?.section === 'latest') {
-                    url += '&tab=1';
+                    if (options && options.section === 'latest') {
+                        url += '&tab=1';
+                    }
+
+                    return url;
                 }
 
-                return url;
-            }
+                if (item.CollectionType === CollectionType.Tvshows) {
+                    url = `#/tv?topParentId=${item.Id}&collectionType=${item.CollectionType}`;
 
-            const layoutMode = localStorage.getItem('layout');
+                    if (options && options.section === 'latest') {
+                        url += '&tab=1';
+                    }
 
-            if (layoutMode === 'experimental' && item.CollectionType == CollectionType.Homevideos) {
-                url = '#/homevideos?topParentId=' + item.Id;
+                    return url;
+                }
 
-                return url;
+                if (item.CollectionType === CollectionType.Music) {
+                    url = `#/music?topParentId=${item.Id}&collectionType=${item.CollectionType}`;
+
+                    if (options?.section === 'latest') {
+                        url += '&tab=1';
+                    }
+
+                    return url;
+                }
+
+                const layoutMode = localStorage.getItem('layout');
+
+                if (layoutMode === 'experimental' && item.CollectionType === CollectionType.Homevideos) {
+                    url = '#/homevideos?topParentId=' + item.Id;
+
+                    return url;
+                }
             }
         }
 
-        const itemTypes = ['Playlist', 'TvChannel', 'Program', 'BoxSet', 'MusicAlbum', 'MusicGenre', 'Person', 'Recording', 'MusicArtist'];
+        if (itemType === 'BoxSet') {
+            return '#/collection?id=' + id + '&serverId=' + serverId;
+        }
+
+        if (itemType === 'Playlist') {
+            return '#/playlist?id=' + id + '&serverId=' + serverId;
+        }
+
+        const itemTypes = ['TvChannel', 'Program', 'MusicAlbum', 'MusicGenre', 'Person', 'Recording', 'MusicArtist'];
 
         if (itemTypes.indexOf(itemType) >= 0) {
             return '#/details?id=' + id + '&serverId=' + serverId;

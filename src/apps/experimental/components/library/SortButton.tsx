@@ -104,7 +104,8 @@ const sortOptionsMapping: SortOptionsMapping = {
         { label: 'OptionPlayCount', value: ItemSortBy.PlayCount },
         { label: 'Runtime', value: ItemSortBy.Runtime },
         { label: 'OptionRandom', value: ItemSortBy.Random }
-    ]
+    ],
+    [LibraryTab.Playlists]: movieOrFavoriteOptions
 };
 
 const getSortMenuOptions = (viewType: LibraryTab): SortOption[] => {

@@ -168,5 +168,27 @@ export const LibraryRoutes: LibraryRoute[] = [
                 view: LibraryTab.Videos
             }
         ]
+    },
+    {
+        path: '/collections',
+        views: [
+            {
+                index: 0,
+                label: 'Collections',
+                view: LibraryTab.Collections,
+                isDefault: true
+            }
+        ]
+    },
+    {
+        path: '/playlists',
+        views: [
+            {
+                index: 0,
+                label: 'Playlists',
+                view: LibraryTab.Playlists,
+                isDefault: true
+            }
+        ]
     }
 ];
