@@ -177,7 +177,7 @@ const HeroSlide = React.memo(({ item }: { item: ItemDto }) => {
         try {
             await toggleFavoriteMutation({
                 itemId: item.Id,
-                isFavorite: !isFavorite // current state to toggle
+                isFavorite: isFavorite // current state to toggle
             });
             await queryClient.invalidateQueries({ queryKey: ['Items'] });
         } catch (e) {
