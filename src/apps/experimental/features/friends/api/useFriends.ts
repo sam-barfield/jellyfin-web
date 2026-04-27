@@ -30,6 +30,8 @@ export interface FriendRequestDto {
     RequestId: string;
     RequesterId: string;
     RequesterName: string;
+    AddresseeId: string;
+    AddresseeName: string;
     CreatedAt: string;
 }
 
