@@ -260,6 +260,11 @@ interface RequestRowProps {
 }
 
 const RequestRow = ({ req, onAccept, onDecline, busy }: RequestRowProps) => {
+    const apiClient = ServerConnections.currentApiClient();
+    const currentUserId = apiClient?.getCurrentUserId();
+    const isOutgoing = req.RequesterId === currentUserId;
+    const displayName = isOutgoing ? req.AddresseeName : req.RequesterName;
+
     const handleAccept = useCallback(() => {
         onAccept(req);
     }, [req, onAccept]);
@@ -272,38 +277,41 @@ const RequestRow = ({ req, onAccept, onDecline, busy }: RequestRowProps) => {
             elevation={0}
             sx={{
                 p: { xs: 1.5, sm: 2 },
-                backgroundColor: 'rgba(0,164,220,0.05)',
-                border: '1px solid rgba(0,164,220,0.15)',
+                backgroundColor: isOutgoing ? 'rgba(255, 152, 0, 0.05)' : 'rgba(0,164,220,0.05)',
+                border: '1px solid',
+                borderColor: isOutgoing ? 'rgba(255, 152, 0, 0.15)' : 'rgba(0,164,220,0.15)',
                 borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 2
             }}
         >
-            <Avatar sx={{ width: 44, height: 44, fontSize: '0.9rem', fontWeight: 700, backgroundColor: avatarColor(req.RequesterName), flexShrink: 0 }}>
-                {getInitials(req.RequesterName)}
+            <Avatar sx={{ width: 44, height: 44, fontSize: '0.9rem', fontWeight: 700, backgroundColor: avatarColor(displayName), flexShrink: 0 }}>
+                {getInitials(displayName)}
             </Avatar>
 
             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                 <Typography sx={{ fontWeight: 700, fontSize: '0.92rem' }} noWrap>
-                    {req.RequesterName}
+                    {displayName}
                 </Typography>
                 <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>
-                    Sent {formatLastOnline(req.CreatedAt)}
+                    {isOutgoing ? 'Sent request ' : 'Received request '} {formatLastOnline(req.CreatedAt)}
                 </Typography>
             </Box>
 
             <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
-                <Button
-                    variant='contained'
-                    size='small'
-                    disabled={busy}
-                    onClick={handleAccept}
-                    startIcon={busy ? <CircularProgress size={12} /> : <CheckRoundedIcon />}
-                    sx={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'none', borderRadius: '8px' }}
-                >
-                    Accept
-                </Button>
+                {!isOutgoing && (
+                    <Button
+                        variant='contained'
+                        size='small'
+                        disabled={busy}
+                        onClick={handleAccept}
+                        startIcon={busy ? <CircularProgress size={12} /> : <CheckRoundedIcon />}
+                        sx={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'none', borderRadius: '8px' }}
+                    >
+                        Accept
+                    </Button>
+                )}
                 <Button
                     variant='outlined'
                     size='small'
@@ -316,7 +324,7 @@ const RequestRow = ({ req, onAccept, onDecline, busy }: RequestRowProps) => {
                         '&:hover': { borderColor: 'error.main', color: 'error.main', backgroundColor: 'rgba(198,40,40,0.08)' }
                     }}
                 >
-                    Decline
+                    {isOutgoing ? 'Cancel' : 'Decline'}
                 </Button>
             </Box>
         </Paper>
