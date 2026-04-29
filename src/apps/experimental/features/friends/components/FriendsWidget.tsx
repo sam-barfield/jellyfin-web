@@ -26,6 +26,11 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import PersonAddRoundedIcon from '@mui/icons-material/PersonAddRounded';
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useApi } from 'hooks/useApi';
 
 import {
     useLiveFriendsWidget,
@@ -561,8 +566,42 @@ const RequestsDrawer = ({ open, onClose, onMutated }: RequestsDrawerProps) => {
 
 const FRIENDS_STORAGE_KEY = 'home_friends_collapsed';
 
+const usePrivateMode = () => {
+    const { api } = useApi();
+    const queryClient = useQueryClient();
+
+    const query = useQuery({
+        queryKey: ['PrivateModeStatus'],
+        queryFn: async () => {
+            const url = api!.getUri('/Users/Me');
+            const response = await api!.axiosInstance.get(url, { headers: { Authorization: api!.authorizationHeader } });
+
+            return response.data?.Configuration?.EnablePrivateMode === true;
+        },
+        enabled: !!api
+    });
+
+    const mutation = useMutation({
+        mutationFn: async (enablePrivateMode: boolean) => {
+            const url = api!.getUri(`/Users/PrivateMode?enablePrivateMode=${enablePrivateMode}`);
+            await api!.axiosInstance.post(url, {}, { headers: { Authorization: api!.authorizationHeader } });
+        },
+        onSuccess: (_, variables) => {
+            queryClient.setQueryData(['PrivateModeStatus'], variables);
+        }
+    });
+
+    return {
+        isPrivateMode: query.data ?? false,
+        isLoading: query.isLoading,
+        isToggling: mutation.isPending,
+        togglePrivateMode: () => mutation.mutate(!query.data)
+    };
+};
+
 export const FriendsWidget = () => {
     const { data: widget, refetch } = useLiveFriendsWidget();
+    const { isPrivateMode, togglePrivateMode, isToggling } = usePrivateMode();
     // const navigate = useNavigate();
 
     const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -578,6 +617,11 @@ export const FriendsWidget = () => {
     const handleToggleCollapse = useCallback(() => {
         setIsCollapsed(prev => !prev);
     }, []);
+
+    const handleTogglePrivateMode = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        togglePrivateMode();
+    }, [togglePrivateMode]);
 
     const handleOpenDrawer = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
@@ -625,6 +669,24 @@ export const FriendsWidget = () => {
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Tooltip title={isPrivateMode ? 'Disable Private Mode' : 'Enable Private Mode'}>
+                        <span>
+                            <IconButton
+                                size='small'
+                                onClick={handleTogglePrivateMode}
+                                disabled={isToggling}
+                                sx={{
+                                    color: isPrivateMode ? '#d32f2f' : 'text.secondary',
+                                    backgroundColor: isPrivateMode ? 'rgba(211, 47, 47, 0.12)' : 'transparent',
+                                    '&:hover': {
+                                        backgroundColor: isPrivateMode ? 'rgba(211, 47, 47, 0.25)' : 'rgba(255,255,255,0.08)'
+                                    }
+                                }}
+                            >
+                                {isPrivateMode ? <VisibilityOffRoundedIcon fontSize='small' /> : <VisibilityRoundedIcon fontSize='small' />}
+                            </IconButton>
+                        </span>
+                    </Tooltip>
                     <Tooltip title='Add friends / view requests'>
                         <Box sx={{ position: 'relative' }}>
                             <IconButton
@@ -659,13 +721,14 @@ export const FriendsWidget = () => {
                     elevation={0}
                     sx={{
                         p: { xs: 1, sm: 1.5 },
-                        backgroundColor: 'rgba(20, 20, 20, 0.4)',
+                        backgroundColor: isPrivateMode ? 'rgba(40, 20, 20, 0.5)' : 'rgba(20, 20, 20, 0.4)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        border: isPrivateMode ? '1px dashed rgba(211, 47, 47, 0.4)' : '1px solid rgba(255, 255, 255, 0.05)',
                         borderRadius: '24px',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-                        overflow: 'hidden'
+                        boxShadow: isPrivateMode ? '0 8px 32px rgba(211, 47, 47, 0.15)' : '0 8px 32px rgba(0, 0, 0, 0.3)',
+                        overflow: 'hidden',
+                        transition: 'all 0.3s ease'
                     }}
                 >
                     {friends.length === 0 ? (
