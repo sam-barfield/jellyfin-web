@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -13,10 +13,27 @@ import { useToggleFavoriteMutation, useTogglePlayedMutation } from 'hooks/useFet
 import { appRouter } from 'components/router/appRouter';
 import { playbackManager } from 'components/playback/playbackmanager';
 
+/** Default hover delay before the popout appears (ms) */
+const HOVER_DELAY = 800;
+
+interface MediaCardProps {
+    item: ItemDto;
+    shape: string;
+    cardOptions?: Record<string, unknown>;
+    fullWidth?: boolean;
+    /** Called after a sustained hover — triggers the popout */
+    onHoverStart?: (item: ItemDto, rect: DOMRect) => void;
+    /** Called when the mouse leaves — starts the popout close timer */
+    onHoverEnd?: () => void;
+    /** Whether the popout is currently showing for this card */
+    isPopoutActive?: boolean;
+}
+
 /**
  * A single card with hover-reveal favourite + played buttons.
+ * Optionally supports a Netflix-style hover popout via onHoverStart/onHoverEnd.
  */
-export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { item: ItemDto; shape: string; cardOptions?: Record<string, unknown>; fullWidth?: boolean }) => {
+export const MediaCard = ({ item, shape, cardOptions, fullWidth = false, onHoverStart, onHoverEnd, isPopoutActive = false }: MediaCardProps) => {
     const queryClient = useQueryClient();
     const { mutateAsync: toggleFavorite } = useToggleFavoriteMutation();
     const { mutateAsync: togglePlayed } = useTogglePlayedMutation();
@@ -93,6 +110,37 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
         }
     }, [item]);
 
+    // --- Hover timer for popout ---
+    const cardRootRef = useRef<HTMLDivElement>(null);
+    const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearHoverTimer = useCallback(() => {
+        if (hoverTimerRef.current) {
+            clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = null;
+        }
+    }, []);
+
+    const handleMouseEnterCard = useCallback(() => {
+        if (!onHoverStart || !cardRootRef.current) return;
+        clearHoverTimer();
+        hoverTimerRef.current = setTimeout(() => {
+            if (cardRootRef.current) {
+                onHoverStart(item, cardRootRef.current.getBoundingClientRect());
+            }
+        }, HOVER_DELAY);
+    }, [onHoverStart, item, clearHoverTimer]);
+
+    const handleMouseLeaveCard = useCallback(() => {
+        clearHoverTimer();
+        if (onHoverEnd) onHoverEnd();
+    }, [clearHoverTimer, onHoverEnd]);
+
+    // Clean up timer on unmount
+    useEffect(() => {
+        return () => clearHoverTimer();
+    }, [clearHoverTimer]);
+
     let cardWidth: string | Record<string, number> = fullWidth ? '100%' : { xs: 120, md: 160 };
     if (!fullWidth && shape === 'backdrop') {
         cardWidth = { xs: 200, md: 280 };
@@ -114,12 +162,15 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
 
     return (
         <Box
+            ref={cardRootRef}
             className='media-card-root'
             tabIndex={0}
             role='button'
             aria-label={item.Name ?? 'Media item'}
             onKeyDown={handleKeyDown}
             onContextMenu={handleContextMenu}
+            onMouseEnter={handleMouseEnterCard}
+            onMouseLeave={handleMouseLeaveCard}
             data-id={item.Id}
             data-serverid={item.ServerId}
             data-type={item.Type}
@@ -134,7 +185,7 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false }: { ite
                 willChange: 'transform',
                 backfaceVisibility: 'hidden', // Prevent rendering flicker at end of animation
                 WebkitFontSmoothing: 'subpixel-antialiased',
-                '&:hover': { transform: 'scale(1.05)', zIndex: 2 },
+                '&:hover': { transform: 'scale(1.05)', zIndex: isPopoutActive ? 5 : 2 },
                 // Show action buttons on hover OR keyboard focus
                 '&:hover .card-actions': { opacity: 1, transform: 'translateY(0) translateZ(0)' },
                 // Adjust spacing and weight for title text

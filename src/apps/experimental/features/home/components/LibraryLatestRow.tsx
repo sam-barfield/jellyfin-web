@@ -55,6 +55,7 @@ export function LibraryLatestRow({ library }: Readonly<LibraryLatestRowProps>) {
             items={latestItems}
             shape={shape}
             onViewAll={handleViewAll}
+            enablePopout
             cardOptions={{
                 preferThumb: viewType !== 'movies' && viewType !== 'tvshows' && itemType !== 'Channel' && viewType !== 'music' ? 'auto' : null,
                 showUnplayedIndicator: false,
