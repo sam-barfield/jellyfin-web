@@ -128,7 +128,10 @@ export const useHomeData = () => {
         imageTypeLimit: 1
     }, { enabled: !!trendingShowsIds?.length });
 
-    const isPending = heroQuery.isPending || resumeQuery.isPending || nextUpQuery.isPending || librariesQuery.isPending || trendingMoviesRes.isPending || trendingShowsRes.isPending || trendingMoviesQuery.isPending || trendingShowsQuery.isPending;
+    // Use isLoading (isPending && isFetching) for trending queries — React Query reports
+    // isPending=true for disabled queries that have never fetched, which would block the
+    // page forever when trakt returns empty results and the hydration queries stay disabled.
+    const isPending = heroQuery.isPending || resumeQuery.isPending || nextUpQuery.isPending || librariesQuery.isPending || trendingMoviesRes.isLoading || trendingShowsRes.isLoading || trendingMoviesQuery.isLoading || trendingShowsQuery.isLoading;
     const isError = heroQuery.isError || resumeQuery.isError || nextUpQuery.isError || librariesQuery.isError || trendingMoviesRes.isError || trendingShowsRes.isError || trendingMoviesQuery.isError || trendingShowsQuery.isError;
 
     // Helper: Sort hydrated items back into their correct Trakt ranking order
