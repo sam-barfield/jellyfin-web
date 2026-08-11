@@ -7,7 +7,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import type { Theme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import classNames from 'classnames';
-import React, { type FC, useCallback } from 'react';
+import React, { type FC, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useApi } from 'hooks/useApi';
 import { useLocalStorage } from 'hooks/useLocalStorage';
@@ -36,6 +36,10 @@ import ShuffleButton from './ShuffleButton';
 import SortButton from './SortButton';
 import LibraryViewMenu from './LibraryViewMenu';
 import ViewSettingsButton from './ViewSettingsButton';
+import type { ItemDto } from 'types/base/models/item-dto';
+import { MediaCardPopout } from '../../features/media/components/MediaCardPopout';
+
+const POPOUT_CLOSE_DELAY = 350;
 
 interface ItemsViewProps {
     viewType: LibraryTab;
@@ -113,7 +117,7 @@ const ItemsView: FC<ItemsViewProps> = ({
         return listOptions;
     }, [itemsResult?.Items, collectionType, viewType, libraryViewSettings.SortBy]);
 
-    const getCardOptions = useCallback(() => {
+    const cardOptions = useMemo(() => {
         let shape;
         let preferThumb;
         let preferDisc;
@@ -134,7 +138,7 @@ const ItemsView: FC<ItemsViewProps> = ({
             shape = CardShape.Auto;
         }
 
-        const cardOptions: CardOptions = {
+        const opts: CardOptions = {
             shape: shape,
             showTitle: libraryViewSettings.ShowTitle,
             showYear: libraryViewSettings.ShowYear,
@@ -156,31 +160,63 @@ const ItemsView: FC<ItemsViewProps> = ({
             || viewType === LibraryTab.Albums
             || viewType === LibraryTab.Episodes
         ) {
-            cardOptions.showParentTitle = libraryViewSettings.ShowTitle;
-            cardOptions.overlayPlayButton = true;
+            opts.showParentTitle = libraryViewSettings.ShowTitle;
+            opts.overlayPlayButton = true;
         } else if (viewType === LibraryTab.Artists) {
-            cardOptions.lines = 1;
-            cardOptions.showYear = false;
-            cardOptions.overlayPlayButton = true;
+            opts.lines = 1;
+            opts.showYear = false;
+            opts.overlayPlayButton = true;
         } else if (viewType === LibraryTab.Channels) {
-            cardOptions.shape = CardShape.Square;
-            cardOptions.showDetailsMenu = true;
-            cardOptions.showCurrentProgram = true;
-            cardOptions.showCurrentProgramTime = true;
+            opts.shape = CardShape.Square;
+            opts.showDetailsMenu = true;
+            opts.showCurrentProgram = true;
+            opts.showCurrentProgramTime = true;
         } else if (viewType === LibraryTab.SeriesTimers) {
-            cardOptions.shape = CardShape.Backdrop;
-            cardOptions.showSeriesTimerTime = true;
-            cardOptions.showSeriesTimerChannel = true;
-            cardOptions.overlayMoreButton = true;
-            cardOptions.lines = 3;
+            opts.shape = CardShape.Backdrop;
+            opts.showSeriesTimerTime = true;
+            opts.showSeriesTimerChannel = true;
+            opts.overlayMoreButton = true;
+            opts.lines = 3;
         } else if (viewType === LibraryTab.Movies) {
-            cardOptions.overlayPlayButton = true;
+            opts.overlayPlayButton = true;
         } else if (viewType === LibraryTab.Series || viewType === LibraryTab.Networks) {
-            cardOptions.overlayMoreButton = true;
+            opts.overlayMoreButton = true;
         }
 
-        return cardOptions;
+        return opts;
     }, [libraryViewSettings.ImageType, libraryViewSettings.ShowTitle, libraryViewSettings.ShowYear, libraryViewSettings.CardLayout, collectionType, __legacyApiClient__, viewType]);
+
+    // --- Popout state ---
+    const [popoutItem, setPopoutItem] = useState<ItemDto | null>(null);
+    const [popoutRect, setPopoutRect] = useState<DOMRect | null>(null);
+    const popoutCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearPopoutCloseTimer = useCallback(() => {
+        if (popoutCloseTimerRef.current) {
+            clearTimeout(popoutCloseTimerRef.current);
+            popoutCloseTimerRef.current = null;
+        }
+    }, []);
+
+    const handleCardHoverStart = useCallback((pItem: ItemDto, rect: DOMRect) => {
+        clearPopoutCloseTimer();
+        setPopoutItem(pItem);
+        setPopoutRect(rect);
+    }, [clearPopoutCloseTimer]);
+
+    const handleCardHoverEnd = useCallback(() => {
+        clearPopoutCloseTimer();
+        popoutCloseTimerRef.current = setTimeout(() => {
+            setPopoutItem(null);
+            setPopoutRect(null);
+        }, POPOUT_CLOSE_DELAY);
+    }, [clearPopoutCloseTimer]);
+
+    const handlePopoutClose = useCallback(() => {
+        clearPopoutCloseTimer();
+        setPopoutItem(null);
+        setPopoutRect(null);
+    }, [clearPopoutCloseTimer]);
 
     const getItems = useCallback(() => {
         if (!itemsResult?.Items?.length) {
@@ -195,7 +231,7 @@ const ItemsView: FC<ItemsViewProps> = ({
                 />
             );
         }
-        const shapeStr = getCardOptions().shape;
+        const shapeStr = cardOptions.shape;
         let mediaShape: 'portrait' | 'backdrop' | 'square' = 'portrait';
         if (shapeStr === CardShape.Backdrop) mediaShape = 'backdrop';
         else if (shapeStr === CardShape.Square) mediaShape = 'square';
@@ -223,14 +259,26 @@ const ItemsView: FC<ItemsViewProps> = ({
                         <MediaCard
                             item={mappedItem}
                             shape={mediaShape}
-                            cardOptions={getCardOptions() as Record<string, unknown>}
+                            cardOptions={cardOptions as Record<string, unknown>}
+                            onHoverStart={handleCardHoverStart}
+                            onHoverEnd={handleCardHoverEnd}
+                            isPopoutActive={Boolean(mappedItem.Id && popoutItem?.Id === mappedItem.Id)}
                             fullWidth={true}
                         />
                     </Box>
                 ))}
+                {/* Netflix-style hover popout */}
+                {popoutItem && popoutRect && (
+                    <MediaCardPopout
+                        item={popoutItem}
+                        anchorRect={popoutRect}
+                        onClose={handlePopoutClose}
+                        onMouseEnterPopout={clearPopoutCloseTimer}
+                    />
+                )}
             </Box>
         );
-    }, [itemsResult?.Items, libraryViewSettings.ViewMode, getCardOptions, viewType, noItemsMessage, getListOptions]);
+    }, [itemsResult?.Items, libraryViewSettings.ViewMode, cardOptions, viewType, popoutItem, popoutRect, handlePopoutClose, clearPopoutCloseTimer, noItemsMessage, getListOptions, handleCardHoverStart, handleCardHoverEnd]);
 
     const totalRecordCount = itemsResult?.TotalRecordCount ?? 0;
     const items = itemsResult?.Items ?? [];
