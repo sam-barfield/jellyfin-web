@@ -33,7 +33,7 @@ interface MediaCardProps {
  * A single card with hover-reveal favourite + played buttons.
  * Optionally supports a Netflix-style hover popout via onHoverStart/onHoverEnd.
  */
-export const MediaCard = ({ item, shape, cardOptions, fullWidth = false, onHoverStart, onHoverEnd, isPopoutActive = false }: MediaCardProps) => {
+function MediaCardInner({ item, shape, cardOptions, fullWidth = false, onHoverStart, onHoverEnd, isPopoutActive = false }: Readonly<MediaCardProps>) {
     const queryClient = useQueryClient();
     const { mutateAsync: toggleFavorite } = useToggleFavoriteMutation();
     const { mutateAsync: togglePlayed } = useTogglePlayedMutation();
@@ -295,4 +295,6 @@ export const MediaCard = ({ item, shape, cardOptions, fullWidth = false, onHover
             </Box>
         </Box>
     );
-};
+}
+
+export const MediaCard = React.memo(MediaCardInner);
