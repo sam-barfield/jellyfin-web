@@ -113,23 +113,40 @@ function MediaCardInner({ item, shape, cardOptions, fullWidth = false, onHoverSt
     // --- Hover timer for popout ---
     const cardRootRef = useRef<HTMLDivElement>(null);
     const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const scrollListenerRef = useRef<(() => void) | null>(null);
+
+    const removeScrollListener = useCallback(() => {
+        if (scrollListenerRef.current) {
+            window.removeEventListener('scroll', scrollListenerRef.current, { capture: true });
+            scrollListenerRef.current = null;
+        }
+    }, []);
 
     const clearHoverTimer = useCallback(() => {
         if (hoverTimerRef.current) {
             clearTimeout(hoverTimerRef.current);
             hoverTimerRef.current = null;
         }
-    }, []);
+        removeScrollListener();
+    }, [removeScrollListener]);
 
     const handleMouseEnterCard = useCallback(() => {
         if (!onHoverStart || !cardRootRef.current) return;
         clearHoverTimer();
+
+        const handleScroll = () => {
+            clearHoverTimer();
+        };
+        scrollListenerRef.current = handleScroll;
+        window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+
         hoverTimerRef.current = setTimeout(() => {
+            removeScrollListener();
             if (cardRootRef.current) {
                 onHoverStart(item, cardRootRef.current.getBoundingClientRect());
             }
         }, HOVER_DELAY);
-    }, [onHoverStart, item, clearHoverTimer]);
+    }, [onHoverStart, item, clearHoverTimer, removeScrollListener]);
 
     const handleMouseLeaveCard = useCallback(() => {
         clearHoverTimer();

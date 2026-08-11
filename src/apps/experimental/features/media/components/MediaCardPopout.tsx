@@ -193,6 +193,18 @@ function MediaCardPopoutInner({ item, anchorRect, onClose, onMouseEnterPopout }:
         return () => clearCloseTimer();
     }, [clearCloseTimer]);
 
+    // Close popout on any page or container scroll
+    useEffect(() => {
+        const handleScroll = () => {
+            onClose();
+        };
+
+        window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleScroll, { capture: true });
+        };
+    }, [onClose]);
+
     const backdropUrl = useMemo(() => getBackdropUrl(mergedItem), [mergedItem]);
 
     // --- Action handlers ---
