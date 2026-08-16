@@ -84,7 +84,7 @@ export const useHomeData = () => {
         enableRewatching: false
     });
 
-    // 4. Fetch Trakt Trending Movies Header
+    // 4. Fetch TMDB Trending Movies Header
     const trendingMoviesRes = useTrendingMovies();
     const trendingMoviesIds = trendingMoviesRes.data?.map(t => t.JellyfinItemId).filter(id => id != null) as string[];
 
@@ -106,7 +106,7 @@ export const useHomeData = () => {
         imageTypeLimit: 1
     }, { enabled: !!trendingMoviesIds?.length });
 
-    // 5. Fetch Trakt Trending Shows Header
+    // 5. Fetch TMDB Trending Shows Header
     const trendingShowsRes = useTrendingShows();
     const trendingShowsIds = trendingShowsRes.data?.map(t => t.JellyfinItemId).filter(id => id != null) as string[];
 
@@ -130,11 +130,11 @@ export const useHomeData = () => {
 
     // Use isLoading (isPending && isFetching) for trending queries — React Query reports
     // isPending=true for disabled queries that have never fetched, which would block the
-    // page forever when trakt returns empty results and the hydration queries stay disabled.
+    // page forever when TMDB returns empty results and the hydration queries stay disabled.
     const isPending = heroQuery.isPending || resumeQuery.isPending || nextUpQuery.isPending || librariesQuery.isPending || trendingMoviesRes.isLoading || trendingShowsRes.isLoading || trendingMoviesQuery.isLoading || trendingShowsQuery.isLoading;
     const isError = heroQuery.isError || resumeQuery.isError || nextUpQuery.isError || librariesQuery.isError || trendingMoviesRes.isError || trendingShowsRes.isError || trendingMoviesQuery.isError || trendingShowsQuery.isError;
 
-    // Helper: Sort hydrated items back into their correct Trakt ranking order
+    // Helper: Sort hydrated items back into their correct TMDB ranking order
     const orderedMovies = (trendingMoviesIds?.map(id => trendingMoviesQuery.data?.Items?.find(i => i.Id === id)).filter(Boolean) ?? []) as ItemDto[];
     const orderedShows = (trendingShowsIds?.map(id => trendingShowsQuery.data?.Items?.find(i => i.Id === id)).filter(Boolean) ?? []) as ItemDto[];
 
