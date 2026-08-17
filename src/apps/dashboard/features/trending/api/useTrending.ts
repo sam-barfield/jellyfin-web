@@ -4,17 +4,16 @@ import { queryClient } from 'utils/query/queryClient';
 import type { Api } from '@jellyfin/sdk/lib/api';
 
 export interface TrendingItem {
-    Rank: number; // The position in the Trakt trending list
+    Rank: number; // The position in the TMDB trending list
     Title: string; // The title of the movie/show
     Overview: string; // The description/synopsis
     Year: number; // Release year
     TmdbId: string | null; // TMDB ID (if available)
-    ImdbId: string | null; // IMDB ID (if available)
     JellyfinItemId: string | null; // The internal Guid format ID of the item in the Jellyfin database
 }
 
 export interface TrendingConfiguration {
-    TraktClientId: string; // The Trakt API Client ID
+    TMDBAccessToken: string; // The TMDB API Client ID
     CacheTimeToLiveMinutes: number; // How long to cache the trending lists (default: 30)
 }
 
