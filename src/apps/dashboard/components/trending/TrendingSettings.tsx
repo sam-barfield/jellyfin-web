@@ -15,7 +15,7 @@ export const TrendingSettings = () => {
     const { mutate: updateConfig, isPending: isUpdating, isSuccess: isUpdateSuccess } = useUpdateTrendingConfiguration();
 
     const [formData, setFormData] = useState<TrendingConfiguration>({
-        TraktClientId: '',
+        TMDBAccessToken: '',
         CacheTimeToLiveMinutes: 30
     });
 
@@ -77,18 +77,18 @@ export const TrendingSettings = () => {
             <form onSubmit={handleSubmit}>
                 <Stack spacing={3}>
                     <Paper sx={{ p: 3, background: 'rgba(255, 255, 255, 0.05)' }}>
-                        <Typography variant='h6' sx={{ mb: 2 }}>Trakt Integration</Typography>
+                        <Typography variant='h6' sx={{ mb: 2 }}>TMDB Integration</Typography>
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
-                                    label='Trakt Client ID'
-                                    name='TraktClientId'
+                                    label='TMDB Access Token'
+                                    name='TMDBAccessToken'
                                     type='password'
-                                    value={formData.TraktClientId}
+                                    value={formData.TMDBAccessToken}
                                     onChange={handleChange}
-                                    placeholder='Enter your Trakt API Client ID'
-                                    helperText='Required to fetch trending lists from Trakt.tv'
+                                    placeholder='Enter your TMDB Access Token'
+                                    helperText='Required to fetch trending lists from TMDB'
                                 />
                             </Grid>
                         </Grid>
