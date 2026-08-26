@@ -18,6 +18,8 @@ import { ServerConnections } from 'lib/jellyfin-apiclient';
 import { useToggleFavoriteMutation, useTogglePlayedMutation } from 'hooks/useFetchItems';
 import { playbackManager } from 'components/playback/playbackmanager';
 import { appRouter } from 'components/router/appRouter';
+import { useItemTrailer } from '../api/useItemTrailer';
+import { YoutubeTrailerPreview } from './YoutubeTrailerPreview';
 
 interface MediaCardPopoutProps {
     /** The item from the list query (may have partial data) */
@@ -32,6 +34,9 @@ interface MediaCardPopoutProps {
 
 /** Delay before the popout closes when the mouse leaves (ms) */
 const CLOSE_DELAY = 300;
+
+/** Delay after the popout opens before the trailer preview starts playing (ms) */
+const TRAILER_START_DELAY = 1000;
 
 /** Returns the best backdrop/fallback image URL for the given item */
 function getBackdropUrl(mergedItem: ItemDto): string {
@@ -126,6 +131,25 @@ function MediaCardPopoutInner({ item, anchorRect, onClose, onMouseEnterPopout }:
         const frame = requestAnimationFrame(() => setIsVisible(true));
         return () => cancelAnimationFrame(frame);
     }, []);
+
+    // --- Trailer preview ---
+    // In practice MediaRow's close delay (~350-500ms) is always shorter than MediaCard's
+    // 800ms open-hover dwell, so `popoutItem` always passes through `null` and this component
+    // fully unmounts/remounts between items rather than being reused with new props — a plain
+    // mount-only effect would work today. Keyed on item.Id anyway (not just []) as a cheap
+    // safeguard in case that timer relationship ever changes and a live prop swap becomes possible.
+    const [trailerArmed, setTrailerArmed] = useState(false);
+    useEffect(() => {
+        setTrailerArmed(false);
+        const timer = setTimeout(() => setTrailerArmed(true), TRAILER_START_DELAY);
+        return () => clearTimeout(timer);
+    }, [item.Id]);
+    const trailer = useItemTrailer(mergedItem, trailerArmed);
+    // Whether the trailer has actually started playing — the preview element is mounted (and
+    // playing) as soon as `trailer` resolves, but stays invisible until this flips true, so we
+    // never show YouTube's brief loading/title chrome or a blank first frame.
+    const [trailerPlaying, setTrailerPlaying] = useState(false);
+    const handleTrailerPlaying = useCallback(() => setTrailerPlaying(true), []);
 
     // --- Position calculation ---
     const position = useMemo(() => {
@@ -320,6 +344,37 @@ function MediaCardPopoutInner({ item, anchorRect, onClose, onMouseEnterPopout }:
                     />
                 ) : (
                     <Skeleton variant='rectangular' width='100%' height='100%' sx={{ bgcolor: '#222' }} />
+                )}
+
+                {/* Trailer preview — mounted (and playing) as soon as it resolves, but stays
+                    invisible until playback actually starts, then fades in over the backdrop
+                    image. Avoids ever showing YouTube's brief loading/title chrome. */}
+                {trailer && (
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            opacity: trailerPlaying ? 1 : 0,
+                            transition: 'opacity 0.4s ease'
+                        }}
+                    >
+                        {trailer.kind === 'video' ? (
+                            <Box
+                                component='video'
+                                src={trailer.src}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                onPlaying={handleTrailerPlaying}
+                                sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            />
+                        ) : (
+                            <Box sx={{ width: '100%', height: '100%', pointerEvents: 'none' }}>
+                                <YoutubeTrailerPreview videoId={trailer.videoId} onPlaying={handleTrailerPlaying} />
+                            </Box>
+                        )}
+                    </Box>
                 )}
 
                 {/* Bottom gradient overlay */}
