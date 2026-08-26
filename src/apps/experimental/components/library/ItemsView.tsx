@@ -7,7 +7,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import type { Theme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import classNames from 'classnames';
-import React, { type FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { type FC, useCallback, useMemo } from 'react';
 
 import { useApi } from 'hooks/useApi';
 import { useLocalStorage } from 'hooks/useLocalStorage';
@@ -25,6 +25,7 @@ import type { CardOptions } from 'types/cardOptions';
 import type { ListOptions } from 'types/listOptions';
 import { useItem } from 'hooks/useItem';
 import { MediaCard } from '../../features/media/components/MediaCard';
+import { usePopoutHover } from '../../features/media/hooks/usePopoutHover';
 
 import AlphabetPicker from './AlphabetPicker';
 import FilterButton from './filter/FilterButton';
@@ -36,10 +37,7 @@ import ShuffleButton from './ShuffleButton';
 import SortButton from './SortButton';
 import LibraryViewMenu from './LibraryViewMenu';
 import ViewSettingsButton from './ViewSettingsButton';
-import type { ItemDto } from 'types/base/models/item-dto';
 import { MediaCardPopout } from '../../features/media/components/MediaCardPopout';
-
-const POPOUT_CLOSE_DELAY = 350;
 
 interface ItemsViewProps {
     viewType: LibraryTab;
@@ -186,37 +184,16 @@ const ItemsView: FC<ItemsViewProps> = ({
         return opts;
     }, [libraryViewSettings.ImageType, libraryViewSettings.ShowTitle, libraryViewSettings.ShowYear, libraryViewSettings.CardLayout, collectionType, __legacyApiClient__, viewType]);
 
-    // --- Popout state ---
-    const [popoutItem, setPopoutItem] = useState<ItemDto | null>(null);
-    const [popoutRect, setPopoutRect] = useState<DOMRect | null>(null);
-    const popoutCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const clearPopoutCloseTimer = useCallback(() => {
-        if (popoutCloseTimerRef.current) {
-            clearTimeout(popoutCloseTimerRef.current);
-            popoutCloseTimerRef.current = null;
-        }
-    }, []);
-
-    const handleCardHoverStart = useCallback((pItem: ItemDto, rect: DOMRect) => {
-        clearPopoutCloseTimer();
-        setPopoutItem(pItem);
-        setPopoutRect(rect);
-    }, [clearPopoutCloseTimer]);
-
-    const handleCardHoverEnd = useCallback(() => {
-        clearPopoutCloseTimer();
-        popoutCloseTimerRef.current = setTimeout(() => {
-            setPopoutItem(null);
-            setPopoutRect(null);
-        }, POPOUT_CLOSE_DELAY);
-    }, [clearPopoutCloseTimer]);
-
-    const handlePopoutClose = useCallback(() => {
-        clearPopoutCloseTimer();
-        setPopoutItem(null);
-        setPopoutRect(null);
-    }, [clearPopoutCloseTimer]);
+    // --- Popout state (shared with MediaRow via usePopoutHover) ---
+    const {
+        popoutItem,
+        popoutRect,
+        handleCardHoverStart,
+        handleCardHoverEnd,
+        clearPopoutCloseTimer,
+        handlePopoutClose,
+        quickReopen
+    } = usePopoutHover();
 
     const getItems = useCallback(() => {
         if (!itemsResult?.Items?.length) {
@@ -263,22 +240,25 @@ const ItemsView: FC<ItemsViewProps> = ({
                             onHoverStart={handleCardHoverStart}
                             onHoverEnd={handleCardHoverEnd}
                             isPopoutActive={Boolean(mappedItem.Id && popoutItem?.Id === mappedItem.Id)}
+                            quickReopen={quickReopen}
                             fullWidth={true}
                         />
                     </Box>
                 ))}
-                {/* Netflix-style hover popout */}
-                {popoutItem && popoutRect && (
-                    <MediaCardPopout
-                        item={popoutItem}
-                        anchorRect={popoutRect}
-                        onClose={handlePopoutClose}
-                        onMouseEnterPopout={clearPopoutCloseTimer}
-                    />
-                )}
+                {/* Netflix-style hover popout — always mounted (rather than conditionally
+                    rendered) so retargeting to a different card updates this same instance in
+                    place instead of a full close+reopen cycle; see usePopoutHover's docs on why
+                    onMouseLeavePopout must be wired to the same handleCardHoverEnd as the cards. */}
+                <MediaCardPopout
+                    item={popoutItem}
+                    anchorRect={popoutRect}
+                    onClose={handlePopoutClose}
+                    onMouseEnterPopout={clearPopoutCloseTimer}
+                    onMouseLeavePopout={handleCardHoverEnd}
+                />
             </Box>
         );
-    }, [itemsResult?.Items, libraryViewSettings.ViewMode, cardOptions, viewType, popoutItem, popoutRect, handlePopoutClose, clearPopoutCloseTimer, noItemsMessage, getListOptions, handleCardHoverStart, handleCardHoverEnd]);
+    }, [itemsResult?.Items, libraryViewSettings.ViewMode, cardOptions, viewType, popoutItem, popoutRect, quickReopen, handlePopoutClose, clearPopoutCloseTimer, noItemsMessage, getListOptions, handleCardHoverStart, handleCardHoverEnd]);
 
     const totalRecordCount = itemsResult?.TotalRecordCount ?? 0;
     const items = itemsResult?.Items ?? [];

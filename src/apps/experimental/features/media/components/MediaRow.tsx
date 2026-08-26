@@ -9,10 +9,7 @@ import ChevronRight from '@mui/icons-material/ChevronRight';
 import { type ItemDto } from 'types/base/models/item-dto';
 import { MediaCard } from './MediaCard';
 import { MediaCardPopout } from './MediaCardPopout';
-
-/** Delay before the popout closes when the mouse leaves the card (ms).
- *  This gives the user time to move their mouse onto the popout itself. */
-const POPOUT_CLOSE_DELAY = 350;
+import { usePopoutHover } from '../hooks/usePopoutHover';
 
 interface MediaRowProps {
     title: string;
@@ -34,37 +31,16 @@ export function MediaRow({ title, items, shape = 'backdrop', onViewAll, cardOpti
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
 
-    // --- Popout state ---
-    const [popoutItem, setPopoutItem] = useState<ItemDto | null>(null);
-    const [popoutRect, setPopoutRect] = useState<DOMRect | null>(null);
-    const popoutCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const clearPopoutCloseTimer = useCallback(() => {
-        if (popoutCloseTimerRef.current) {
-            clearTimeout(popoutCloseTimerRef.current);
-            popoutCloseTimerRef.current = null;
-        }
-    }, []);
-
-    const handleCardHoverStart = useCallback((item: ItemDto, rect: DOMRect) => {
-        clearPopoutCloseTimer();
-        setPopoutItem(item);
-        setPopoutRect(rect);
-    }, [clearPopoutCloseTimer]);
-
-    const handleCardHoverEnd = useCallback(() => {
-        clearPopoutCloseTimer();
-        popoutCloseTimerRef.current = setTimeout(() => {
-            setPopoutItem(null);
-            setPopoutRect(null);
-        }, POPOUT_CLOSE_DELAY);
-    }, [clearPopoutCloseTimer]);
-
-    const handlePopoutClose = useCallback(() => {
-        clearPopoutCloseTimer();
-        setPopoutItem(null);
-        setPopoutRect(null);
-    }, [clearPopoutCloseTimer]);
+    // --- Popout state (shared with ItemsView via usePopoutHover) ---
+    const {
+        popoutItem,
+        popoutRect,
+        handleCardHoverStart,
+        handleCardHoverEnd,
+        clearPopoutCloseTimer,
+        handlePopoutClose,
+        quickReopen
+    } = usePopoutHover();
 
     const updateScrollState = useCallback(() => {
         if (!scrollRef.current) return;
@@ -198,7 +174,7 @@ export function MediaRow({ title, items, shape = 'backdrop', onViewAll, cardOpti
                             onHoverStart={enablePopout ? handleCardHoverStart : undefined}
                             onHoverEnd={enablePopout ? handleCardHoverEnd : undefined}
                             isPopoutActive={enablePopout && popoutItem?.Id === item.Id}
-                            quickReopen={enablePopout && popoutItem !== null}
+                            quickReopen={enablePopout && quickReopen}
                         />
                     ))}
                 </Box>
