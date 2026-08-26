@@ -198,17 +198,22 @@ export function MediaRow({ title, items, shape = 'backdrop', onViewAll, cardOpti
                             onHoverStart={enablePopout ? handleCardHoverStart : undefined}
                             onHoverEnd={enablePopout ? handleCardHoverEnd : undefined}
                             isPopoutActive={enablePopout && popoutItem?.Id === item.Id}
+                            quickReopen={enablePopout && popoutItem !== null}
                         />
                     ))}
                 </Box>
 
-                {/* Netflix-style hover popout */}
-                {enablePopout && popoutItem && popoutRect && (
+                {/* Netflix-style hover popout — always mounted (rather than conditionally
+                    rendered) so retargeting to a different card updates this same instance in
+                    place instead of a full close+reopen cycle; it renders nothing of its own
+                    accord until the first card is ever hovered. */}
+                {enablePopout && (
                     <MediaCardPopout
                         item={popoutItem}
                         anchorRect={popoutRect}
                         onClose={handlePopoutClose}
                         onMouseEnterPopout={clearPopoutCloseTimer}
+                        onMouseLeavePopout={handleCardHoverEnd}
                     />
                 )}
             </Box>
