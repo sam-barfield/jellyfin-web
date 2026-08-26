@@ -96,26 +96,33 @@ function classifyOpen(prevId: string | null | undefined, nextId: string | null |
  * Owns the "what should currently be shown/animating" state for `MediaCardPopoutInner`, so a
  * persistently-mounted popout can retarget to a new item in place: `displayItem`/`displayRect`
  * persist the last-shown item/rect (so there's content to animate out from or crossfade between),
- * `isVisible` drives the mount/exit scale+opacity transition, and `contentReady` drives a quick
+ * `isVisible` drives the mount/exit scale+opacity transition, `contentReady` drives a quick
  * content crossfade specifically for a retarget (skipping the full mount transition, since the
- * popout is already on screen).
+ * popout is already on screen), and `glidePosition` gates the top/left position transition to
+ * retargets only — a fresh open (after being fully closed) must NOT animate position: since
+ * `displayRect` is sticky (kept around for the exit animation, never reset to null), a fresh open
+ * would otherwise visibly slide in from wherever the popout was last shown, which can be
+ * completely unrelated to the newly-hovered card.
  */
 function usePopoutDisplay(item: ItemDto | null, anchorRect: DOMRect | null) {
     const [displayItem, setDisplayItem] = useState<ItemDto | null>(item);
     const [displayRect, setDisplayRect] = useState<DOMRect | null>(anchorRect);
     const [isVisible, setIsVisible] = useState(false);
     const [contentReady, setContentReady] = useState(true);
+    const [glidePosition, setGlidePosition] = useState(false);
     const prevItemIdRef = useRef<string | null | undefined>(undefined);
 
     useEffect(() => {
         if (!item || !anchorRect) {
             setIsVisible(false);
+            setGlidePosition(false);
             prevItemIdRef.current = undefined;
             return;
         }
 
         const openKind = classifyOpen(prevItemIdRef.current, item.Id);
         prevItemIdRef.current = item.Id;
+        setGlidePosition(openKind === 'retarget');
         setDisplayItem(item);
         setDisplayRect(anchorRect);
 
@@ -135,7 +142,14 @@ function usePopoutDisplay(item: ItemDto | null, anchorRect: DOMRect | null) {
         }
     }, [item, anchorRect]);
 
-    return { displayItem, displayRect, isVisible, contentReady };
+    return { displayItem, displayRect, isVisible, contentReady, glidePosition };
+}
+
+/** Position/opacity transition for the popout's root — only glides top/left during a retarget (see
+ *  `usePopoutDisplay`'s docs on why a fresh open must not animate position) */
+function popoutTransition(glidePosition: boolean): string {
+    const base = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease';
+    return glidePosition ? `${base}, top 0.2s ease, left 0.2s ease` : base;
 }
 
 /** Computes where the popout should sit relative to the hovered card's rect, clamped to the viewport */
@@ -203,7 +217,7 @@ function MediaCardPopoutInner({ item, anchorRect, onClose, onMouseEnterPopout, o
     const queryClient = useQueryClient();
     const popoutRef = useRef<HTMLDivElement>(null);
 
-    const { displayItem, displayRect, isVisible, contentReady } = usePopoutDisplay(item, anchorRect);
+    const { displayItem, displayRect, isVisible, contentReady, glidePosition } = usePopoutDisplay(item, anchorRect);
 
     // Reset per-item optimistic state when the displayed item actually changes
     useEffect(() => {
@@ -357,7 +371,7 @@ function MediaCardPopoutInner({ item, anchorRect, onClose, onMouseEnterPopout, o
                 boxShadow: '0 14px 40px rgba(0,0,0,0.7), 0 0px 0px 1px rgba(255,255,255,0.08)',
                 transform: isVisible ? 'scale(1)' : 'scale(0.85)',
                 opacity: isVisible ? 1 : 0,
-                transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, top 0.2s ease, left 0.2s ease',
+                transition: popoutTransition(glidePosition),
                 transformOrigin: 'center top',
                 // Avoid blocking clicks/hover on the cards underneath while faded out — this stays
                 // permanently mounted now rather than being removed from the DOM when hidden.
