@@ -12,9 +12,16 @@ import Card from 'components/cardbuilder/Card/Card';
 import { useToggleFavoriteMutation, useTogglePlayedMutation } from 'hooks/useFetchItems';
 import { appRouter } from 'components/router/appRouter';
 import { playbackManager } from 'components/playback/playbackmanager';
+import { useApi } from 'hooks/useApi';
+import { getItemQuery } from 'hooks/useItem';
 
 /** Default hover delay before the popout appears (ms) */
 const HOVER_DELAY = 800;
+/** Hover delay used instead of HOVER_DELAY once a popout is already open elsewhere in the row */
+const QUICK_HOVER_DELAY = 150;
+/** Debounce before prefetching full item details on hover — well under either delay above, but
+ *  enough to skip a request for cards the mouse only passes over while scanning the row */
+const PREFETCH_DELAY = 60;
 
 interface MediaCardProps {
     item: ItemDto;
@@ -27,14 +34,18 @@ interface MediaCardProps {
     onHoverEnd?: () => void;
     /** Whether the popout is currently showing for this card */
     isPopoutActive?: boolean;
+    /** Whether a popout is already open elsewhere in the row — shortens the open-hover dwell so
+     *  retargeting to a neighboring card feels immediate instead of waiting the full delay again */
+    quickReopen?: boolean;
 }
 
 /**
  * A single card with hover-reveal favourite + played buttons.
  * Optionally supports a Netflix-style hover popout via onHoverStart/onHoverEnd.
  */
-function MediaCardInner({ item, shape, cardOptions, fullWidth = false, onHoverStart, onHoverEnd, isPopoutActive = false }: Readonly<MediaCardProps>) {
+function MediaCardInner({ item, shape, cardOptions, fullWidth = false, onHoverStart, onHoverEnd, isPopoutActive = false, quickReopen = false }: Readonly<MediaCardProps>) {
     const queryClient = useQueryClient();
+    const { api, user } = useApi();
     const { mutateAsync: toggleFavorite } = useToggleFavoriteMutation();
     const { mutateAsync: togglePlayed } = useTogglePlayedMutation();
 
@@ -113,6 +124,7 @@ function MediaCardInner({ item, shape, cardOptions, fullWidth = false, onHoverSt
     // --- Hover timer for popout ---
     const cardRootRef = useRef<HTMLDivElement>(null);
     const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const prefetchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const scrollListenerRef = useRef<(() => void) | null>(null);
 
     const removeScrollListener = useCallback(() => {
@@ -127,12 +139,31 @@ function MediaCardInner({ item, shape, cardOptions, fullWidth = false, onHoverSt
             clearTimeout(hoverTimerRef.current);
             hoverTimerRef.current = null;
         }
+        if (prefetchTimerRef.current) {
+            clearTimeout(prefetchTimerRef.current);
+            prefetchTimerRef.current = null;
+        }
         removeScrollListener();
     }, [removeScrollListener]);
 
     const handleMouseEnterCard = useCallback(() => {
         if (!onHoverStart || !cardRootRef.current) return;
         clearHoverTimer();
+
+        // Kick off the full-item fetch well before the popout opens, so its Overview/Genres/etc.
+        // are already cached and ready by the time it's shown instead of visibly popping in a
+        // moment after the popout appears. Debounced by PREFETCH_DELAY (rather than firing
+        // instantly on enter) so a quick mouse pass across many cards while scanning the row
+        // doesn't fire a request per card and end up delaying the fetch that actually matters.
+        const itemId = item.Id;
+        const userId = user?.Id;
+        if (itemId && api && userId) {
+            prefetchTimerRef.current = setTimeout(() => {
+                queryClient.prefetchQuery(getItemQuery(api, itemId, userId)).catch(() => {
+                    // Best-effort — the popout's own useItem call will just fetch it again
+                });
+            }, PREFETCH_DELAY);
+        }
 
         const handleScroll = () => {
             clearHoverTimer();
@@ -145,8 +176,8 @@ function MediaCardInner({ item, shape, cardOptions, fullWidth = false, onHoverSt
             if (cardRootRef.current) {
                 onHoverStart(item, cardRootRef.current.getBoundingClientRect());
             }
-        }, HOVER_DELAY);
-    }, [onHoverStart, item, clearHoverTimer, removeScrollListener]);
+        }, quickReopen ? QUICK_HOVER_DELAY : HOVER_DELAY);
+    }, [onHoverStart, item, clearHoverTimer, removeScrollListener, quickReopen, queryClient, api, user?.Id]);
 
     const handleMouseLeaveCard = useCallback(() => {
         clearHoverTimer();

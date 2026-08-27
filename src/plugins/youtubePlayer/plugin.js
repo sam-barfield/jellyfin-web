@@ -4,8 +4,7 @@ import loading from '../../components/loading/loading';
 import { setBackdropTransparency, TRANSPARENCY_LEVEL } from '../../components/backdrop/backdrop';
 import { PluginType } from '../../types/plugin.ts';
 import Events from '../../utils/events.ts';
-
-/* globals YT */
+import { loadYoutubeIframeApi } from '../../utils/youtubeIframeApi.ts';
 
 const errorCodes = {
     2: 'YoutubeBadRequest',
@@ -141,21 +140,21 @@ function setCurrentSrc(instance, elem, options) {
     return new Promise(function (resolve, reject) {
         instance._currentSrc = options.url;
         const params = new URLSearchParams(options.url.split('?')[1]); /* eslint-disable-line compat/compat */
-        // 3. This function creates an <iframe> (and YouTube player)
-        //    after the API code downloads.
-        window.onYouTubeIframeAPIReady = function () {
-            instance.currentYoutubePlayer = new YT.Player('player', {
+
+        // 3. This creates an <iframe> (and YouTube player) once the API has loaded.
+        loadYoutubeIframeApi().then(function () {
+            instance.currentYoutubePlayer = new window.YT.Player('player', {
                 height: instance.videoDialog.offsetHeight,
                 width: instance.videoDialog.offsetWidth,
                 videoId: params.get('v'),
                 events: {
                     'onReady': onPlayerReady,
                     'onStateChange': function (event) {
-                        if (event.data === YT.PlayerState.PLAYING) {
+                        if (event.data === window.YT.PlayerState.PLAYING) {
                             onPlaying(instance, options, resolve);
-                        } else if (event.data === YT.PlayerState.ENDED) {
+                        } else if (event.data === window.YT.PlayerState.ENDED) {
                             onEndedInternal(instance);
-                        } else if (event.data === YT.PlayerState.PAUSED) {
+                        } else if (event.data === window.YT.PlayerState.PAUSED) {
                             Events.trigger(instance, 'pause');
                         }
                     },
@@ -182,16 +181,7 @@ function setCurrentSrc(instance, elem, options) {
             }
             window.removeEventListener('orientationChange', resizeListener);
             window.addEventListener('orientationChange', resizeListener);
-        };
-
-        if (!window.YT) {
-            const tag = document.createElement('script');
-            tag.src = 'https://www.youtube.com/iframe_api';
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        } else {
-            window.onYouTubeIframeAPIReady();
-        }
+        });
     });
 }
 
