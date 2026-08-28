@@ -2,6 +2,7 @@ import React from 'react';
 import { ImageType } from '@jellyfin/sdk/lib/generated-client/models/image-type';
 import { ItemFields } from '@jellyfin/sdk/lib/generated-client/models/item-fields';
 import { useGetLatestItems } from '../../../../../hooks/useFetchItems';
+import { useApi } from '../../../../../hooks/useApi';
 import { MediaRow } from '../../media/components/MediaRow';
 
 import { appRouter } from 'components/router/appRouter';
@@ -13,8 +14,11 @@ interface LibraryLatestRowProps {
 
 /**
  * Dynamically fetches and renders the latest items for a given library.
+ * Exclusion filtering is handled by the parent via useHomeData's `latestLibraries`.
  */
 export function LibraryLatestRow({ library }: Readonly<LibraryLatestRowProps>) {
+    const { user } = useApi();
+
     const { data: latestItems, isPending, isError } = useGetLatestItems(
         {
             limit: 16,
@@ -29,7 +33,8 @@ export function LibraryLatestRow({ library }: Readonly<LibraryLatestRowProps>) {
             ],
             enableImageTypes: [ImageType.Primary, ImageType.Backdrop, ImageType.Thumb],
             imageTypeLimit: 1,
-            parentId: library?.Id as string | undefined
+            parentId: library?.Id as string | undefined,
+            isPlayed: user?.Configuration?.HidePlayedInLatest ? false : undefined
         },
         { enabled: !!library?.Id }
     );
@@ -68,3 +73,4 @@ export function LibraryLatestRow({ library }: Readonly<LibraryLatestRowProps>) {
         />
     );
 }
+

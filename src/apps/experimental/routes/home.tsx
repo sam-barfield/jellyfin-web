@@ -24,7 +24,7 @@ import '../../../elements/emby-scroller/emby-scroller';
 
 const Home = () => {
     const [ searchParams, setSearchParams ] = useSearchParams();
-    const initialTabIndex = parseInt(searchParams.get('tab') ?? '0', 10);
+    const initialTabIndex = Number.parseInt(searchParams.get('tab') ?? '0', 10);
 
     const libraryMenu = useMemo(async () => ((await import('../../../scripts/libraryMenu')).default), []);
 
@@ -126,6 +126,7 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
         resumeItems,
         nextUpItems,
         libraries,
+        latestLibraries,
         isPending
     } = useHomeData();
 
@@ -243,7 +244,7 @@ const ModernHome = ({ initialTabIndex, onTabChangeUrl }: ModernHomeProps) => {
                                         lines: 2
                                     }}
                                 />
-                                {libraries?.map((library: ItemDto) => (
+                                {latestLibraries?.map((library: ItemDto) => (
                                     <LibraryLatestRow key={library.Id} library={library} />
                                 ))}
                             </Box>
