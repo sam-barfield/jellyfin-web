@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { ItemsApiGetItemsRequest, PlaylistsApiMoveItemRequest } from '@jellyfin/sdk/lib/generated-client';
+import type { ItemsApiGetItemsRequest, ItemsApiGetResumeItemsRequest, PlaylistsApiMoveItemRequest } from '@jellyfin/sdk/lib/generated-client';
 import type { TvShowsApiGetNextUpRequest } from '@jellyfin/sdk/lib/generated-client/api/tv-shows-api';
 import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
 import { ImageType } from '@jellyfin/sdk/lib/generated-client/models/image-type';
@@ -70,6 +70,46 @@ export const useGetItems = (
         gcTime: parametersOptions.sortBy?.includes(ItemSortBy.Random) ? 0 : undefined,
         refetchOnWindowFocus: queryOptions?.refetchOnWindowFocus ?? (parametersOptions.sortBy?.includes(ItemSortBy.Random) ? false : undefined),
         refetchOnReconnect: parametersOptions.sortBy?.includes(ItemSortBy.Random) ? false : undefined,
+        staleTime: queryOptions?.staleTime,
+        enabled: (queryOptions?.enabled !== false) && !!currentApi.api && !!currentApi.user?.Id
+    });
+};
+
+const fetchGetResumeItems = async (
+    currentApi: JellyfinApiContext,
+    parametersOptions: ItemsApiGetResumeItemsRequest,
+    options?: AxiosRequestConfig
+) => {
+    const { api, user } = currentApi;
+    if (api && user?.Id) {
+        const response = await getItemsApi(api).getResumeItems(
+            {
+                userId: user.Id,
+                ...parametersOptions
+            },
+            {
+                signal: options?.signal
+            }
+        );
+        return response.data as ItemDtoQueryResult;
+    }
+};
+
+export const useGetResumeItems = (
+    parametersOptions: ItemsApiGetResumeItemsRequest,
+    queryOptions?: { enabled?: boolean; refetchOnWindowFocus?: boolean | 'always'; staleTime?: number }
+) => {
+    const currentApi = useApi();
+    return useQuery({
+        queryKey: [
+            'ResumeItems',
+            {
+                ...parametersOptions
+            }
+        ],
+        queryFn: ({ signal }) =>
+            fetchGetResumeItems(currentApi, parametersOptions, { signal }),
+        refetchOnWindowFocus: queryOptions?.refetchOnWindowFocus,
         staleTime: queryOptions?.staleTime,
         enabled: (queryOptions?.enabled !== false) && !!currentApi.api && !!currentApi.user?.Id
     });
